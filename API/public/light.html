@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Green House - Ánh sáng</title>
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- MQTT Paho Client Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <!-- Common functions -->
+    <script src="components/common.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Load header components
+        loadHeader('components/header.html', 'Smart Green House - Ánh sáng');
+      });
+    </script>
+    <style>
+      /* Thêm CSS cho Curtain Card */
+      .card-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 15px 0;
+      }
+      .curtain-status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        margin: 15px 0;
+      }
+      .status-indicator {
+        font-size: 1rem;
+        font-weight: bold;
+        padding: 5px 15px;
+        border-radius: 20px;
+      }
+      .status-on {
+        background-color: #4CAF50;
+        color: white;
+      }
+      .status-off {
+        background-color: #F44336;
+        color: white;
+      }
+      .curtain-open {
+        background-color: #2196F3;
+        color: white;
+      }
+      .curtain-closed {
+        background-color: #9E9E9E;
+        color: white;
+      }
+      .device-controls {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+      }
+      
+      /* CSS cho toggle switch */
+      .control-mode-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 15px 0;
+      }
+      .toggle-label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      .toggle-switch-container {
+        display: flex;
+        align-items: center;
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+        margin-right: 10px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+      }
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+      input:checked + .toggle-slider {
+        background-color: #4CAF50;
+      }
+      input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+      }
+      #control-mode-text {
+        font-weight: bold;
+        min-width: 70px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar will be loaded here -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+      <div class="page-header">
+        <h1><i class="fas fa-sun"></i> Quản lý ánh sáng</h1>
+        <p class="subtitle">Theo dõi và điều khiển ánh sáng trong nhà kính</p>
+      </div>
+      
+      <div class="dashboard-cards">
+        <!-- Light Intensity Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Cường độ ánh sáng hiện tại</h3>
+            <div class="card-icon">
+              <i class="fas fa-sun"></i>
+            </div>
+          </div>
+          <div class="card-value" id="light-intensity">--</div>
+          <div class="card-info">lux</div>
+          <div class="card-info">
+            <small id="last-updated">Cập nhật lần cuối: --</small>
+          </div>
+        </div>
+        
+        <!-- Light Status Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Trạng thái đèn</h3>
+            <div class="card-icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+          </div>
+          <div class="card-status">
+            <span class="status-indicator" id="light-status">Đang kiểm tra...</span>
+          </div>
+          <div class="card-info">
+            <p>Ánh sáng dưới 300 lux: tự động BẬT đèn</p>
+            <p>Ánh sáng trên 300 lux: tự động TẮT đèn</p>
+          </div>
+        </div>
+        
+        <!-- Curtain Status Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Trạng thái rèm</h3>
+            <div class="card-icon">
+              <i class="fas fa-blinds"></i>
+            </div>
+          </div>
+          <div class="curtain-status">
+            <span class="status-indicator" id="curtain-status">Đang kiểm tra...</span>
+          </div>
+          <div class="card-info">
+            <p>Ánh sáng trên 1000 lux: tự động ĐÓNG rèm</p>
+            <p>Ánh sáng dưới 1000 lux: tự động MỞ rèm</p>
+          </div>
+        </div>
+        
+        <!-- Light Settings Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Cài đặt ánh sáng</h3>
+            <div class="card-icon">
+              <i class="fas fa-sliders-h"></i>
+            </div>
+          </div>
+          <div class="settings-form">
+            <div class="form-group">
+              <label>Ngưỡng tự động bật đèn (lux):</label>
+              <input type="range" id="light-threshold" min="100" max="1000" step="50" value="300">
+              <span id="light-threshold-value">300 lux</span>
+            </div>
+            <div class="form-group">
+              <label>Ngưỡng tự động đóng rèm (lux):</label>
+              <input type="range" id="curtain-threshold" min="500" max="5000" step="100" value="1000">
+              <span id="curtain-threshold-value">1000 lux</span>
+            </div>
+            <div class="form-group">
+              <div class="checkbox-wrapper">
+                <input type="checkbox" id="auto-control" checked>
+                <label for="auto-control">Kích hoạt điều khiển tự động</label>
+              </div>
+            </div>
+            <button id="save-settings" class="control-btn"><i class="fas fa-save"></i> Lưu cài đặt</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chart Container -->
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+          <h3 class="card-title">Biểu đồ cường độ ánh sáng</h3>
+          <div class="card-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+        </div>
+        <div class="chart-controls">
+          <button id="toggleChart" class="btn-chart-control">
+            <i class="fas fa-eye"></i> <span id="toggleChartText">Ẩn biểu đồ</span>
+          </button>
+          <select id="dataPointsLimit" class="chart-select">
+            <option value="10">10 điểm dữ liệu</option>
+            <option value="20" selected>20 điểm dữ liệu</option>
+            <option value="30">30 điểm dữ liệu</option>
+            <option value="50">50 điểm dữ liệu</option>
+          </select>
+          <select id="timeRange" class="chart-select">
+            <option value="day">Hôm nay</option>
+            <option value="week">Tuần này</option>
+            <option value="month">Tháng này</option>
+          </select>
+        </div>
+        <div id="chartContainer" style="height: 300px; position: relative;">
+          <canvas id="lightChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(document).ready(function() {
+        // Load sidebar component and set active menu
+        loadComponent('#sidebar-container', 'components/sidebar.html', function() {
+          setActiveMenu('nav-light');
+        });
+        
+        // MQTT Client setup
+        const client = new Paho.MQTT.Client("localhost", 9001, "web_" + Math.random().toString(16).substr(2, 8));
+        
+        // Set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        // Connect the client
+        client.connect({onSuccess:onConnect});
+
+        // Called when the client connects
+        function onConnect() {
+          console.log("Connected to MQTT broker");
+          // Subscribe to threshold topics
+          client.subscribe("greenhouse/light/threshold/low");
+          client.subscribe("greenhouse/light/threshold/high");
+        }
+
+        // Called when the client loses its connection
+        function onConnectionLost(responseObject) {
+          if (responseObject.errorCode !== 0) {
+            console.log("Connection lost: " + responseObject.errorMessage);
+          }
+        }
+
+        // Called when a message arrives
+        function onMessageArrived(message) {
+          console.log("Message received: " + message.destinationName + " - " + message.payloadString);
+          if (message.destinationName === "greenhouse/light/threshold/low") {
+            $("#light-threshold").val(message.payloadString);
+            $("#light-threshold-value").text(message.payloadString + " lux");
+          } else if (message.destinationName === "greenhouse/light/threshold/high") {
+            $("#curtain-threshold").val(message.payloadString);
+            $("#curtain-threshold-value").text(message.payloadString + " lux");
+          }
+        }
+
+        // Handle threshold changes
+        $("#light-threshold").on("input", function() {
+          $("#light-threshold-value").text($(this).val() + " lux");
+        });
+
+        $("#curtain-threshold").on("input", function() {
+          $("#curtain-threshold-value").text($(this).val() + " lux");
+        });
+
+        // Handle save settings
+        $("#save-settings").click(function() {
+          const lightThreshold = $("#light-threshold").val();
+          const curtainThreshold = $("#curtain-threshold").val();
+          const autoControl = $("#auto-control").is(":checked");
+
+          // Publish thresholds to MQTT
+          const lightMessage = new Paho.MQTT.Message(lightThreshold);
+          lightMessage.destinationName = "greenhouse/light/threshold/low";
+          client.send(lightMessage);
+
+          const curtainMessage = new Paho.MQTT.Message(curtainThreshold);
+          curtainMessage.destinationName = "greenhouse/light/threshold/high";
+          client.send(curtainMessage);
+
+          // Show success message
+          alert("Đã lưu cài đặt thành công!");
+        });
+
+        // MQTT Configuration
+        const MQTT_CONFIG = {
+          broker: "broker.emqx.io",
+          port: 8083,
+          clientId: "mqttx_470f24bd",
+          topics: {
+            greenhouse: "myapp/greenhouse"  // Topic duy nhất cho tất cả dữ liệu và điều khiển
+          },
+          reconnectTimeout: 3000,  // Thời gian chờ trước khi kết nối lại (mili giây)
+          cleanSession: true       // Sử dụng clean session để tránh trùng lặp
+        };
+        
+        // Biến toàn cục để theo dõi trạng thái kết nối
+        let mqttClient = null;
+        let reconnectCount = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+        
+        // Tạo ID duy nhất cho mỗi phiên sử dụng timestamp và random string
+        function generateUniqueClientId() {
+          const timestamp = new Date().getTime().toString();
+          const random = Math.random().toString(36).substring(2, 10);
+          return MQTT_CONFIG.clientId + '_' + timestamp + '_' + random;
+        }
+        
+        // Variables for chart control
+        let chartVisible = true;
+        let chartUpdateTimer = null;
+        let maxDataPoints = 20; // Số lượng điểm dữ liệu tối đa
+        let isChartInitialized = false;
+        let chart = null;
+        
+        // Device state variables
+        let lightStatus = false;
+        let curtainStatus = false; // false: open, true: closed
+        let currentLightIntensity = 0;
+        let lightThreshold = 300;   // Ngưỡng đèn
+        let curtainThreshold = 1000; // Ngưỡng rèm
+        
+        // Chart data history
+        let lightDataHistory = [];
+
+        // Cài đặt giao diện
+        const UI_CONFIG = {
+          lightThresholds: {
+            low: 100,   // Dưới 100 lux: ánh sáng yếu
+            medium: 500  // 100-500 lux: ánh sáng trung bình, trên 500: ánh sáng mạnh
+          },
+          colors: {
+            lowLight: "#e0e0e0",     // Xám nhạt cho ánh sáng yếu
+            mediumLight: "#fff8e1",  // Vàng nhạt cho ánh sáng trung bình
+            brightLight: "#fffde7"   // Vàng sáng cho ánh sáng mạnh
+          }
+        };
+
+        // Khởi tạo kết nối MQTT
+        initMQTT();
+
+        /**
+         * Khởi tạo kết nối MQTT
+         */
+        function initMQTT() {
+          // Tạo ID client duy nhất để tránh xung đột "Session taken over"
+          const uniqueClientId = generateUniqueClientId();
+          console.log("Khởi tạo kết nối MQTT với ID: " + uniqueClientId);
+          
+          // Khởi tạo client MQTT
+          mqttClient = new Paho.MQTT.Client(
+            MQTT_CONFIG.broker,
+            Number(MQTT_CONFIG.port),
+            uniqueClientId
+          );
+          
+          // Thiết lập các hàm xử lý sự kiện
+          setupMQTTCallbacks(mqttClient);
+          
+          // Kết nối đến MQTT broker
+          connectMQTT(mqttClient);
+          
+          // Thêm trình xử lý sự kiện khi rời khỏi trang để ngắt kết nối đúng cách
+          window.addEventListener('beforeunload', function() {
+            if (mqttClient && mqttClient.isConnected()) {
+              mqttClient.disconnect();
+              console.log("Đã ngắt kết nối MQTT khi rời khỏi trang");
+            }
+          });
+        }
+
+        function setupMQTTCallbacks(client) {
+          // Xử lý mất kết nối
+          client.onConnectionLost = function(response) {
+            handleConnectionLost(client, response);
+          };
+          
+          // Xử lý khi nhận được tin nhắn
+          client.onMessageArrived = function(message) {
+            handleMessageArrived(message);
+          };
+        }
+
+        function connectMQTT(client) {
+          // Đặt lại bộ đếm thử lại nếu đây là lần kết nối mới
+          if (!client.isConnected()) {
+            reconnectCount = 0;
+          }
+          
+          client.connect({
+            onSuccess: function() {
+              onConnectSuccess(client);
+            },
+            useSSL: false,
+            timeout: 10,
+            keepAliveInterval: 30, // Giữ kết nối tồn tại (giây)
+            cleanSession: MQTT_CONFIG.cleanSession,
+            onFailure: function(message) {
+              console.log("Kết nối MQTT thất bại: " + message.errorMessage + " (Code: " + message.errorCode + ")");
+              handleReconnect(client);
+            }
+          });
+        }
+
+        /**
+         * Xử lý việc kết nối lại với chiến lược exponential backoff
+         * @param {Object} client - MQTT client
+         */
+        function handleReconnect(client) {
+          reconnectCount++;
+          
+          if (reconnectCount <= MAX_RECONNECT_ATTEMPTS) {
+            // Tính toán thời gian chờ với thuật toán exponential backoff
+            const timeout = MQTT_CONFIG.reconnectTimeout * Math.pow(2, reconnectCount - 1);
+            const maxTimeout = 30000; // Tối đa 30 giây
+            const waitTime = Math.min(timeout, maxTimeout);
+            
+            console.log(`Thử kết nối lại lần ${reconnectCount}/${MAX_RECONNECT_ATTEMPTS} sau ${waitTime/1000} giây...`);
+            
+            // Hiển thị thông báo trên giao diện
+            $("#light-intensity").text("Đang kết nối lại...");
+            
+            // Đợi một khoảng thời gian trước khi thử lại
+            setTimeout(function() {
+              // Tạo ID client hoàn toàn mới nếu đã thử lại nhiều lần
+              if (reconnectCount > 2) {
+                const newUniqueId = generateUniqueClientId();
+                console.log("Thử với ID mới: " + newUniqueId);
+                
+                // Tạo client mới thay vì sử dụng client cũ
+                mqttClient = new Paho.MQTT.Client(
+                  MQTT_CONFIG.broker,
+                  Number(MQTT_CONFIG.port),
+                  newUniqueId
+                );
+                
+                // Thiết lập lại các callback
+                setupMQTTCallbacks(mqttClient);
+                
+                // Kết nối với client mới
+                connectMQTT(mqttClient);
+              } else {
+                // Thử kết nối lại với client hiện tại
+                connectMQTT(client);
+              }
+            }, waitTime);
+          } else {
+            console.log("Đã vượt quá số lần thử kết nối lại tối đa");
+            $("#light-intensity").text("Lỗi kết nối");
+          }
+        }
+
+        /**
+         * Xử lý khi kết nối MQTT thành công
+         * @param {Object} client - MQTT client
+         */
+        function onConnectSuccess(client) {
+          console.log("Đã kết nối MQTT thành công");
+          
+          // Đặt lại bộ đếm thử lại
+          reconnectCount = 0;
+          
+          // Đăng ký theo dõi topic ánh sáng
+          client.subscribe(MQTT_CONFIG.topics.greenhouse);
+          console.log("Đã đăng ký topic: " + MQTT_CONFIG.topics.greenhouse);
+        
+          $("#light-intensity").text("Đang chờ dữ liệu...");
+        }
+
+        function handleConnectionLost(client, response) {
+          console.log("Mất kết nối MQTT: " + response.errorMessage + " (Code: " + response.errorCode + ")");
+          
+          // Kiểm tra nếu là lỗi "Session taken over" (code 142)
+          if (response.errorCode === 142) {
+            console.log("Phát hiện lỗi 'Session taken over' - Tạo ID mới và kết nối lại");
+            setTimeout(function() {
+              initMQTT();
+            }, 1000);
+          } 
+          else if (response.errorCode !== 0) {
+            handleReconnect(client);
+          }
+        }
+
+        function handleMessageArrived(message) {
+          console.log("Nhận tin nhắn MQTT - Topic: " + message.destinationName + 
+                      ", Nội dung: " + message.payloadString);
+          
+          try {
+            const data = JSON.parse(message.payloadString);
+            
+            // Xử lý phản hồi cập nhật ngưỡng
+            if (data.update_status === "success") {
+              $.notify("Thiết bị đã áp dụng ngưỡng mới thành công!", "success");
+              
+              // Cập nhật giá trị ngưỡng hiển thị nếu khác với giá trị đã gửi
+              if (data.light_threshold) {
+                $('#light-threshold').val(data.light_threshold);
+                $('#light-threshold-value').text(data.light_threshold + " lux");
+                lightThreshold = parseInt(data.light_threshold);
+              }
+              
+              if (data.curtain_threshold) {
+                $('#curtain-threshold').val(data.curtain_threshold);
+                $('#curtain-threshold-value').text(data.curtain_threshold + " lux");
+                curtainThreshold = parseInt(data.curtain_threshold);
+              }
+            }
+            
+            // Xử lý dữ liệu ánh sáng và trạng thái như bình thường
+            if (data.light_value !== undefined) {
+              updateLightData(data.light_value);
+              
+              // Cập nhật trạng thái thiết bị nếu có
+              if (data.light_status !== undefined) {
+                lightStatus = data.light_status === "on";
+                updateLightStatusDisplay();
+              }
+              
+              if (data.curtain_status !== undefined) {
+                curtainStatus = data.curtain_status === "closed";
+                updateCurtainStatusDisplay();
+              }
+              
+              // Cập nhật thông tin ngưỡng nếu có
+              if (data.current_light_threshold !== undefined && 
+                  data.current_light_threshold !== lightThreshold) {
+                $('#light-threshold').val(data.current_light_threshold);
+                $('#light-threshold-value').text(data.current_light_threshold + " lux");
+                lightThreshold = parseInt(data.current_light_threshold);
+              }
+              
+              if (data.current_curtain_threshold !== undefined && 
+                  data.current_curtain_threshold !== curtainThreshold) {
+                $('#curtain-threshold').val(data.current_curtain_threshold);
+                $('#curtain-threshold-value').text(data.current_curtain_threshold + " lux");
+                curtainThreshold = parseInt(data.current_curtain_threshold);
+              }
+            }
+          } catch (error) {
+            console.error("Lỗi xử lý dữ liệu MQTT: " + error.message);
+          }
+        }
+
+        /**
+         * Cập nhật dữ liệu ánh sáng lên giao diện
+         * @param {number|string} lightValue - Giá trị ánh sáng
+         */
+        function updateLightData(lightValue) {
+          currentLightIntensity = parseFloat(lightValue);
+          
+          // Cập nhật giá trị hiển thị
+          $("#light-intensity").text(Math.round(currentLightIntensity));
+          $('#last-updated').text("Cập nhật lần cuối: " + new Date().toLocaleTimeString());
+          
+          // Hiển thị thông báo
+          console.log("Đã cập nhật dữ liệu ánh sáng: " + currentLightIntensity + " lux");
+          
+          // Cập nhật màu sắc dựa trên cường độ ánh sáng
+          updateLightCardStyle(currentLightIntensity);
+          
+          // Cập nhật biểu đồ
+          addDataPoint(currentLightIntensity);
+        }
+
+        /**
+         * Cập nhật màu sắc card ánh sáng dựa trên cường độ
+         * @param {number|string} lightValue - Giá trị ánh sáng
+         */
+        function updateLightCardStyle(lightValue) {
+          const lightCard = $(".card:contains('Cường độ ánh sáng')");
+          lightValue = parseInt(lightValue);
+          
+          // Đặt màu dựa trên ngưỡng ánh sáng
+          if (lightValue < UI_CONFIG.lightThresholds.low) {
+            // Ánh sáng yếu
+            lightCard.css("background-color", UI_CONFIG.colors.lowLight);
+          } else if (lightValue < UI_CONFIG.lightThresholds.medium) {
+            // Ánh sáng trung bình
+            lightCard.css("background-color", UI_CONFIG.colors.mediumLight);
+          } else {
+            // Ánh sáng mạnh
+            lightCard.css("background-color", UI_CONFIG.colors.brightLight);
+          }
+        }
+
+        // Function to update light status display
+        function updateLightStatusDisplay() {
+          const statusElement = $('#light-status');
+          
+          if (lightStatus) {
+            statusElement.text("ĐANG BẬT");
+            statusElement.removeClass('status-off').addClass('status-indicator status-on');
+          } else {
+            statusElement.text("ĐANG TẮT");
+            statusElement.removeClass('status-on').addClass('status-indicator status-off');
+          }
+        }
+        
+        // Function to update curtain status display
+        function updateCurtainStatusDisplay() {
+          const statusElement = $('#curtain-status');
+          
+          if (curtainStatus) {
+            statusElement.text("ĐANG ĐÓNG");
+            statusElement.removeClass('curtain-open').addClass('status-indicator curtain-closed');
+          } else {
+            statusElement.text("ĐANG MỞ");
+            statusElement.removeClass('curtain-closed').addClass('status-indicator curtain-open');
+          }
+        }
+        
+        // Send MQTT control message
+        function sendControlCommand(command) {
+          if (!mqttClient || !mqttClient.isConnected()) {
+            console.log("MQTT client not connected");
+            $.notify("Không thể kết nối đến thiết bị. Vui lòng thử lại sau!", "error");
+            return;
+          }
+          
+          console.log("Chuẩn bị gửi lệnh: " + command);
+          
+          // Tạo tin nhắn dạng văn bản đơn giản
+          const message = new Paho.MQTT.Message(command);
+          message.destinationName = MQTT_CONFIG.topics.greenhouse;
+          
+          try {
+            mqttClient.send(message);
+            console.log("Đã gửi lệnh thành công: " + command + " đến topic " + MQTT_CONFIG.topics.greenhouse);
+            
+            // Hiển thị thông báo tạm thời để người dùng biết lệnh đã được gửi
+            $.notify("Đã gửi lệnh " + command, "success");
+          } catch (error) {
+            console.error("Lỗi khi gửi lệnh: ", error);
+            $.notify("Lỗi khi gửi lệnh: " + error.message, "error");
+          }
+        }
+
+        // Function to add data point to chart
+        function addDataPoint(value) {
+          const now = new Date();
+          lightDataHistory.push({
+            timestamp: now,
+            value: value
+          });
+          
+          // Keep only the latest points based on maxDataPoints
+          if (lightDataHistory.length > maxDataPoints) {
+            lightDataHistory = lightDataHistory.slice(lightDataHistory.length - maxDataPoints);
+          }
+          
+          // Update chart if visible
+          if (chartVisible && isChartInitialized) {
+            updateChart();
+          }
+        }
+        
+        // Function to initialize chart
+        function initializeChart() {
+          if (isChartInitialized) return;
+          
+          const ctx = $('#lightChart')[0].getContext('2d');
+          chart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: [], // Thời gian
+              datasets: [{
+                label: "Cường độ ánh sáng (lux)",
+                data: [], // Dữ liệu ánh sáng
+                borderColor: "#FF9900",
+                backgroundColor: "rgba(255, 153, 0, 0.1)",
+                fill: true,
+                tension: 0.4,
+              }],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'top' },
+                title: { display: false }
+              },
+              scales: {
+                x: {
+                  grid: { display: false },
+                  title: { display: true, text: "Thời gian" }
+                },
+                y: {
+                  grid: { color: "rgba(0, 0, 0, 0.05)" },
+                  title: { display: true, text: "Cường độ ánh sáng (lux)" }
+                }
+              }
+            }
+          });
+          
+          isChartInitialized = true;
+        }
+
+        // Function to update chart with real data
+        function updateChart() {
+          if (!chartVisible || !isChartInitialized || lightDataHistory.length === 0) return;
+
+          const timestamps = lightDataHistory.map(item => item.timestamp.toLocaleTimeString());
+          const values = lightDataHistory.map(item => item.value);
+
+          chart.data.labels = timestamps;
+          chart.data.datasets[0].data = values;
+          chart.update('none'); // Use 'none' to avoid expensive animations
+        }
+
+        // Toggle chart visibility
+        $('#toggleChart').on('click', function() {
+          const chartContainer = $('#chartContainer');
+          const toggleText = $('#toggleChartText');
+          const toggleIcon = $(this).find('i');
+          
+          chartVisible = !chartVisible;
+          
+          if (chartVisible) {
+            chartContainer.css('height', '300px');
+            toggleText.text('Ẩn biểu đồ');
+            toggleIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+            
+            // Initialize chart if needed
+            initializeChart();
+            
+            // Update chart
+            updateChart();
+          } else {
+            chartContainer.css('height', '0');
+            toggleText.text('Hiển thị biểu đồ');
+            toggleIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+          }
+        });
+
+        // Change data point limit
+        $('#dataPointsLimit').on('change', function() {
+          maxDataPoints = parseInt($(this).val());
+          
+          // Trim data history if needed
+          if (lightDataHistory.length > maxDataPoints) {
+            lightDataHistory = lightDataHistory.slice(lightDataHistory.length - maxDataPoints);
+          }
+          
+          if (chartVisible && isChartInitialized) {
+            updateChart();
+          }
+        });
+        
+        // Load saved settings if any
+        function loadSavedSettings() {
+          const savedLightThreshold = localStorage.getItem('lightThreshold');
+          const savedCurtainThreshold = localStorage.getItem('curtainThreshold');
+          const savedAutoControl = localStorage.getItem('autoControl');
+          
+          if (savedLightThreshold) {
+            $('#light-threshold').val(savedLightThreshold);
+            $('#light-threshold-value').text(savedLightThreshold + " lux");
+            lightThreshold = parseInt(savedLightThreshold);
+          }
+          
+          if (savedCurtainThreshold) {
+            $('#curtain-threshold').val(savedCurtainThreshold);
+            $('#curtain-threshold-value').text(savedCurtainThreshold + " lux");
+            curtainThreshold = parseInt(savedCurtainThreshold);
+          }
+          
+          if (savedAutoControl !== null) {
+            $('#auto-control').prop('checked', savedAutoControl === 'true');
+          }
+        }
+        
+        // Initialize when document loads
+        initializeChart();
+        loadSavedSettings();
+        updateLightStatusDisplay();
+        updateCurtainStatusDisplay();
+        
+        // Custom notification function (simpler alternative to plugins)
+        $.notify = function(message, type) {
+          const bgColor = type === 'success' ? '#4CAF50' : '#F44336';
+          
+          $('<div>')
+            .addClass('notification')
+            .css({
+              position: 'fixed',
+              top: '20px',
+              right: '20px',
+              padding: '12px 24px',
+              background: bgColor,
+              color: 'white',
+              borderRadius: '4px',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+              zIndex: 9999
+            })
+            .text(message)
+            .appendTo('body')
+            .fadeIn()
+            .delay(3000)
+            .fadeOut(function() {
+              $(this).remove();
+            });
+        };
+      });
+    </script>
+  </body>
+</html>

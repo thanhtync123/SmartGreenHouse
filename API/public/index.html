@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Green House - Dashboard</title>
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <!-- MQTT Paho Client Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <!-- Common functions -->
+    <script src="components/common.js"></script>
+  </head>
+  <body>
+    <!-- Sidebar will be loaded here -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+      <h1>Dashboard</h1>
+      
+      <div class="dashboard-cards">
+        <!-- Light Intensity Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Cường độ ánh sáng</h3>
+            <div class="card-icon">
+              <i class="fas fa-sun"></i>
+            </div>
+          </div>
+          <div class="card-value" id="light_value">--</div>
+          <div class="card-info">lux</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /**
+       * File: index.html
+       * Mô tả: Trang hiển thị dữ liệu ánh sáng từ SmartGreenHouse
+       * Phiên bản: 1.0
+       */
+
+      // Cài đặt MQTT
+      const MQTT_CONFIG = {
+        broker: "broker.emqx.io",
+        port: 8083,
+        clientId: "mqttx_470f24bd",
+        topics: {
+          greenhouse: "myapp/greenhouse"
+        },
+        reconnectTimeout: 3000,  // Thời gian chờ trước khi kết nối lại (mili giây)
+        cleanSession: true       // Sử dụng clean session để tránh trùng lặp
+      };
+
+      // Biến toàn cục để theo dõi trạng thái kết nối
+      let mqttClient = null;
+      let reconnectCount = 0;
+      const MAX_RECONNECT_ATTEMPTS = 5;
+      
+      // Tạo ID duy nhất cho mỗi phiên sử dụng timestamp và random string
+      function generateUniqueClientId() {
+        const timestamp = new Date().getTime().toString();
+        const random = Math.random().toString(36).substring(2, 10);
+        return MQTT_CONFIG.clientId + '_' + timestamp + '_' + random;
+      }
+
+      // Cài đặt giao diện
+      const UI_CONFIG = {
+        lightThresholds: {
+          low: 100,   // Dưới 100 lux: ánh sáng yếu
+          medium: 500  // 100-500 lux: ánh sáng trung bình, trên 500: ánh sáng mạnh
+        },
+        colors: {
+          lowLight: "#e0e0e0",     // Xám nhạt cho ánh sáng yếu
+          mediumLight: "#fff8e1",  // Vàng nhạt cho ánh sáng trung bình
+          brightLight: "#fffde7"   // Vàng sáng cho ánh sáng mạnh
+        }
+      };
+
+      // Khi tài liệu đã sẵn sàng
+      $(document).ready(function() {
+        // Load header
+        loadHeader('components/header.html', 'Smart Green House - Dashboard');
+        
+        // Load sidebar và đánh dấu menu hiện tại
+        loadSidebar();
+        
+        // Khởi tạo kết nối MQTT
+        initMQTT();
+      });
+
+      /**
+       * Tải sidebar và đánh dấu menu hiện tại
+       */
+      function loadSidebar() {
+        loadComponent('#sidebar-container', 'components/sidebar.html', function() {
+          setActiveMenu('nav-dashboard');
+        });
+      }
+
+      /**
+       * Khởi tạo kết nối MQTT
+       */
+      function initMQTT() {
+        // Tạo ID client duy nhất để tránh xung đột "Session taken over"
+        const uniqueClientId = generateUniqueClientId();
+        console.log("Khởi tạo kết nối MQTT với ID: " + uniqueClientId);
+        
+        // Khởi tạo client MQTT
+        mqttClient = new Paho.MQTT.Client(
+          MQTT_CONFIG.broker,
+          Number(MQTT_CONFIG.port),
+          uniqueClientId
+        );
+        
+        // Thiết lập các hàm xử lý sự kiện
+        setupMQTTCallbacks(mqttClient);
+        
+        // Kết nối đến MQTT broker
+        connectMQTT(mqttClient);
+        
+        // Thêm trình xử lý sự kiện khi rời khỏi trang để ngắt kết nối đúng cách
+        window.addEventListener('beforeunload', function() {
+          if (mqttClient && mqttClient.isConnected()) {
+            mqttClient.disconnect();
+            console.log("Đã ngắt kết nối MQTT khi rời khỏi trang");
+          }
+        });
+      }
+
+
+      function setupMQTTCallbacks(client) {
+        // Xử lý mất kết nối
+        client.onConnectionLost = function(response) {
+          handleConnectionLost(client, response);
+        };
+        
+        // Xử lý khi nhận được tin nhắn
+        client.onMessageArrived = function(message) {
+          handleMessageArrived(message);
+        };
+      }
+
+
+      function connectMQTT(client) {
+        // Đặt lại bộ đếm thử lại nếu đây là lần kết nối mới
+        if (!client.isConnected()) {
+          reconnectCount = 0;
+        }
+        
+        client.connect({
+          onSuccess: function() {
+            onConnectSuccess(client);
+          },
+          useSSL: false,
+          timeout: 10,
+          keepAliveInterval: 30, // Giữ kết nối tồn tại (giây)
+          cleanSession: MQTT_CONFIG.cleanSession,
+          onFailure: function(message) {
+            console.log("Kết nối MQTT thất bại: " + message.errorMessage + " (Code: " + message.errorCode + ")");
+            handleReconnect(client);
+          }
+        });
+      }
+
+      /**
+       * Xử lý việc kết nối lại với chiến lược exponential backoff
+       * @param {Object} client - MQTT client
+       */
+      function handleReconnect(client) {
+        reconnectCount++;
+        
+        if (reconnectCount <= MAX_RECONNECT_ATTEMPTS) {
+          // Tính toán thời gian chờ với thuật toán exponential backoff
+          const timeout = MQTT_CONFIG.reconnectTimeout * Math.pow(2, reconnectCount - 1);
+          const maxTimeout = 30000; // Tối đa 30 giây
+          const waitTime = Math.min(timeout, maxTimeout);
+          
+          console.log(`Thử kết nối lại lần ${reconnectCount}/${MAX_RECONNECT_ATTEMPTS} sau ${waitTime/1000} giây...`);
+          
+          // Hiển thị thông báo trên giao diện
+          $("#light_value").text("Đang kết nối lại...");
+          
+          // Đợi một khoảng thời gian trước khi thử lại
+          setTimeout(function() {
+            // Tạo ID client hoàn toàn mới nếu đã thử lại nhiều lần
+            if (reconnectCount > 2) {
+              const newUniqueId = generateUniqueClientId();
+              console.log("Thử với ID mới: " + newUniqueId);
+              
+              // Tạo client mới thay vì sử dụng client cũ
+              mqttClient = new Paho.MQTT.Client(
+                MQTT_CONFIG.broker,
+                Number(MQTT_CONFIG.port),
+                newUniqueId
+              );
+              
+              // Thiết lập lại các callback
+              setupMQTTCallbacks(mqttClient);
+              
+              // Kết nối với client mới
+              connectMQTT(mqttClient);
+            } else {
+              // Thử kết nối lại với client hiện tại
+              connectMQTT(client);
+            }
+          }, waitTime);
+        } else {
+          console.log("Đã vượt quá số lần thử kết nối lại tối đa");
+          $("#light_value").text("Lỗi kết nối");
+        }
+      }
+
+      /**
+       * Xử lý khi kết nối MQTT thành công
+       * @param {Object} client - MQTT client
+       */
+      function onConnectSuccess(client) {
+        console.log("Đã kết nối MQTT thành công");
+        
+        // Đặt lại bộ đếm thử lại
+        reconnectCount = 0;
+        
+        // Đăng ký theo dõi topic greenhouse
+        client.subscribe(MQTT_CONFIG.topics.greenhouse);
+        console.log("Đã đăng ký topic: " + MQTT_CONFIG.topics.greenhouse);
+      
+        $("#light_value").text("Đang chờ dữ liệu...");
+      }
+      function handleConnectionLost(client, response) {
+        console.log("Mất kết nối MQTT: " + response.errorMessage + " (Code: " + response.errorCode + ")");
+        
+        // Kiểm tra nếu là lỗi "Session taken over" (code 142)
+        if (response.errorCode === 142) {
+          console.log("Phát hiện lỗi 'Session taken over' - Tạo ID mới và kết nối lại");
+          setTimeout(function() {
+            initMQTT();
+          }, 1000);
+        } 
+        else if (response.errorCode !== 0) {
+          handleReconnect(client);
+        }
+      }
+
+      function handleMessageArrived(message) {
+        console.log("Nhận tin nhắn MQTT - Topic: " + message.destinationName + 
+                    ", Nội dung: " + message.payloadString);
+        
+        try {
+          const data = JSON.parse(message.payloadString);
+          
+          // Xử lý dữ liệu ánh sáng
+          if (message.destinationName === MQTT_CONFIG.topics.greenhouse && 
+              data.light_value !== undefined) {
+            updateLightData(data.light_value);
+          }
+        } catch (error) {
+          console.error("Lỗi xử lý dữ liệu MQTT: " + error.message);
+        }
+      }
+
+      /**
+       * Cập nhật dữ liệu ánh sáng lên giao diện
+       * @param {number|string} lightValue - Giá trị ánh sáng
+       */
+      function updateLightData(lightValue) {
+        // Cập nhật giá trị hiển thị
+        $("#light_value").text(lightValue);
+        
+        // Hiển thị thông báo
+        console.log("Đã cập nhật dữ liệu ánh sáng: " + lightValue + " lux");
+        
+        // Cập nhật màu sắc dựa trên cường độ ánh sáng
+        updateLightCardStyle(lightValue);
+      }
+
+      /**
+       * Cập nhật màu sắc card ánh sáng dựa trên cường độ
+       * @param {number|string} lightValue - Giá trị ánh sáng
+       */
+      function updateLightCardStyle(lightValue) {
+        const lightCard = $(".card:contains('Cường độ ánh sáng')");
+        lightValue = parseInt(lightValue);
+        
+        // Đặt màu dựa trên ngưỡng ánh sáng
+        if (lightValue < UI_CONFIG.lightThresholds.low) {
+          // Ánh sáng yếu
+          lightCard.css("background-color", UI_CONFIG.colors.lowLight);
+        } else if (lightValue < UI_CONFIG.lightThresholds.medium) {
+          // Ánh sáng trung bình
+          lightCard.css("background-color", UI_CONFIG.colors.mediumLight);
+        } else {
+          // Ánh sáng mạnh
+          lightCard.css("background-color", UI_CONFIG.colors.brightLight);
+        }
+      }
+    </script>
+  </body>
+</html>
