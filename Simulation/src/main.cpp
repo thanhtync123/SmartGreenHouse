@@ -5,47 +5,66 @@
 #include <LiquidCrystal_I2C.h>
 #include <ESP32Servo.h>
 
-#define SLIDE_LIGHT 32 // Chân đọc giá trị từ biến trở (slide)
-#define LCD_ADDR 0x27  // Địa chỉ I2C mặc định của LCD 20x4
-#define LCD_COLS 20
-#define LCD_ROWS 4
+// === ĐỊNH NGHĨA CHÂN KẾT NỐI ===
+#define SLIDE_LIGHT 32     // Chân đọc giá trị từ biến trở (slide)
 #define LIGHT_RELAY_PIN 19 // Chân điều khiển đèn
 #define SERVO_PIN 17       // Chân điều khiển servo cho rèm
 
+// === CẤU HÌNH LCD ===
+#define LCD_ADDR 0x27
+#define LCD_COLS 20
+#define LCD_ROWS 4
+
+// === CẤU HÌNH WIFI VÀ MQTT ===
 const char* WIFI_SSID = "Wokwi-GUEST";
 const char* WIFI_PASSWORD = "";
 const char* MQTT_SERVER = "broker.emqx.io";
 const int MQTT_PORT = 1883;
-const char* MQTT_TOPIC = "myapp/greenhouse"; // Topic duy nhất cho tất cả dữ liệu và điều khiển
+const char* MQTT_TOPIC = "myapp/greenhouse";
 const char* MQTT_ID = "slide-reader-12301";
 
+// === CẤU HÌNH NGƯỠNG CỐ ĐỊNH ===
+const int LIGHT_THRESHOLD_LOW = 3000;  // Ngưỡng bật đèn
+const int LIGHT_THRESHOLD_HIGH = 9999; // Ngưỡng đóng rèm
+
+// === KHỞI TẠO ĐỐI TƯỢNG ===
 WiFiClient espClient;
 PubSubClient client(espClient);
 LiquidCrystal_I2C lcd(LCD_ADDR, LCD_COLS, LCD_ROWS);
 Servo curtainServo;
 
-// Định nghĩa các ngưỡng - giờ có thể thay đổi từ MQTT
-int LIGHT_THRESHOLD_LOW = 300;  // Ngưỡng bật đèn
-int LIGHT_THRESHOLD_HIGH = 1000; // Ngưỡng đóng rèm
-
-bool isLightOn = false;  // Trạng thái đèn
+// === BIẾN TRẠNG THÁI ===
+bool isLightOn = false;     // Trạng thái đèn
 bool isCurtainClosed = false; // Trạng thái rèm
 
+// === FUNCTION PROTOTYPES ===
+void WIFIConnect();
+void MQTT_Reconnect();
+void callback(char* topic, byte* payload, unsigned int length);
+void controlLight(bool turnOn);
+void controlCurtain(bool close);
+void sendStatusToMQTT();
+
+// === KẾT NỐI WIFI ===
 void WIFIConnect() {
   Serial.println("Connecting to WiFi...");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
+  
   Serial.println("\nWiFi connected!");
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
 }
 
+// === KẾT NỐI MQTT ===
 void MQTT_Reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
+    
     if (client.connect(MQTT_ID)) {
       Serial.println("Connected to MQTT!");
       client.subscribe(MQTT_TOPIC);
@@ -58,140 +77,99 @@ void MQTT_Reconnect() {
   }
 }
 
-// Thêm khai báo hàm (function prototypes) ở đây
-void controlLight(bool turnOn);
-void controlCurtain(bool close);
-
+// === XỬ LÝ DỮ LIỆU MQTT ===
 void callback(char* topic, byte* payload, unsigned int length) {
-  // Tạo bộ đệm để lưu trữ tin nhắn
   char message[length + 1];
+  
   for (int i = 0; i < length; i++) {
     message[i] = (char)payload[i];
   }
   message[length] = '\0';
+  
   Serial.print("Message arrived: ");
   Serial.println(message);
-  
-  // Kiểm tra xem có phải là JSON không
-  if (message[0] == '{') {
-    StaticJsonDocument<256> doc;
-    DeserializationError error = deserializeJson(doc, message);
-    
-    if (!error) {
-      // Kiểm tra nếu tin nhắn chứa cài đặt ngưỡng
-      if (doc.containsKey("light_threshold")) {
-        LIGHT_THRESHOLD_LOW = doc["light_threshold"];
-        Serial.print("Đã cập nhật ngưỡng ánh sáng: ");
-        Serial.println(LIGHT_THRESHOLD_LOW);
-        
-        // Hiển thị ngưỡng mới trên LCD
-        lcd.setCursor(0, 2);
-        lcd.print("Light threshold: ");
-        lcd.print(LIGHT_THRESHOLD_LOW);
-        lcd.print("   ");
-      }
-      
-      if (doc.containsKey("curtain_threshold")) {
-        LIGHT_THRESHOLD_HIGH = doc["curtain_threshold"];
-        Serial.print("Đã cập nhật ngưỡng rèm: ");
-        Serial.println(LIGHT_THRESHOLD_HIGH);
-        
-        // Hiển thị ngưỡng mới trên LCD
-        lcd.setCursor(0, 3);
-        lcd.print("Curtain threshold: ");
-        lcd.print(LIGHT_THRESHOLD_HIGH);
-        lcd.print("   ");
-      }
-    }
-  }
 }
 
-// Hàm điều khiển đèn
+// === ĐIỀU KHIỂN ĐÈN ===
 void controlLight(bool turnOn) {
-  if (turnOn) {
-    digitalWrite(LIGHT_RELAY_PIN, HIGH);
-    isLightOn = true;
-    Serial.println("Đèn đã BẬT");
-  } else {
-    digitalWrite(LIGHT_RELAY_PIN, LOW);
-    isLightOn = false;
-    Serial.println("Đèn đã TẮT");
-  }
+  digitalWrite(LIGHT_RELAY_PIN, turnOn ? HIGH : LOW);
+  isLightOn = turnOn;
   
-  // Gửi trạng thái đèn lên MQTT
-  StaticJsonDocument<100> statusDoc;
-  statusDoc["light_status"] = isLightOn ? "on" : "off";
-  statusDoc["curtain_status"] = isCurtainClosed ? "closed" : "open";
-  char statusBuffer[100];
-  serializeJson(statusDoc, statusBuffer);
-  client.publish(MQTT_TOPIC, statusBuffer);
+  Serial.println(turnOn ? "Đèn đã BẬT" : "Đèn đã TẮT");
   
   // Hiển thị trạng thái trên LCD
   lcd.setCursor(0, 2);
   lcd.print("Light: ");
   lcd.print(isLightOn ? "ON  " : "OFF ");
+  
+  sendStatusToMQTT();
 }
 
-// Hàm điều khiển rèm
+// === ĐIỀU KHIỂN RÈM ===
 void controlCurtain(bool close) {
-  int angle;
-  if (close) {
-    angle = 180; // Góc đóng rèm
-    isCurtainClosed = true;
-    Serial.println("Rèm đã ĐÓNG");
-  } else {
-    angle = 0;  // Góc mở rèm
-    isCurtainClosed = false;
-    Serial.println("Rèm đã MỞ");
-  }
+  curtainServo.write(close ? 180 : 0);
+  isCurtainClosed = close;
   
-  curtainServo.write(angle);
-  
-  // Gửi trạng thái rèm lên MQTT
-  StaticJsonDocument<100> statusDoc;
-  statusDoc["light_status"] = isLightOn ? "on" : "off";
-  statusDoc["curtain_status"] = isCurtainClosed ? "closed" : "open";
-  char statusBuffer[100];
-  serializeJson(statusDoc, statusBuffer);
-  client.publish(MQTT_TOPIC, statusBuffer);
+  Serial.println(close ? "Rèm đã ĐÓNG" : "Rèm đã MỞ");
   
   // Hiển thị trạng thái trên LCD
   lcd.setCursor(0, 3);
   lcd.print("Curtain: ");
   lcd.print(isCurtainClosed ? "CLOSED" : "OPEN  ");
+  
+  sendStatusToMQTT();
 }
 
+// === GỬI TRẠNG THÁI LÊN MQTT ===
+void sendStatusToMQTT() {
+  StaticJsonDocument<100> statusDoc;
+  statusDoc["light_status"] = isLightOn ? "on" : "off";
+  statusDoc["curtain_status"] = isCurtainClosed ? "closed" : "open";
+  
+  char statusBuffer[100];
+  serializeJson(statusDoc, statusBuffer);
+  client.publish(MQTT_TOPIC, statusBuffer);
+}
+
+// === HÀM SETUP ===
 void setup() {
   Serial.begin(115200);
-  WIFIConnect();
   
+  // Kết nối WiFi và MQTT
+  WIFIConnect();
   client.setServer(MQTT_SERVER, MQTT_PORT);
   client.setCallback(callback);
   
+  // Khởi tạo LCD
   lcd.init();
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Smart GreenHouse");
   
+  // Cấu hình IO
   pinMode(LIGHT_RELAY_PIN, OUTPUT);
   digitalWrite(LIGHT_RELAY_PIN, LOW); // Tắt đèn khi khởi động
   
+  // Khởi tạo servo
   curtainServo.attach(SERVO_PIN);
   curtainServo.write(0);  // Mở rèm khi khởi động
   
-  // Đăng ký topic điều khiển
+  // Đăng ký topic MQTT
   client.subscribe(MQTT_TOPIC);
 }
 
+// === HÀM LOOP ===
 void loop() {
+  // Đảm bảo kết nối MQTT
   if (!client.connected()) {
     MQTT_Reconnect();
   }
   client.loop();
   
+  // Đọc giá trị ánh sáng
   int slideValue = analogRead(SLIDE_LIGHT);
-  int lightValue = map(slideValue, 0, 4095, 0, 10000); // Chuyển đổi giá trị analog sang lux
+  int lightValue = map(slideValue, 0, 4095, 0, 10000);
   
   Serial.print("Giá trị ánh sáng: ");
   Serial.println(lightValue);
@@ -202,18 +180,17 @@ void loop() {
   lcd.print(lightValue);
   lcd.print(" lux    "); 
 
-  // Kiểm tra và điều khiển đèn dựa trên ngưỡng
+  // Điều khiển tự động dựa trên ngưỡng cố định
   if (lightValue < LIGHT_THRESHOLD_LOW && !isLightOn) {
-    controlLight(true); // Bật đèn khi ánh sáng < 300 lux
+    controlLight(true);
   } else if (lightValue >= LIGHT_THRESHOLD_LOW && isLightOn) {
-    controlLight(false); // Tắt đèn khi ánh sáng >= 300 lux
+    controlLight(false);
   }
   
-  // Kiểm tra và điều khiển rèm dựa trên ngưỡng
   if (lightValue > LIGHT_THRESHOLD_HIGH && !isCurtainClosed) {
-    controlCurtain(true); // Đóng rèm khi ánh sáng > 1000 lux
+    controlCurtain(true);
   } else if (lightValue <= LIGHT_THRESHOLD_HIGH && isCurtainClosed) {
-    controlCurtain(false); // Mở rèm khi ánh sáng <= 1000 lux
+    controlCurtain(false);
   }
 
   // Gửi dữ liệu lên MQTT
