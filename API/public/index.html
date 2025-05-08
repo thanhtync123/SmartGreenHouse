@@ -2,128 +2,176 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Thêm Chart.js -->
-    <style>
-      canvas {
-        max-width: 800px;
-        margin: 20px auto;
-      }
-    </style>
+    <title>Smart Greenhouse Monitoring</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h2>Nhiệt độ</h2>
-    <h1 id="nhietdo"></h1>
-    <h2>Độ ẩm</h2>
-    <h1 id="doam"></h1>
+    <!-- Sidebar sẽ được load động từ sidebar.html -->
+    <div id="sidebar-container"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h2>Greenhouse Dashboard</h2>
+        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+      </div>
 
-    <!-- Thêm canvas cho biểu đồ -->
-    <canvas id="tempHumidityChart"></canvas>
+      <!-- Dashboard Cards -->
+      <div class="dashboard">
+        <!-- Temperature Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon temperature">
+                <i class="fas fa-thermometer-half"></i>
+              </div>
+              <span>Temperature</span>
+            </div>
+            <i class="fas fa-ellipsis-v"></i>
+          </div>
+          <div class="card-value">28.5<span class="card-unit">°C</span></div>
+          <div class="progress-container">
+            <div class="progress-info">
+              <span>Current Level</span>
+              <span>75%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress temperature"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Updated 2 minutes ago</span>
+            <div class="status warning">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Slightly High</span>
+            </div>
+          </div>
+        </div>
 
-    <script>
-      // Cập nhật dữ liệu mới nhất
-      function updateLatestData() {
-        $.getJSON("/api/readings/latest", function (data) {
-          $("#nhietdo").text(data.temperature);
-          $("#doam").text(data.humidity);
-        });
-      }
+        <!-- Humidity Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon humidity">
+                <i class="fas fa-tint"></i>
+              </div>
+              <span>Humidity</span>
+            </div>
+            <i class="fas fa-ellipsis-v"></i>
+          </div>
+          <div class="card-value">65<span class="card-unit">%</span></div>
+          <div class="progress-container">
+            <div class="progress-info">
+              <span>Current Level</span>
+              <span>65%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress humidity"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Updated 2 minutes ago</span>
+            <div class="status optimal">
+              <i class="fas fa-check-circle"></i>
+              <span>Optimal</span>
+            </div>
+          </div>
+        </div>
 
-      // Khởi tạo biểu đồ
-      const ctx = document.getElementById("tempHumidityChart").getContext("2d");
-      const chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: [], // Thời gian
-          datasets: [
-            {
-              label: "Nhiệt độ (°C)",
-              data: [], // Dữ liệu nhiệt độ
-              borderColor: "red",
-              fill: false,
-            },
-            {
-              label: "Độ ẩm (%)",
-              data: [], // Dữ liệu độ ẩm
-              borderColor: "blue",
-              fill: false,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: "Thời gian",
-              },
-            },
-            y: {
-              title: {
-                display: true,
-                text: "Giá trị",
-              },
-            },
-          },
-        },
-      });
+        <!-- Light Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon light">
+                <i class="fas fa-sun"></i>
+              </div>
+              <span>Light Intensity</span>
+            </div>
+            <i class="fas fa-ellipsis-v"></i>
+          </div>
+          <div class="card-value">850<span class="card-unit">lux</span></div>
+          <div class="progress-container">
+            <div class="progress-info">
+              <span>Current Level</span>
+              <span>85%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress light"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Updated 2 minutes ago</span>
+            <div class="status optimal">
+              <i class="fas fa-check-circle"></i>
+              <span>Optimal</span>
+            </div>
+          </div>
+        </div>
 
-      // Cập nhật biểu đồ từ API
-      function updateChart() {
-        $.getJSON("/api/readings", function (data) {
-          const timestamps = data.map((item) =>
-            new Date(item.timestamp).toLocaleTimeString()
-          );
-          const temperatures = data.map((item) => item.temperature);
-          const humidities = data.map((item) => item.humidity);
+        <!-- Soil Moisture Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon soil">
+                <i class="fas fa-water"></i>
+              </div>
+              <span>Soil Moisture</span>
+            </div>
+            <i class="fas fa-ellipsis-v"></i>
+          </div>
+          <div class="card-value">45<span class="card-unit">%</span></div>
+          <div class="progress-container">
+            <div class="progress-info">
+              <span>Current Level</span>
+              <span>45%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress soil"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Updated 2 minutes ago</span>
+            <div class="status warning">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Needs Water</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          chart.data.labels = timestamps.reverse(); // Đảo ngược để thời gian mới nhất ở bên phải
-          chart.data.datasets[0].data = temperatures.reverse();
-          chart.data.datasets[1].data = humidities.reverse();
-          chart.update();
-        });
-      }
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <!-- Temperature & Humidity Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">Temperature & Humidity</div>
+            <div class="chart-filters">
+              <div class="chart-filter">Day</div>
+              <div class="chart-filter active">Week</div>
+              <div class="chart-filter">Month</div>
+            </div>
+          </div>
+          <div class="chart-placeholder"></div>
+        </div>
 
-      // Cập nhật định kỳ
-      setInterval(updateLatestData, 5000);
-      setInterval(updateChart, 5000);
-      updateLatestData(); // Gọi lần đầu
-      updateChart(); // Gọi lần đầu
-
-      // MQTT Client (giữ nguyên)
-      const client = new Paho.MQTT.Client(
-        "broker.emqx.io",
-        Number(8083),
-        "clientId56"
-      );
-
-      client.onConnectionLost = onConnectionLost;
-      client.onMessageArrived = onMessageArrived;
-
-      client.connect({ onSuccess: onConnect });
-
-      function onConnect() {
-        console.log("onConnect");
-        client.subscribe("dht22");
-      }
-
-      function onConnectionLost(responseObject) {
-        if (responseObject.errorCode !== 0) {
-          console.log("onConnectionLost:" + responseObject.errorMessage);
-        }
-      }
-
-      function onMessageArrived(message) {
-        console.log("onMessageArrived:" + message.payloadString);
-        const obj = JSON.parse(message.payloadString);
-        document.getElementById("nhietdo").innerHTML = obj.temperature;
-        document.getElementById("doam").innerHTML = obj.humidity;
-        updateChart(); // Cập nhật biểu đồ khi nhận dữ liệu mới từ MQTT
-      }
-    </script>
+        <!-- Light & Soil Moisture Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">Light & Soil Moisture</div>
+            <div class="chart-filters">
+              <div class="chart-filter">Day</div>
+              <div class="chart-filter active">Week</div>
+              <div class="chart-filter">Month</div>
+            </div>
+          </div>
+          <div class="chart-placeholder"></div>
+        </div>
+      </div>
+    </div>
+    <script src="sidebar.js"></script>
   </body>
 </html>

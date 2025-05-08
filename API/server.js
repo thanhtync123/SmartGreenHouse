@@ -1,11 +1,11 @@
-const express = require('express');
-const mqtt = require('paho-mqtt'); // Sửa cách import
-require('dotenv').config();
-const db = require('./config/database');
-const readingRoutes = require('./routes/readings');
+const express = require("express");
+const mqtt = require("paho-mqtt"); // Sửa cách import
+require("dotenv").config();
+const db = require("./config/database");
+const readingRoutes = require("./routes/readings");
 
 const app = express();
-app.use(express.static('public')); // Phục vụ file tĩnh
+app.use(express.static("public")); // Phục vụ file tĩnh
 app.use(express.json());
 
 // Khởi tạo bảng
@@ -21,14 +21,18 @@ async function initializeDatabase() {
       )
     `);
     connection.release();
-    console.log('Database initialized');
+    console.log("Database initialized");
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error("Error initializing database:", error);
   }
 }
 
 // Kết nối MQTT
-const client = new mqtt.Client("broker.emqx.io", Number(8083), "serverClientId" + Math.random().toString());
+const client = new mqtt.Client(
+  "broker.emqx.io",
+  Number(8083),
+  "serverClientId" + Math.random().toString()
+);
 
 client.onConnectionLost = (responseObject) => {
   if (responseObject.errorCode !== 0) {
@@ -41,13 +45,13 @@ client.onMessageArrived = async (message) => {
     const data = JSON.parse(message.payloadString);
     const connection = await db.getConnection();
     await connection.query(
-      'INSERT INTO readings (temperature, humidity) VALUES (?, ?)',
+      "INSERT INTO readings (temperature, humidity) VALUES (?, ?)",
       [data.temperature, data.humidity]
     );
     connection.release();
-    console.log('Saved new reading:', data);
+    console.log("Saved new reading:", data);
   } catch (error) {
-    console.error('Error saving reading:', error);
+    console.error("Error saving reading:", error);
   }
 };
 
@@ -59,11 +63,11 @@ client.connect({
   },
   onFailure: (err) => {
     console.log("MQTT Connection failed:", err);
-  }
+  },
 });
 
 // Routes
-app.use('/api', readingRoutes);
+app.use("/api", readingRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

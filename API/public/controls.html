@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controls - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Sidebar sẽ được load động từ sidebar.html -->
+    <div id="sidebar-container"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h2>Controls</h2>
+        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+      </div>
+
+      <!-- Mode Selection -->
+      <div class="card mode-selection">
+        <div class="card-header">
+          <div class="card-title">Operation Mode</div>
+        </div>
+        <div class="mode-options">
+          <div class="mode-option active">
+            <i class="fas fa-robot"></i>
+            <span>Automatic</span>
+            <p>
+              System automatically controls all parameters based on optimal
+              settings
+            </p>
+          </div>
+          <div class="mode-option">
+            <i class="fas fa-user-cog"></i>
+            <span>Manual</span>
+            <p>Manually control all greenhouse systems and parameters</p>
+          </div>
+          <div class="mode-option">
+            <i class="fas fa-calendar-check"></i>
+            <span>Scheduled</span>
+            <p>Follow pre-defined schedules for different systems</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Panels -->
+      <div class="control-panels">
+        <!-- Climate Control -->
+        <div class="card control-panel">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-temperature-high"></i>
+              Climate Control
+            </div>
+            <div class="control-status active">
+              <span>Active</span>
+            </div>
+          </div>
+          <div class="control-items">
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Ventilation Fans</div>
+                <div class="control-value">Speed: 65%</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch active">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="65" />
+                </div>
+              </div>
+            </div>
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Heating System</div>
+                <div class="control-value">Off</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="0" disabled />
+                </div>
+              </div>
+            </div>
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Cooling System</div>
+                <div class="control-value">Power: 40%</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch active">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="40" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="control-settings">
+            <div class="setting-item">
+              <label>Target Temperature</label>
+              <div class="setting-input">
+                <input type="number" value="25" min="15" max="35" />
+                <span class="unit">°C</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Target Humidity</label>
+              <div class="setting-input">
+                <input type="number" value="60" min="40" max="80" />
+                <span class="unit">%</span>
+              </div>
+            </div>
+            <button class="apply-button">Apply Settings</button>
+          </div>
+        </div>
+
+        <!-- Lighting Control -->
+        <div class="card control-panel">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-lightbulb"></i>
+              Lighting Control
+            </div>
+            <div class="control-status active">
+              <span>Active</span>
+            </div>
+          </div>
+          <div class="control-items">
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Main Grow Lights</div>
+                <div class="control-value">Brightness: 75%</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch active">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="75" />
+                </div>
+              </div>
+            </div>
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Supplemental Lights</div>
+                <div class="control-value">Off</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="0" disabled />
+                </div>
+              </div>
+            </div>
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">UV Lights</div>
+                <div class="control-value">Intensity: 30%</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch active">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="30" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="control-settings">
+            <div class="setting-item">
+              <label>Light Duration</label>
+              <div class="setting-input">
+                <input type="number" value="14" min="8" max="18" />
+                <span class="unit">hours</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Light Spectrum</label>
+              <select class="setting-select">
+                <option>Full Spectrum</option>
+                <option>Vegetative Growth</option>
+                <option>Flowering</option>
+                <option>Custom</option>
+              </select>
+            </div>
+            <button class="apply-button">Apply Settings</button>
+          </div>
+        </div>
+
+        <!-- Irrigation Control -->
+        <div class="card control-panel">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-faucet"></i>
+              Irrigation Control
+            </div>
+            <div class="control-status inactive">
+              <span>Inactive</span>
+            </div>
+          </div>
+          <div class="control-items">
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Main Water Pump</div>
+                <div class="control-value">Off</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="0" disabled />
+                </div>
+              </div>
+            </div>
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Drip System</div>
+                <div class="control-value">Off</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="0" disabled />
+                </div>
+              </div>
+            </div>
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Misting System</div>
+                <div class="control-value">Off</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch">
+                  <div class="toggle-slider"></div>
+                </div>
+                <div class="control-slider">
+                  <input type="range" min="0" max="100" value="0" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="control-settings">
+            <div class="setting-item">
+              <label>Water Amount</label>
+              <div class="setting-input">
+                <input type="number" value="500" min="100" max="2000" />
+                <span class="unit">ml</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Target Soil Moisture</label>
+              <div class="setting-input">
+                <input type="number" value="60" min="30" max="80" />
+                <span class="unit">%</span>
+              </div>
+            </div>
+            <button class="apply-button">Apply Settings</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Quick Actions</div>
+        </div>
+        <div class="quick-actions">
+          <button class="quick-action-button">
+            <i class="fas fa-power-off"></i>
+            <span>Emergency Shutdown</span>
+          </button>
+          <button class="quick-action-button">
+            <i class="fas fa-sync-alt"></i>
+            <span>Reset All Systems</span>
+          </button>
+          <button class="quick-action-button">
+            <i class="fas fa-tint"></i>
+            <span>Start Irrigation Cycle</span>
+          </button>
+          <button class="quick-action-button">
+            <i class="fas fa-fan"></i>
+            <span>Ventilation Boost</span>
+          </button>
+          <button class="quick-action-button">
+            <i class="fas fa-sun"></i>
+            <span>Light Cycle Override</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

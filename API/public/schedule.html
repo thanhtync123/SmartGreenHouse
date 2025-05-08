@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Sidebar sẽ được load động từ sidebar.html -->
+    <div id="sidebar-container"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h2>Schedule</h2>
+        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+      </div>
+
+      <!-- Calendar View -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Calendar</div>
+          <div class="calendar-nav">
+            <button class="nav-button">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="current-month">May 2025</span>
+            <button class="nav-button">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        <div class="calendar">
+          <div class="calendar-header">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+          </div>
+          <div class="calendar-body">
+            <div class="calendar-day prev-month">28</div>
+            <div class="calendar-day prev-month">29</div>
+            <div class="calendar-day prev-month">30</div>
+            <div class="calendar-day">1</div>
+            <div class="calendar-day">2</div>
+            <div class="calendar-day">3</div>
+            <div class="calendar-day">4</div>
+            <div class="calendar-day">5</div>
+            <div class="calendar-day">6</div>
+            <div class="calendar-day">7</div>
+            <div class="calendar-day has-event">
+              8
+              <div class="event-indicator irrigation"></div>
+              <div class="event-indicator lighting"></div>
+            </div>
+            <div class="calendar-day">9</div>
+            <div class="calendar-day">10</div>
+            <div class="calendar-day">11</div>
+            <div class="calendar-day has-event">
+              12
+              <div class="event-indicator irrigation"></div>
+            </div>
+            <div class="calendar-day">13</div>
+            <div class="calendar-day">14</div>
+            <div class="calendar-day has-event">
+              15
+              <div class="event-indicator climate"></div>
+            </div>
+            <div class="calendar-day">16</div>
+            <div class="calendar-day">17</div>
+            <div class="calendar-day">18</div>
+            <div class="calendar-day has-event">
+              19
+              <div class="event-indicator irrigation"></div>
+            </div>
+            <div class="calendar-day">20</div>
+            <div class="calendar-day">21</div>
+            <div class="calendar-day">22</div>
+            <div class="calendar-day">23</div>
+            <div class="calendar-day">24</div>
+            <div class="calendar-day">25</div>
+            <div class="calendar-day has-event">
+              26
+              <div class="event-indicator irrigation"></div>
+              <div class="event-indicator lighting"></div>
+            </div>
+            <div class="calendar-day">27</div>
+            <div class="calendar-day">28</div>
+            <div class="calendar-day">29</div>
+            <div class="calendar-day">30</div>
+            <div class="calendar-day">31</div>
+            <div class="calendar-day next-month">1</div>
+          </div>
+        </div>
+        <div class="calendar-legend">
+          <div class="legend-item">
+            <div class="legend-color irrigation"></div>
+            <span>Irrigation</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color lighting"></div>
+            <span>Lighting</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color climate"></div>
+            <span>Climate</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule List -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Scheduled Tasks</div>
+          <button class="action-button">
+            <i class="fas fa-plus"></i> Add Task
+          </button>
+        </div>
+        <div class="schedule-list">
+          <div class="schedule-item">
+            <div class="schedule-icon irrigation">
+              <i class="fas fa-faucet"></i>
+            </div>
+            <div class="schedule-details">
+              <div class="schedule-title">Irrigation Cycle</div>
+              <div class="schedule-time">Every 3 days at 07:00 AM</div>
+              <div class="schedule-description">
+                Water all plants with 500ml per plant
+              </div>
+            </div>
+            <div class="schedule-actions">
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+              <button class="action-icon"><i class="fas fa-edit"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="schedule-item">
+            <div class="schedule-icon lighting">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <div class="schedule-details">
+              <div class="schedule-title">Lighting Cycle</div>
+              <div class="schedule-time">Daily, 06:00 AM - 08:00 PM</div>
+              <div class="schedule-description">
+                Full spectrum lighting at 75% intensity
+              </div>
+            </div>
+            <div class="schedule-actions">
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+              <button class="action-icon"><i class="fas fa-edit"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="schedule-item">
+            <div class="schedule-icon climate">
+              <i class="fas fa-temperature-high"></i>
+            </div>
+            <div class="schedule-details">
+              <div class="schedule-title">Climate Control</div>
+              <div class="schedule-time">Weekly on Thursday at 09:00 AM</div>
+              <div class="schedule-description">
+                Adjust temperature and humidity settings
+              </div>
+            </div>
+            <div class="schedule-actions">
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+              <button class="action-icon"><i class="fas fa-edit"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="schedule-item">
+            <div class="schedule-icon">
+              <i class="fas fa-broom"></i>
+            </div>
+            <div class="schedule-details">
+              <div class="schedule-title">System Maintenance</div>
+              <div class="schedule-time">Monthly on the 1st at 10:00 AM</div>
+              <div class="schedule-description">
+                Clean filters and check system health
+              </div>
+            </div>
+            <div class="schedule-actions">
+              <div class="toggle-switch">
+                <div class="toggle-slider"></div>
+              </div>
+              <button class="action-icon"><i class="fas fa-edit"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add/Edit Schedule Form -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Add New Schedule</div>
+        </div>
+        <div class="schedule-form">
+          <div class="form-group">
+            <label>Task Name</label>
+            <input type="text" placeholder="Enter task name" />
+          </div>
+          <div class="form-group">
+            <label>Task Type</label>
+            <select>
+              <option>Irrigation</option>
+              <option>Lighting</option>
+              <option>Climate Control</option>
+              <option>Maintenance</option>
+              <option>Custom</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Frequency</label>
+              <select>
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+                <option>Custom</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Time</label>
+              <input type="time" value="08:00" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea placeholder="Enter task description"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="cancel-button">Cancel</button>
+            <button class="save-button">Save Schedule</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Sidebar sẽ được load động từ sidebar.html -->
+    <div id="sidebar-container"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h2>Notifications</h2>
+        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+      </div>
+
+      <!-- Notification Filters -->
+      <div class="notification-filters card">
+        <div class="filter-group">
+          <label>Filter By</label>
+          <div class="button-group">
+            <button class="filter-button active">All</button>
+            <button class="filter-button">Alerts</button>
+            <button class="filter-button">Warnings</button>
+            <button class="filter-button">Info</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Time Range</label>
+          <select class="filter-select">
+            <option>Today</option>
+            <option>Last 3 Days</option>
+            <option>Last Week</option>
+            <option>Last Month</option>
+            <option>All Time</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Mark all as read</label>
+          <button class="action-button">
+            <i class="fas fa-check-double"></i> Mark All Read
+          </button>
+        </div>
+      </div>
+
+      <!-- Notifications List -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Notifications</div>
+          <div class="notification-count">12 Unread</div>
+        </div>
+        <div class="notifications-list">
+          <div class="notification-item unread alert">
+            <div class="notification-icon">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="notification-content">
+              <div class="notification-title">High Temperature Alert</div>
+              <div class="notification-message">
+                Temperature in Zone 3 has reached 30.1°C, exceeding the maximum
+                threshold of 30°C.
+              </div>
+              <div class="notification-time">10 minutes ago</div>
+            </div>
+            <div class="notification-actions">
+              <button class="action-icon"><i class="fas fa-check"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="notification-item unread warning">
+            <div class="notification-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="notification-content">
+              <div class="notification-title">Low Soil Moisture Warning</div>
+              <div class="notification-message">
+                Soil moisture level has dropped to 45%, below the optimal range
+                of 50-70%.
+              </div>
+              <div class="notification-time">25 minutes ago</div>
+            </div>
+            <div class="notification-actions">
+              <button class="action-icon"><i class="fas fa-check"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="notification-item unread info">
+            <div class="notification-icon">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="notification-content">
+              <div class="notification-title">Irrigation Cycle Completed</div>
+              <div class="notification-message">
+                Scheduled irrigation cycle has been completed successfully.
+              </div>
+              <div class="notification-time">1 hour ago</div>
+            </div>
+            <div class="notification-actions">
+              <button class="action-icon"><i class="fas fa-check"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="notification-item info">
+            <div class="notification-icon">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="notification-content">
+              <div class="notification-title">System Update Available</div>
+              <div class="notification-message">
+                A new system update (v2.5.3) is available for installation.
+              </div>
+              <div class="notification-time">3 hours ago</div>
+            </div>
+            <div class="notification-actions">
+              <button class="action-icon"><i class="fas fa-check"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="notification-item warning">
+            <div class="notification-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="notification-content">
+              <div class="notification-title">Battery Level Low</div>
+              <div class="notification-message">
+                Backup battery level is at 20%. Please connect to power source.
+              </div>
+              <div class="notification-time">5 hours ago</div>
+            </div>
+            <div class="notification-actions">
+              <button class="action-icon"><i class="fas fa-check"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="notification-item alert">
+            <div class="notification-icon">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="notification-content">
+              <div class="notification-title">Sensor Disconnected</div>
+              <div class="notification-message">
+                Light sensor in Zone 2 has been disconnected. Please check the
+                connection.
+              </div>
+              <div class="notification-time">Yesterday, 18:30</div>
+            </div>
+            <div class="notification-actions">
+              <button class="action-icon"><i class="fas fa-check"></i></button>
+              <button class="action-icon">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="notifications-pagination">
+          <button class="pagination-button">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="pagination-button active">1</button>
+          <button class="pagination-button">2</button>
+          <button class="pagination-button">3</button>
+          <button class="pagination-button">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Notification Settings</div>
+        </div>
+        <div class="settings-container">
+          <div class="settings-group">
+            <h3>Alert Preferences</h3>
+            <div class="setting-item">
+              <label>Enable Notifications</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Notification Sound</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Desktop Notifications</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>Notification Types</h3>
+            <div class="setting-item">
+              <label>System Alerts</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Sensor Warnings</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Schedule Notifications</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>System Updates</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>External Notifications</h3>
+            <div class="setting-item">
+              <label>Email Notifications</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Email Address</label>
+              <input type="email" value="user@example.com" />
+            </div>
+            <div class="setting-item">
+              <label>SMS Notifications</label>
+              <div class="toggle-switch">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Phone Number</label>
+              <input type="tel" value="+1 (555) 123-4567" disabled />
+            </div>
+          </div>
+        </div>
+        <div class="settings-actions">
+          <button class="cancel-button">Cancel</button>
+          <button class="save-button">Save Settings</button>
+        </div>
+      </div>
+    </div>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

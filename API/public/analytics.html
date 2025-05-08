@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Sidebar sẽ được load động từ sidebar.html -->
+    <div id="sidebar-container"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h2>Analytics</h2>
+        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+      </div>
+
+      <!-- Analytics Filters -->
+      <div class="analytics-filters card">
+        <div class="filter-group">
+          <label>Date Range</label>
+          <div class="filter-controls">
+            <select class="filter-select">
+              <option>Last 24 Hours</option>
+              <option>Last 7 Days</option>
+              <option>Last 30 Days</option>
+              <option>Custom Range</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Sensors</label>
+          <div class="filter-controls">
+            <div class="checkbox-group">
+              <label class="checkbox">
+                <input type="checkbox" checked />
+                <span>Temperature</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" checked />
+                <span>Humidity</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" checked />
+                <span>Light</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" checked />
+                <span>Soil Moisture</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Interval</label>
+          <div class="filter-controls">
+            <div class="button-group">
+              <button class="filter-button active">Hourly</button>
+              <button class="filter-button">Daily</button>
+              <button class="filter-button">Weekly</button>
+            </div>
+          </div>
+        </div>
+        <button class="apply-button">Apply Filters</button>
+      </div>
+
+      <!-- Main Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Sensor Data Trends</div>
+          <div class="chart-actions">
+            <button class="action-button">
+              <i class="fas fa-download"></i> Export
+            </button>
+            <button class="action-button">
+              <i class="fas fa-expand"></i> Fullscreen
+            </button>
+          </div>
+        </div>
+        <div class="main-chart">
+          <!-- Placeholder for the main chart -->
+          <div class="chart-placeholder" style="height: 400px"></div>
+        </div>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="statistics-grid">
+        <div class="card stat-card">
+          <div class="stat-icon temperature">
+            <i class="fas fa-thermometer-half"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-title">Avg. Temperature</div>
+            <div class="stat-value">26.8°C</div>
+            <div class="stat-change increase">
+              <i class="fas fa-arrow-up"></i> 2.3°C from last week
+            </div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-icon humidity">
+            <i class="fas fa-tint"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-title">Avg. Humidity</div>
+            <div class="stat-value">62%</div>
+            <div class="stat-change decrease">
+              <i class="fas fa-arrow-down"></i> 5% from last week
+            </div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-icon light">
+            <i class="fas fa-sun"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-title">Avg. Light</div>
+            <div class="stat-value">780 lux</div>
+            <div class="stat-change increase">
+              <i class="fas fa-arrow-up"></i> 120 lux from last week
+            </div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-icon soil">
+            <i class="fas fa-water"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-title">Avg. Soil Moisture</div>
+            <div class="stat-value">48%</div>
+            <div class="stat-change stable">
+              <i class="fas fa-equals"></i> No change from last week
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Sensor Data Log</div>
+          <div class="table-actions">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search..." />
+            </div>
+            <button class="action-button">
+              <i class="fas fa-download"></i> Export
+            </button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Temperature (°C)</th>
+                <th>Humidity (%)</th>
+                <th>Light (lux)</th>
+                <th>Soil Moisture (%)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2025-05-08 15:30:00</td>
+                <td>28.5</td>
+                <td>65</td>
+                <td>850</td>
+                <td>45</td>
+                <td><span class="status-badge optimal">Optimal</span></td>
+              </tr>
+              <tr>
+                <td>2025-05-08 14:30:00</td>
+                <td>29.1</td>
+                <td>63</td>
+                <td>920</td>
+                <td>44</td>
+                <td><span class="status-badge warning">Warning</span></td>
+              </tr>
+              <tr>
+                <td>2025-05-08 13:30:00</td>
+                <td>27.8</td>
+                <td>67</td>
+                <td>780</td>
+                <td>46</td>
+                <td><span class="status-badge optimal">Optimal</span></td>
+              </tr>
+              <tr>
+                <td>2025-05-08 12:30:00</td>
+                <td>26.5</td>
+                <td>70</td>
+                <td>650</td>
+                <td>48</td>
+                <td><span class="status-badge optimal">Optimal</span></td>
+              </tr>
+              <tr>
+                <td>2025-05-08 11:30:00</td>
+                <td>25.2</td>
+                <td>72</td>
+                <td>520</td>
+                <td>50</td>
+                <td><span class="status-badge optimal">Optimal</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination">
+          <span>Showing 1 to 5 of 120 entries</span>
+          <div class="pagination-controls">
+            <button class="pagination-button" disabled>
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="pagination-button active">1</button>
+            <button class="pagination-button">2</button>
+            <button class="pagination-button">3</button>
+            <span>...</span>
+            <button class="pagination-button">24</button>
+            <button class="pagination-button">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

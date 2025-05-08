@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Sidebar sẽ được load động từ sidebar.html -->
+    <div id="sidebar-container"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h2>Settings</h2>
+        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+      </div>
+
+      <!-- Settings Tabs -->
+      <div class="settings-tabs">
+        <button class="tab-button active">General</button>
+        <button class="tab-button">Network</button>
+        <button class="tab-button">Sensors</button>
+        <button class="tab-button">Automation</button>
+        <button class="tab-button">Notifications</button>
+        <button class="tab-button">User Account</button>
+        <button class="tab-button">System</button>
+      </div>
+
+      <!-- General Settings -->
+      <div class="card settings-card">
+        <div class="card-header">
+          <div class="card-title">General Settings</div>
+        </div>
+        <div class="settings-container">
+          <div class="settings-group">
+            <h3>System Information</h3>
+            <div class="setting-item">
+              <label>Greenhouse Name</label>
+              <input type="text" value="Main Greenhouse" />
+            </div>
+            <div class="setting-item">
+              <label>Location</label>
+              <input type="text" value="North Garden" />
+            </div>
+            <div class="setting-item">
+              <label>Description</label>
+              <textarea>Primary greenhouse for vegetable production.</textarea>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>Display Settings</h3>
+            <div class="setting-item">
+              <label>Temperature Unit</label>
+              <div class="radio-group">
+                <label class="radio">
+                  <input type="radio" name="temp-unit" checked />
+                  <span>Celsius (°C)</span>
+                </label>
+                <label class="radio">
+                  <input type="radio" name="temp-unit" />
+                  <span>Fahrenheit (°F)</span>
+                </label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Date Format</label>
+              <select>
+                <option>YYYY-MM-DD</option>
+                <option>MM/DD/YYYY</option>
+                <option>DD/MM/YYYY</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Time Format</label>
+              <select>
+                <option>24-hour</option>
+                <option>12-hour (AM/PM)</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Theme</label>
+              <select>
+                <option>Light</option>
+                <option>Dark</option>
+                <option>System Default</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>Data Settings</h3>
+            <div class="setting-item">
+              <label>Data Refresh Rate</label>
+              <select>
+                <option>5 seconds</option>
+                <option>10 seconds</option>
+                <option>30 seconds</option>
+                <option>1 minute</option>
+                <option>5 minutes</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Data Storage Duration</label>
+              <select>
+                <option>1 month</option>
+                <option>3 months</option>
+                <option>6 months</option>
+                <option>1 year</option>
+                <option>Forever</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Enable Data Export</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-actions">
+          <button class="cancel-button">Cancel</button>
+          <button class="save-button">Save Settings</button>
+        </div>
+      </div>
+
+      <!-- Network Settings -->
+      <div class="card settings-card" style="display: none">
+        <div class="card-header">
+          <div class="card-title">Network Settings</div>
+        </div>
+        <div class="settings-container">
+          <div class="settings-group">
+            <h3>Wi-Fi Configuration</h3>
+            <div class="setting-item">
+              <label>Wi-Fi Status</label>
+              <div class="status-badge connected">Connected</div>
+            </div>
+            <div class="setting-item">
+              <label>Network Name (SSID)</label>
+              <input type="text" value="Greenhouse_Network" />
+            </div>
+            <div class="setting-item">
+              <label>Password</label>
+              <input type="password" value="************" />
+            </div>
+            <div class="setting-item">
+              <label>Security</label>
+              <select>
+                <option>WPA2-PSK</option>
+                <option>WPA3-PSK</option>
+                <option>WPA/WPA2-PSK</option>
+                <option>Open (Not Recommended)</option>
+              </select>
+            </div>
+            <button class="action-button">Scan for Networks</button>
+          </div>
+          <div class="settings-group">
+            <h3>Network Configuration</h3>
+            <div class="setting-item">
+              <label>IP Configuration</label>
+              <div class="radio-group">
+                <label class="radio">
+                  <input type="radio" name="ip-config" checked />
+                  <span>DHCP (Automatic)</span>
+                </label>
+                <label class="radio">
+                  <input type="radio" name="ip-config" />
+                  <span>Static IP</span>
+                </label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>IP Address</label>
+              <input type="text" value="192.168.1.100" disabled />
+            </div>
+            <div class="setting-item">
+              <label>Subnet Mask</label>
+              <input type="text" value="255.255.255.0" disabled />
+            </div>
+            <div class="setting-item">
+              <label>Gateway</label>
+              <input type="text" value="192.168.1.1" disabled />
+            </div>
+            <div class="setting-item">
+              <label>DNS Server</label>
+              <input type="text" value="8.8.8.8" disabled />
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>Cloud Connection</h3>
+            <div class="setting-item">
+              <label>Cloud Sync</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Cloud Server</label>
+              <input type="text" value="cloud.greenhouse.io" />
+            </div>
+            <div class="setting-item">
+              <label>API Key</label>
+              <input type="password" value="************" />
+            </div>
+            <div class="setting-item">
+              <label>Sync Interval</label>
+              <select>
+                <option>5 minutes</option>
+                <option>15 minutes</option>
+                <option>30 minutes</option>
+                <option>1 hour</option>
+              </select>
+            </div>
+            <button class="action-button">Test Connection</button>
+          </div>
+        </div>
+        <div class="settings-actions">
+          <button class="cancel-button">Cancel</button>
+          <button class="save-button">Save Settings</button>
+        </div>
+      </div>
+    </div>
+    <script src="sidebar.js"></script>
+  </body>
+</html>
