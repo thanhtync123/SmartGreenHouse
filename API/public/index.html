@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Thêm Chart.js -->
+    <style>
+      canvas {
+        max-width: 800px;
+        margin: 20px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Nhiệt độ</h2>
+    <h1 id="nhietdo"></h1>
+    <h2>Độ ẩm</h2>
+    <h1 id="doam"></h1>
+
+    <!-- Thêm canvas cho biểu đồ -->
+    <canvas id="tempHumidityChart"></canvas>
+
+    <script>
+      // Cập nhật dữ liệu mới nhất
+      function updateLatestData() {
+        $.getJSON("/api/readings/latest", function (data) {
+          $("#nhietdo").text(data.temperature);
+          $("#doam").text(data.humidity);
+        });
+      }
+
+      // Khởi tạo biểu đồ
+      const ctx = document.getElementById("tempHumidityChart").getContext("2d");
+      const chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: [], // Thời gian
+          datasets: [
+            {
+              label: "Nhiệt độ (°C)",
+              data: [], // Dữ liệu nhiệt độ
+              borderColor: "red",
+              fill: false,
+            },
+            {
+              label: "Độ ẩm (%)",
+              data: [], // Dữ liệu độ ẩm
+              borderColor: "blue",
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Thời gian",
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Giá trị",
+              },
+            },
+          },
+        },
+      });
+
+      // Cập nhật biểu đồ từ API
+      function updateChart() {
+        $.getJSON("/api/readings", function (data) {
+          const timestamps = data.map((item) =>
+            new Date(item.timestamp).toLocaleTimeString()
+          );
+          const temperatures = data.map((item) => item.temperature);
+          const humidities = data.map((item) => item.humidity);
+
+          chart.data.labels = timestamps.reverse(); // Đảo ngược để thời gian mới nhất ở bên phải
+          chart.data.datasets[0].data = temperatures.reverse();
+          chart.data.datasets[1].data = humidities.reverse();
+          chart.update();
+        });
+      }
+
+      // Cập nhật định kỳ
+      setInterval(updateLatestData, 5000);
+      setInterval(updateChart, 5000);
+      updateLatestData(); // Gọi lần đầu
+      updateChart(); // Gọi lần đầu
+
+      // MQTT Client (giữ nguyên)
+      const client = new Paho.MQTT.Client(
+        "broker.emqx.io",
+        Number(8083),
+        "clientId56"
+      );
+
+      client.onConnectionLost = onConnectionLost;
+      client.onMessageArrived = onMessageArrived;
+
+      client.connect({ onSuccess: onConnect });
+
+      function onConnect() {
+        console.log("onConnect");
+        client.subscribe("dht22");
+      }
+
+      function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+          console.log("onConnectionLost:" + responseObject.errorMessage);
+        }
+      }
+
+      function onMessageArrived(message) {
+        console.log("onMessageArrived:" + message.payloadString);
+        const obj = JSON.parse(message.payloadString);
+        document.getElementById("nhietdo").innerHTML = obj.temperature;
+        document.getElementById("doam").innerHTML = obj.humidity;
+        updateChart(); // Cập nhật biểu đồ khi nhận dữ liệu mới từ MQTT
+      }
+    </script>
+  </body>
+</html>
