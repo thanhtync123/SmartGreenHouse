@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        background: linear-gradient(to bottom right, var(--primary-dark), var(--primary));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      .register-container {
+        background-color: white;
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow);
+        width: 100%;
+        max-width: 500px;
+        padding: 30px;
+        transition: var(--transition);
+        margin: 30px 0;
+      }
+
+      .register-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .logo i {
+        font-size: 2.5rem;
+        color: var(--primary);
+      }
+
+      .register-header h1 {
+        font-size: 1.8rem;
+        color: var(--dark);
+        margin-bottom: 5px;
+      }
+
+      .register-header p {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      .input-group i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 12px 12px 40px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+      }
+
+      .form-row {
+        display: flex;
+        gap: 15px;
+      }
+
+      .form-row .form-group {
+        flex: 1;
+      }
+
+      .password-info {
+        font-size: 0.8rem;
+        color: #7f8c8d;
+        margin-top: 5px;
+      }
+
+      .terms-privacy {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-bottom: 20px;
+      }
+
+      .terms-privacy input {
+        margin-top: 3px;
+      }
+
+      .terms-privacy a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .terms-privacy a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+      }
+
+      .register-button {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .register-button:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .register-divider {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+      }
+
+      .register-divider::before,
+      .register-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      .register-divider span {
+        padding: 0 10px;
+      }
+
+      .social-register {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .social-button {
+        flex: 1;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        background-color: white;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .social-button:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+
+      .login-link {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+      }
+
+      .login-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+      }
+
+      .login-link a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+      }
+
+      .password-strength {
+        height: 5px;
+        background-color: #ecf0f1;
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+
+      .password-strength-bar {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.5s ease, background-color 0.5s ease;
+        width: 0%;
+      }
+
+      .strength-weak {
+        background-color: var(--danger);
+        width: 25%;
+      }
+
+      .strength-medium {
+        background-color: var(--warning);
+        width: 50%;
+      }
+
+      .strength-good {
+        background-color: var(--secondary);
+        width: 75%;
+      }
+
+      .strength-strong {
+        background-color: var(--success);
+        width: 100%;
+      }
+
+      @media (max-width: 576px) {
+        .register-container {
+          margin: 20px;
+          padding: 20px;
+        }
+
+        .form-row {
+          flex-direction: column;
+          gap: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-container">
+      <div class="register-header">
+        <div class="logo">
+          <i class="fas fa-leaf"></i>
+          <h1>Smart Greenhouse</h1>
+        </div>
+        <p>Tạo tài khoản để quản lý nhà kính thông minh của bạn</p>
+      </div>
+
+      <form id="register-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">Họ</label>
+            <div class="input-group">
+              <i class="fas fa-user"></i>
+              <input
+                type="text"
+                class="form-control"
+                id="first-name"
+                placeholder="Họ của bạn"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="last-name">Tên</label>
+            <div class="input-group">
+              <i class="fas fa-user"></i>
+              <input
+                type="text"
+                class="form-control"
+                id="last-name"
+                placeholder="Tên của bạn"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="Nhập email của bạn"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Số điện thoại</label>
+          <div class="input-group">
+            <i class="fas fa-phone"></i>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              placeholder="Nhập số điện thoại"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              placeholder="Tạo mật khẩu"
+              required
+            />
+          </div>
+          <div class="password-strength">
+            <div class="password-strength-bar"></div>
+          </div>
+          <p class="password-info">
+            Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ cái, số và ký tự đặc biệt
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Xác nhận mật khẩu</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              class="form-control"
+              id="confirm-password"
+              placeholder="Nhập lại mật khẩu"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="terms-privacy">
+          <input type="checkbox" id="terms" required />
+          <label for="terms">
+            Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và
+            <a href="#">Chính sách riêng tư</a> của Smart Greenhouse
+          </label>
+        </div>
+
+        <button type="submit" class="register-button">Đăng ký</button>
+      </form>
+
+      <div class="register-divider">
+        <span>Hoặc đăng ký bằng</span>
+      </div>
+
+      <div class="social-register">
+        <button type="button" class="social-button">
+          <i class="fab fa-google"></i>
+          <span>Google</span>
+        </button>
+        <button type="button" class="social-button">
+          <i class="fab fa-facebook-f"></i>
+          <span>Facebook</span>
+        </button>
+      </div>
+
+      <div class="login-link">
+        Bạn đã có tài khoản? <a href="login.html">Đăng nhập</a>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('register-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Lấy giá trị từ form
+        const firstName = document.getElementById('first-name').value;
+        const lastName = document.getElementById('last-name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        // Kiểm tra mật khẩu khớp nhau
+        if (password !== confirmPassword) {
+          alert('Mật khẩu không khớp. Vui lòng thử lại.');
+          return;
+        }
+        
+        // Ở đây bạn sẽ thêm code gửi thông tin đăng ký đến API
+        console.log('Đăng ký với:', { firstName, lastName, email, phone });
+        
+        // Chuyển hướng người dùng đến trang đăng nhập sau khi đăng ký thành công
+        // window.location.href = 'login.html';
+      });
+
+      // Kiểm tra độ mạnh của mật khẩu
+      document.getElementById('password').addEventListener('input', function(e) {
+        const password = e.target.value;
+        const passwordStrength = document.querySelector('.password-strength-bar');
+        
+        // Xóa tất cả classes hiện tại
+        passwordStrength.className = 'password-strength-bar';
+        
+        // Đánh giá độ mạnh của mật khẩu
+        if (password.length === 0) {
+          passwordStrength.style.width = '0%';
+        } else if (password.length < 6) {
+          passwordStrength.classList.add('strength-weak');
+        } else if (password.length < 8) {
+          passwordStrength.classList.add('strength-medium');
+        } else if (password.length < 10) {
+          passwordStrength.classList.add('strength-good');
+        } else {
+          passwordStrength.classList.add('strength-strong');
+        }
+      });
+    </script>
+  </body>
+</html>

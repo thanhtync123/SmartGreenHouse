@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        background: linear-gradient(to bottom right, var(--primary-dark), var(--primary));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      .login-container {
+        background-color: white;
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow);
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+        transition: var(--transition);
+      }
+
+      .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .logo i {
+        font-size: 2.5rem;
+        color: var(--primary);
+      }
+
+      .login-header h1 {
+        font-size: 1.8rem;
+        color: var(--dark);
+        margin-bottom: 5px;
+      }
+
+      .login-header p {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      .input-group i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 12px 12px 40px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+      }
+
+      .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+      }
+
+      .checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .forgot-password {
+        color: var(--primary);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .forgot-password:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+      }
+
+      .login-button {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .login-button:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .login-divider {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+      }
+
+      .login-divider::before,
+      .login-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      .login-divider span {
+        padding: 0 10px;
+      }
+
+      .social-login {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .social-button {
+        flex: 1;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        background-color: white;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .social-button:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+
+      .register-link {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+      }
+
+      .register-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+      }
+
+      .register-link a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+      }
+
+      @media (max-width: 576px) {
+        .login-container {
+          margin: 20px;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-header">
+        <div class="logo">
+          <i class="fas fa-leaf"></i>
+          <h1>Smart Greenhouse</h1>
+        </div>
+        <p>Đăng nhập để quản lý nhà kính thông minh</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="Nhập email của bạn"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              placeholder="Nhập mật khẩu"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="remember-forgot">
+          <label class="checkbox">
+            <input type="checkbox" id="remember" />
+            <span>Ghi nhớ đăng nhập</span>
+          </label>
+          <a href="#" class="forgot-password">Quên mật khẩu?</a>
+        </div>
+
+        <button type="submit" class="login-button">Đăng nhập</button>
+      </form>
+
+      <div class="login-divider">
+        <span>Hoặc đăng nhập bằng</span>
+      </div>
+
+      <div class="social-login">
+        <button type="button" class="social-button">
+          <i class="fab fa-google"></i>
+          <span>Google</span>
+        </button>
+        <button type="button" class="social-button">
+          <i class="fab fa-facebook-f"></i>
+          <span>Facebook</span>
+        </button>
+      </div>
+
+      <div class="register-link">
+        Bạn chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Ở đây bạn sẽ thêm code gửi thông tin đăng nhập đến API
+        console.log('Đang đăng nhập với:', email);
+        
+        // Chuyển hướng người dùng đến trang chính sau khi đăng nhập thành công
+        // window.location.href = 'index.html';
+      });
+    </script>
+  </body>
+</html>

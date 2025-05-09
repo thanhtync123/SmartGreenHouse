@@ -3,7 +3,6 @@ const mqtt = require("mqtt"); // Sửa cách import MQTT cho Node.js
 require("dotenv").config();
 const db = require("./config/database");
 const readingRoutes = require("./routes/readings");
-const authRoutes = require("./routes/auth"); // Thêm import auth routes
 
 const app = express();
 app.use(express.static("public")); // Phục vụ file tĩnh
@@ -123,7 +122,6 @@ client.on("message", async (topic, message) => {
 
 // Routes
 app.use("/api", readingRoutes);
-app.use("/api/auth", authRoutes); // Thêm auth routes
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
