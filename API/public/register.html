@@ -98,79 +98,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
 
-            $('.register-button').click(function() {
-                $('#register-form').submit();
-                    const username = $("#username").val().trim();
-                    const email = $("#email").val().trim();
-                    const password = $("#password").val().trim();
-                        $.ajax({
-                      type: "POST",
-                      url: "api/register",
-                      contentType: "application/json", 
-                      data: JSON.stringify({            
-                        action: "register",
-                        username: username,
-                        email: email,
-                        password: password
-                      }),
-                      dataType: "json",  
-                      success: function(response) {
-                        alert(response.message);
-                      },
-                      error: function(xhr, status, error) {
-                        console.error('Có lỗi xảy ra:', error);
-                        alert("Có lỗi xảy ra trong quá trình đăng ký.");
-                      }
-      });
-            });
-    // $("#register-form").submit(function (event) {
-    //   event.preventDefault();
-    //   const username = $("#username").val().trim();
-    //   const email = $("#email").val().trim();
-    //   const password = $("#password").val().trim();
-    //       $.ajax({
-    //     type: "POST",
-    //     url: "api/register",
-    //     contentType: "application/json", 
-    //     data: JSON.stringify({            
-    //       action: "register",
-    //       username: username,
-    //       email: email,
-    //       password: password
-    //     }),
-    //     dataType: "json",  
-    //     success: function(response) {
-    //       alert(response.message);
-    //     },
-    //     error: function(xhr, status, error) {
-    //       console.error('Có lỗi xảy ra:', error);
-    //       alert("Có lỗi xảy ra trong quá trình đăng ký.");
-    //     }
-    //   });
-    // });
 
-
-    // Kiểm tra độ mạnh của mật khẩu
-    document.getElementById('password').addEventListener('input', function (e) {
-      const password = e.target.value;
-      const passwordStrength = document.querySelector('.password-strength-bar');
-
-      // Xóa tất cả classes hiện tại
-      passwordStrength.className = 'password-strength-bar';
-
-      // Đánh giá độ mạnh của mật khẩu
-      if (password.length === 0) {
-        passwordStrength.style.width = '0%';
-      } else if (password.length < 6) {
-        passwordStrength.classList.add('strength-weak');
-      } else if (password.length < 8) {
-        passwordStrength.classList.add('strength-medium');
-      } else if (password.length < 10) {
-        passwordStrength.classList.add('strength-good');
-      } else {
-        passwordStrength.classList.add('strength-strong');
-      }
-    });
   </script>
 </body>
 
