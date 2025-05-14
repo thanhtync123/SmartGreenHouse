@@ -1,30 +1,34 @@
-// routes/auth.js
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
-// POST /api/login
-router.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  if (email === 'admin@example.com' && password === '123456') {
-    res.json({ success: true, message: 'Đăng nhập thành công!' });
-  } else {
-    res.status(401).json({ success: false, message: 'Sai thông tin đăng nhập!' });
+
+router.post('/register', async (req, res) => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const connection = await db.getConnection();
+    // Kiểm tra username hoặc email đã tồn tại chưa
+    const [users] = await connection.query(
+      'SELECT id FROM users WHERE username = ? OR email = ?',
+      [username, email]
+    );
+    if (users.length > 0) {
+      connection.release();
+      return res.status(409).json({ error: 'Username or email already exists' });
+    }
+    // Thêm user mới (không băm mật khẩu)
+    await connection.query(
+      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+      [username, email, password]
+    );
+    connection.release();
+    res.json({ message: 'Register successful' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
-
-router.post('/register', (req, res) => {
-    const { username, email, password } = req.body;
-  const sql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-  db.query(sql, [username, email, password], (err, result) => {
-     if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Có lỗi xảy ra' });
-    }
-    res.json(result); // Trả về kết quả của truy vấn
-  });
-    
-    
-});
-
 
 module.exports = router;
