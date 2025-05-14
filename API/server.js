@@ -12,6 +12,9 @@ app.get('/login', (req, res) => {
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
+const authRouter = require('./routes/auth');
+app.use(express.json());
+app.use('/api', authRouter);
 
 
 

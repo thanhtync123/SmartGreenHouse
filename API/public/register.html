@@ -97,8 +97,38 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
-
-
+$('.register-button').on('click', function () {
+      const username = $('#username').val();
+      const email = $('#email').val();
+      const password = $('#password').val();
+      const confirmPassword = $('#confirm-password').val();
+      const terms = $('#terms').is(':checked');
+      if (!username || !email || !password || !confirmPassword) {
+        alert('Vui lòng nhập đầy đủ thông tin');
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert('Mật khẩu xác nhận không khớp');
+        return;
+      }
+      if (!terms) {
+        alert('Bạn phải đồng ý với điều khoản');
+        return;
+      }
+      $.ajax({
+        url: '/api/register',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ username, email, password }),
+        success: function (res) {
+          alert('Đăng ký thành công! Vui lòng đăng nhập.');
+          window.location.href = 'login.html';
+        },
+        error: function (xhr) {
+          alert(xhr.responseJSON?.error || 'Đăng ký thất bại');
+        }
+      });
+    });
   </script>
 </body>
 
