@@ -1,177 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - Smart Greenhouse</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+    <style></style>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đăng ký - Smart Greenhouse</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
-  <style>
-
-  </style>
-</head>
-
-<body>
-  <div class="register-container">
-    <div class="register-header">
-      <div class="logo">
-        <i class="fas fa-leaf"></i>
-        <h1>Smart Greenhouse</h1>
+  <body>
+    <div class="register-container">
+      <div class="register-header">
+        <div class="logo">
+          <i class="fas fa-leaf"></i>
+          <h1>Smart Greenhouse</h1>
+        </div>
+        <p>Tạo tài khoản để quản lý nhà kính thông minh của bạn</p>
       </div>
-      <p>Tạo tài khoản để quản lý nhà kính thông minh của bạn</p>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label for="username">Tên người dùng</label>
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              placeholder="Nhập tên người dùng"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="Nhập email của bạn"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              placeholder="Tạo mật khẩu"
+              required
+            />
+          </div>
+          <div class="password-strength">
+            <div class="password-strength-bar"></div>
+          </div>
+          <p class="password-info">
+            Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ cái, số và ký tự đặc
+            biệt
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Xác nhận mật khẩu</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              class="form-control"
+              id="confirm-password"
+              placeholder="Nhập lại mật khẩu"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="terms-privacy">
+          <input type="checkbox" id="terms" required />
+          <label for="terms">
+            Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và
+            <a href="#">Chính sách riêng tư</a> của Smart Greenhouse
+          </label>
+        </div>
+      </form>
+      <button type="button" class="register-button">Đăng ký</button>
+      <div class="register-divider">
+        <span>Hoặc đăng ký bằng</span>
+      </div>
+
+      <div class="social-register">
+        <button type="button" class="social-button">
+          <i class="fab fa-google"></i>
+          <span>Google</span>
+        </button>
+        <button type="button" class="social-button">
+          <i class="fab fa-facebook-f"></i>
+          <span>Facebook</span>
+        </button>
+      </div>
+
+      <div class="login-link">
+        Bạn đã có tài khoản? <a href="login.html">Đăng nhập</a>
+      </div>
     </div>
-
-    <form id="register-form">
-
-      <div class="form-group">
-        <label for="username">Tên người dùng</label>
-        <div class="input-group">
-          <i class="fas fa-user"></i>
-          <input type="text" class="form-control" id="username" placeholder="Nhập tên người dùng" required />
-        </div>
-      </div>
-
-
-      <div class="form-group">
-        <label for="email">Email</label>
-        <div class="input-group">
-          <i class="fas fa-envelope"></i>
-          <input type="email" class="form-control" id="email" placeholder="Nhập email của bạn" required />
-        </div>
-      </div>
-
-
-
-      <div class="form-group">
-        <label for="password">Mật khẩu</label>
-        <div class="input-group">
-          <i class="fas fa-lock"></i>
-          <input type="password" class="form-control" id="password" placeholder="Tạo mật khẩu" required />
-        </div>
-        <div class="password-strength">
-          <div class="password-strength-bar"></div>
-        </div>
-        <p class="password-info">
-          Mật khẩu phải có ít nhất 8 ký tự bao gồm chữ cái, số và ký tự đặc biệt
-        </p>
-      </div>
-
-      <div class="form-group">
-        <label for="confirm-password">Xác nhận mật khẩu</label>
-        <div class="input-group">
-          <i class="fas fa-lock"></i>
-          <input type="password" class="form-control" id="confirm-password" placeholder="Nhập lại mật khẩu" required />
-        </div>
-      </div>
-
-      <div class="terms-privacy">
-        <input type="checkbox" id="terms" required />
-        <label for="terms">
-          Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và
-          <a href="#">Chính sách riêng tư</a> của Smart Greenhouse
-        </label>
-      </div>
-
- 
-    </form>
-     <button type="button" class="register-button">Đăng ký</button>
-    <div class="register-divider">
-      <span>Hoặc đăng ký bằng</span>
-    </div>
-
-    <div class="social-register">
-      <button type="button" class="social-button">
-        <i class="fab fa-google"></i>
-        <span>Google</span>
-      </button>
-      <button type="button" class="social-button">
-        <i class="fab fa-facebook-f"></i>
-        <span>Facebook</span>
-      </button>
-    </div>
-
-    <div class="login-link">
-      Bạn đã có tài khoản? <a href="login.html">Đăng nhập</a>
-    </div>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script>
-
-            $('.register-button').click(function() {
-                $('#register-form').submit();
-                    const username = $("#username").val().trim();
-                    const email = $("#email").val().trim();
-                    const password = $("#password").val().trim();
-                        $.ajax({
-                      type: "POST",
-                      url: "api/register",
-                      contentType: "application/json", 
-                      data: JSON.stringify({            
-                        action: "register",
-                        username: username,
-                        email: email,
-                        password: password
-                      }),
-                      dataType: "json",  
-                      success: function(response) {
-                        alert(response.message);
-                      },
-                      error: function(xhr, status, error) {
-                        console.error('Có lỗi xảy ra:', error);
-                        alert("Có lỗi xảy ra trong quá trình đăng ký.");
-                      }
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+      $(".register-button").click(function () {
+        $("#register-form").submit();
+        const username = $("#username").val().trim();
+        const email = $("#email").val().trim();
+        const password = $("#password").val().trim();
+        $.ajax({
+          type: "POST",
+          url: "api/register",
+          contentType: "application/json",
+          data: JSON.stringify({
+            action: "register",
+            username: username,
+            email: email,
+            password: password,
+          }),
+          dataType: "json",
+          success: function (response) {
+            alert(response.message);
+          },
+          error: function (xhr, status, error) {
+            console.error("Có lỗi xảy ra:", error);
+            alert("Có lỗi xảy ra trong quá trình đăng ký.");
+          },
+        });
       });
-            });
-    // $("#register-form").submit(function (event) {
-    //   event.preventDefault();
-    //   const username = $("#username").val().trim();
-    //   const email = $("#email").val().trim();
-    //   const password = $("#password").val().trim();
-    //       $.ajax({
-    //     type: "POST",
-    //     url: "api/register",
-    //     contentType: "application/json", 
-    //     data: JSON.stringify({            
-    //       action: "register",
-    //       username: username,
-    //       email: email,
-    //       password: password
-    //     }),
-    //     dataType: "json",  
-    //     success: function(response) {
-    //       alert(response.message);
-    //     },
-    //     error: function(xhr, status, error) {
-    //       console.error('Có lỗi xảy ra:', error);
-    //       alert("Có lỗi xảy ra trong quá trình đăng ký.");
-    //     }
-    //   });
-    // });
+      // $("#register-form").submit(function (event) {
+      //   event.preventDefault();
+      //   const username = $("#username").val().trim();
+      //   const email = $("#email").val().trim();
+      //   const password = $("#password").val().trim();
+      //       $.ajax({
+      //     type: "POST",
+      //     url: "api/register",
+      //     contentType: "application/json",
+      //     data: JSON.stringify({
+      //       action: "register",
+      //       username: username,
+      //       email: email,
+      //       password: password
+      //     }),
+      //     dataType: "json",
+      //     success: function(response) {
+      //       alert(response.message);
+      //     },
+      //     error: function(xhr, status, error) {
+      //       console.error('Có lỗi xảy ra:', error);
+      //       alert("Có lỗi xảy ra trong quá trình đăng ký.");
+      //     }
+      //   });
+      // });
 
+      // Kiểm tra độ mạnh của mật khẩu
+      document
+        .getElementById("password")
+        .addEventListener("input", function (e) {
+          const password = e.target.value;
+          const passwordStrength = document.querySelector(
+            ".password-strength-bar"
+          );
 
-    // Kiểm tra độ mạnh của mật khẩu
-    document.getElementById('password').addEventListener('input', function (e) {
-      const password = e.target.value;
-      const passwordStrength = document.querySelector('.password-strength-bar');
+          // Xóa tất cả classes hiện tại
+          passwordStrength.className = "password-strength-bar";
 
-      // Xóa tất cả classes hiện tại
-      passwordStrength.className = 'password-strength-bar';
-
-      // Đánh giá độ mạnh của mật khẩu
-      if (password.length === 0) {
-        passwordStrength.style.width = '0%';
-      } else if (password.length < 6) {
-        passwordStrength.classList.add('strength-weak');
-      } else if (password.length < 8) {
-        passwordStrength.classList.add('strength-medium');
-      } else if (password.length < 10) {
-        passwordStrength.classList.add('strength-good');
-      } else {
-        passwordStrength.classList.add('strength-strong');
-      }
-    });
-  </script>
-</body>
-
+          // Đánh giá độ mạnh của mật khẩu
+          if (password.length === 0) {
+            passwordStrength.style.width = "0%";
+          } else if (password.length < 6) {
+            passwordStrength.classList.add("strength-weak");
+          } else if (password.length < 8) {
+            passwordStrength.classList.add("strength-medium");
+          } else if (password.length < 10) {
+            passwordStrength.classList.add("strength-good");
+          } else {
+            passwordStrength.classList.add("strength-strong");
+          }
+        });
+    </script>
+  </body>
 </html>

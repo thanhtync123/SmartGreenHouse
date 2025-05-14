@@ -8,7 +8,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/dht22.css" />
   </head>
   <body>
     <!-- Sidebar sẽ được load động từ sidebar.html -->
@@ -23,61 +24,68 @@
       <!-- Dashboard Cards -->
       <div class="dashboard">
         <!-- Temperature Card -->
-        <div class="card">
+        <div class="card" id="temperature-card">
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon temperature">
                 <i class="fas fa-thermometer-half"></i>
               </div>
-              <span>Temperature</span>
+              <span>Nhiệt độ</span>
             </div>
             <i class="fas fa-ellipsis-v"></i>
           </div>
-          <div class="card-value">28.5<span class="card-unit">°C</span></div>
+          <div class="card-value" id="temperature-value">
+            28.5<span class="card-unit">°C</span>
+          </div>
           <div class="progress-container">
             <div class="progress-info">
-              <span>Current Level</span>
-              <span>75%</span>
+              <span>Mức hiện tại</span>
+              <span id="temperature-progress">75%</span>
             </div>
             <div class="progress-bar">
-              <div class="progress temperature"></div>
+              <div
+                class="progress temperature"
+                id="temperature-progress-bar"
+              ></div>
             </div>
           </div>
           <div class="card-footer">
-            <span>Updated 2 minutes ago</span>
-            <div class="status warning">
+            <span id="temperature-updated">Cập nhật 2 phút trước</span>
+            <div class="status warning" id="temperature-status">
               <i class="fas fa-exclamation-circle"></i>
-              <span>Slightly High</span>
+              <span>Hơi cao</span>
             </div>
           </div>
         </div>
 
         <!-- Humidity Card -->
-        <div class="card">
+        <div class="card" id="humidity-card">
           <div class="card-header">
             <div class="card-title">
               <div class="card-icon humidity">
                 <i class="fas fa-tint"></i>
               </div>
-              <span>Humidity</span>
+              <span>Độ ẩm</span>
             </div>
             <i class="fas fa-ellipsis-v"></i>
           </div>
-          <div class="card-value">65<span class="card-unit">%</span></div>
+          <div class="card-value" id="humidity-value">
+            65<span class="card-unit">%</span>
+          </div>
           <div class="progress-container">
             <div class="progress-info">
-              <span>Current Level</span>
-              <span>65%</span>
+              <span>Mức hiện tại</span>
+              <span id="humidity-progress">65%</span>
             </div>
             <div class="progress-bar">
-              <div class="progress humidity"></div>
+              <div class="progress humidity" id="humidity-progress-bar"></div>
             </div>
           </div>
           <div class="card-footer">
-            <span>Updated 2 minutes ago</span>
-            <div class="status optimal">
+            <span id="humidity-updated">Cập nhật 2 phút trước</span>
+            <div class="status optimal" id="humidity-status">
               <i class="fas fa-check-circle"></i>
-              <span>Optimal</span>
+              <span>Tối ưu</span>
             </div>
           </div>
         </div>
@@ -172,6 +180,7 @@
         </div>
       </div>
     </div>
-    <script src="sidebar.js"></script>
+    <script src="./js/sidebar.js"></script>
+    <script src="./js/dht22.js"></script>
   </body>
 </html>

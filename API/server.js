@@ -2,7 +2,7 @@ const express = require("express");
 const mqtt = require("mqtt");
 require("dotenv").config();
 const db = require("./config/database");
-const readingRoutes = require("./routes/readings");
+const readingRoutes = require("./routes/dht22readings");
 const authRoutes = require("./routes/auth");
 const path = require("path");
 
@@ -12,8 +12,8 @@ const app = express();
 app.use(express.json());
 
 // API Routes
-app.use('/api', authRoutes);
-app.use('/api', readingRoutes);
+app.use("/api", authRoutes);
+app.use("/api", readingRoutes);
 
 // Static files
 app.use(express.static("public"));
@@ -81,6 +81,16 @@ function setupMqtt() {
     clientId: "serverClientId" + Math.random().toString(),
   });
 
+  client.on("message", async (topic, message) => {
+    console.log(
+      "Nhận tin nhắn từ chủ đề:",
+      topic,
+      "Dữ liệu:",
+      message.toString()
+    );
+    // Phần còn lại của mã
+  });
+
   client.on("connect", () => {
     console.log("MQTT Connected");
     client.subscribe("dht22");
@@ -97,19 +107,18 @@ function setupMqtt() {
     try {
       const data = JSON.parse(message.toString());
       const connection = await db.getConnection();
-
       // Insert sensor data
-      if (data.sensorType === "dht22") {
+      if (topic === "dht22") {
         await connection.query(
           "INSERT INTO dht22 (temperature, humidity) VALUES (?, ?)",
           [data.temperature, data.humidity]
         );
-      } else if (data.sensorType === "soil_moisture") {
+      } else if (topic === "soil_moisture") {
         await connection.query(
           "INSERT INTO soil_moisture (moisture) VALUES (?)",
           [data.moisture]
         );
-      } else if (data.sensorType === "bh1370") {
+      } else if (topic === "bh1370") {
         await connection.query(
           "INSERT INTO bh1370 (light_intensity) VALUES (?)",
           [data.light_intensity]
@@ -117,7 +126,7 @@ function setupMqtt() {
       }
 
       // Insert alert if exists
-      if (data.alert) {
+      if (topic) {
         await connection.query(
           "INSERT INTO alerts (sensor_type, value, message) VALUES (?, ?, ?)",
           [data.sensorType, data.value || null, data.alert]
