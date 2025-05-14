@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/database");
-// xin chafousdfhksdhfkhsdkjfh
+
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
