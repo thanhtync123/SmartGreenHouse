@@ -1,52 +1,38 @@
 const express = require("express");
-const path = require("path"); 
+const path = require("path");
 const app = express();
 const mqtt = require("mqtt");
 require("dotenv").config();
 const db = require("./config/database");
-<<<<<<< HEAD
 const readingRoutes = require("./routes/dht22readings");
 const authRoutes = require("./routes/auth");
-const path = require("path");
-
-const app = express();
 
 // Middleware
-=======
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 // Route
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
 });
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'register.html'));
+app.get("/register", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "register.html"));
 });
-const authRouter = require('./routes/auth');
->>>>>>> 0008adecfea34dc9121d32e66ca597198fa07565
-app.use(express.json());
-app.use('/api', authRouter);
 
-<<<<<<< HEAD
-// API Routes
+app.use(express.json());
 app.use("/api", authRoutes);
 app.use("/api", readingRoutes);
-=======
->>>>>>> 0008adecfea34dc9121d32e66ca597198fa07565
-
-
 
 // Thêm debug info để kiểm tra các route
-const publicPath = path.join(__dirname, 'public');
-console.log('Serving static files from:', publicPath);
+const publicPath = path.join(__dirname, "public");
+console.log("Serving static files from:", publicPath);
 
 // In danh sách các file tồn tại trong thư mục public
-const fs = require('fs');
-console.log('Files in public directory:');
+const fs = require("fs");
+console.log("Files in public directory:");
 try {
   const files = fs.readdirSync(publicPath);
-  files.forEach(file => console.log(' - ' + file));
+  files.forEach((file) => console.log(" - " + file));
 } catch (err) {
-  console.error('Error reading public directory:', err);
+  console.error("Error reading public directory:", err);
 }
 
 // =======================
@@ -175,13 +161,8 @@ function setupMqtt() {
 // // =======================
 // // Start Server
 // // =======================
-const PORT =  3000;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-<<<<<<< HEAD
   setupMqtt();
 });
-=======
-  //setupMqtt();
-});
->>>>>>> 0008adecfea34dc9121d32e66ca597198fa07565
