@@ -13,13 +13,14 @@ const char *MQTT_SERVER = "broker.emqx.io";
 const int MQTT_PORT = 1883;
 const char *MQTT_TOPIC = "dht22";
 const char *MQTT_ID = "hehehehhe";
+const char *MQTT_TOPIC_LIGHT = "light_sensor"; 
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 DHT dht(DHTPIN, DHTTYPE);
 // Cảm biến ánh sáng
 #define LIGHT_SENSOR_PIN 32  
-const char *MQTT_TOPIC_LIGHT = "light_sensor";
+
 
 void WIFIConnect()
 {
@@ -74,9 +75,7 @@ void loop()
   // Đọc nhiệt độ và độ ẩm từ cảm biến
   float h = dht.readHumidity();
   float t = dht.readTemperature(); // Mặc định là độ C
-  int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (65535 - 1);
-  Serial.print("Gia tri anh sang: ");
-  Serial.println(lux);
+
   if (isnan(h) || isnan(t))
   {
     Serial.println("Không thể đọc dữ liệu từ cảm biến DHT!");
@@ -89,17 +88,24 @@ void loop()
   Serial.print("Do am: ");
   Serial.print(h);
   Serial.println("%");
-
-  // Tạo JSON object
   StaticJsonDocument<200> doc;
   doc["temperature"] = t;
   doc["humidity"] = h;
 
   char jsonBuffer[200];
   serializeJson(doc, jsonBuffer);
-
-  // Gửi JSON lên MQTT
   client.publish(MQTT_TOPIC, jsonBuffer);
+
+  // Xử lý cảm biến ánh sáng--------------------------------------------------------
+
+  int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (65535 - 1);
+  Serial.print("Gia tri anh sang: ");
+  Serial.println(lux);
+  StaticJsonDocument<100> lightDoc;
+  lightDoc["light"] = lux;  
+  char lightBuffer[100];
+  serializeJson(lightDoc, lightBuffer);
+  client.publish(MQTT_TOPIC_LIGHT, lightBuffer);
 
   delay(500);
 }
