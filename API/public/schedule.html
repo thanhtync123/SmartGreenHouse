@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Schedule - Smart Greenhouse</title>
+    <title>Lịch trình - Nhà kính thông minh</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -16,19 +16,19 @@
     <!-- Main Content -->
     <div class="main-content">
       <div class="header">
-        <h2>Schedule</h2>
-        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+        <h2>Lịch trình</h2>
+        <div class="date-time">Thứ Năm, 8 tháng 5, 2025 | 15:48:40</div>
       </div>
 
       <!-- Calendar View -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Calendar</div>
+          <div class="card-title">Lịch</div>
           <div class="calendar-nav">
             <button class="nav-button">
               <i class="fas fa-chevron-left"></i>
             </button>
-            <span class="current-month">May 2025</span>
+            <span class="current-month">Tháng 5, 2025</span>
             <button class="nav-button">
               <i class="fas fa-chevron-right"></i>
             </button>
@@ -36,13 +36,13 @@
         </div>
         <div class="calendar">
           <div class="calendar-header">
-            <div class="weekday">Sun</div>
-            <div class="weekday">Mon</div>
-            <div class="weekday">Tue</div>
-            <div class="weekday">Wed</div>
-            <div class="weekday">Thu</div>
-            <div class="weekday">Fri</div>
-            <div class="weekday">Sat</div>
+            <div class="weekday">CN</div>
+            <div class="weekday">T2</div>
+            <div class="weekday">T3</div>
+            <div class="weekday">T4</div>
+            <div class="weekday">T5</div>
+            <div class="weekday">T6</div>
+            <div class="weekday">T7</div>
           </div>
           <div class="calendar-body">
             <div class="calendar-day prev-month">28</div>
@@ -102,15 +102,15 @@
         <div class="calendar-legend">
           <div class="legend-item">
             <div class="legend-color irrigation"></div>
-            <span>Irrigation</span>
+            <span>Tưới tiêu</span>
           </div>
           <div class="legend-item">
             <div class="legend-color lighting"></div>
-            <span>Lighting</span>
+            <span>Chiếu sáng</span>
           </div>
           <div class="legend-item">
             <div class="legend-color climate"></div>
-            <span>Climate</span>
+            <span>Khí hậu</span>
           </div>
         </div>
       </div>
@@ -118,9 +118,9 @@
       <!-- Schedule List -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Scheduled Tasks</div>
+          <div class="card-title">Công việc đã lên lịch</div>
           <button class="action-button">
-            <i class="fas fa-plus"></i> Add Task
+            <i class="fas fa-plus"></i> Thêm công việc
           </button>
         </div>
         <div class="schedule-list">
@@ -214,45 +214,45 @@
       <!-- Add/Edit Schedule Form -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Add New Schedule</div>
+          <div class="card-title">Thêm lịch mới</div>
         </div>
         <div class="schedule-form">
           <div class="form-group">
-            <label>Task Name</label>
-            <input type="text" placeholder="Enter task name" />
+            <label>Tên công việc</label>
+            <input type="text" placeholder="Nhập tên công việc" />
           </div>
           <div class="form-group">
-            <label>Task Type</label>
+            <label>Loại công việc</label>
             <select>
-              <option>Irrigation</option>
-              <option>Lighting</option>
-              <option>Climate Control</option>
-              <option>Maintenance</option>
-              <option>Custom</option>
+              <option>Tưới tiêu</option>
+              <option>Chiếu sáng</option>
+              <option>Khí hậu</option>
+              <option>Bảo trì</option>
+              <option>Tùy chỉnh</option>
             </select>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Frequency</label>
+              <label>Tần suất</label>
               <select>
-                <option>Daily</option>
-                <option>Weekly</option>
-                <option>Monthly</option>
-                <option>Custom</option>
+                <option>Hàng ngày</option>
+                <option>Hàng tuần</option>
+                <option>Hàng tháng</option>
+                <option>Tùy chỉnh</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Time</label>
+              <label>Thời gian</label>
               <input type="time" value="08:00" />
             </div>
           </div>
           <div class="form-group">
-            <label>Description</label>
-            <textarea placeholder="Enter task description"></textarea>
+            <label>Mô tả</label>
+            <textarea placeholder="Nhập mô tả công việc"></textarea>
           </div>
           <div class="form-actions">
-            <button class="cancel-button">Cancel</button>
-            <button class="save-button">Save Schedule</button>
+            <button class="cancel-button">Hủy</button>
+            <button class="save-button">Lưu lịch</button>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Settings - Smart Greenhouse</title>
+    <title>Cài đặt - Nhà kính thông minh</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -16,46 +16,46 @@
     <!-- Main Content -->
     <div class="main-content">
       <div class="header">
-        <h2>Settings</h2>
-        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+        <h2>Cài đặt</h2>
+        <div class="date-time">Thứ Năm, ngày 8 tháng 5 năm 2025 | 15:48:40</div>
       </div>
 
       <!-- Settings Tabs -->
       <div class="settings-tabs">
-        <button class="tab-button active">General</button>
-        <button class="tab-button">Network</button>
-        <button class="tab-button">Sensors</button>
-        <button class="tab-button">Automation</button>
-        <button class="tab-button">Notifications</button>
-        <button class="tab-button">User Account</button>
-        <button class="tab-button">System</button>
+        <button class="tab-button active">Chung</button>
+        <button class="tab-button">Mạng</button>
+        <button class="tab-button">Cảm biến</button>
+        <button class="tab-button">Tự động hóa</button>
+        <button class="tab-button">Thông báo</button>
+        <button class="tab-button">Tài khoản</button>
+        <button class="tab-button">Hệ thống</button>
       </div>
 
       <!-- General Settings -->
       <div class="card settings-card">
         <div class="card-header">
-          <div class="card-title">General Settings</div>
+          <div class="card-title">Cài đặt chung</div>
         </div>
         <div class="settings-container">
           <div class="settings-group">
-            <h3>System Information</h3>
+            <h3>Thông tin hệ thống</h3>
             <div class="setting-item">
-              <label>Greenhouse Name</label>
-              <input type="text" value="Main Greenhouse" />
+              <label>Tên nhà kính</label>
+              <input type="text" value="Nhà kính chính" />
             </div>
             <div class="setting-item">
-              <label>Location</label>
-              <input type="text" value="North Garden" />
+              <label>Vị trí</label>
+              <input type="text" value="Khu vườn phía Bắc" />
             </div>
             <div class="setting-item">
-              <label>Description</label>
-              <textarea>Primary greenhouse for vegetable production.</textarea>
+              <label>Mô tả</label>
+              <textarea>Nhà kính chính cho sản xuất rau quả.</textarea>
             </div>
           </div>
           <div class="settings-group">
-            <h3>Display Settings</h3>
+            <h3>Cài đặt hiển thị</h3>
             <div class="setting-item">
-              <label>Temperature Unit</label>
+              <label>Đơn vị nhiệt độ</label>
               <div class="radio-group">
                 <label class="radio">
                   <input type="radio" name="temp-unit" checked />
@@ -68,7 +68,7 @@
               </div>
             </div>
             <div class="setting-item">
-              <label>Date Format</label>
+              <label>Định dạng ngày</label>
               <select>
                 <option>YYYY-MM-DD</option>
                 <option>MM/DD/YYYY</option>
@@ -76,14 +76,14 @@
               </select>
             </div>
             <div class="setting-item">
-              <label>Time Format</label>
+              <label>Định dạng giờ</label>
               <select>
                 <option>24-hour</option>
                 <option>12-hour (AM/PM)</option>
               </select>
             </div>
             <div class="setting-item">
-              <label>Theme</label>
+              <label>Chủ đề</label>
               <select>
                 <option>Light</option>
                 <option>Dark</option>
@@ -92,29 +92,29 @@
             </div>
           </div>
           <div class="settings-group">
-            <h3>Data Settings</h3>
+            <h3>Cài đặt dữ liệu</h3>
             <div class="setting-item">
-              <label>Data Refresh Rate</label>
+              <label>Tốc độ làm mới dữ liệu</label>
               <select>
-                <option>5 seconds</option>
-                <option>10 seconds</option>
-                <option>30 seconds</option>
-                <option>1 minute</option>
-                <option>5 minutes</option>
+                <option>5 giây</option>
+                <option>10 giây</option>
+                <option>30 giây</option>
+                <option>1 phút</option>
+                <option>5 phút</option>
               </select>
             </div>
             <div class="setting-item">
-              <label>Data Storage Duration</label>
+              <label>Thời gian lưu trữ dữ liệu</label>
               <select>
-                <option>1 month</option>
-                <option>3 months</option>
-                <option>6 months</option>
-                <option>1 year</option>
-                <option>Forever</option>
+                <option>1 tháng</option>
+                <option>3 tháng</option>
+                <option>6 tháng</option>
+                <option>1 năm</option>
+                <option>Vĩnh viễn</option>
               </select>
             </div>
             <div class="setting-item">
-              <label>Enable Data Export</label>
+              <label>Bật xuất dữ liệu</label>
               <div class="toggle-switch active">
                 <div class="toggle-slider"></div>
               </div>
@@ -122,59 +122,59 @@
           </div>
         </div>
         <div class="settings-actions">
-          <button class="cancel-button">Cancel</button>
-          <button class="save-button">Save Settings</button>
+          <button class="cancel-button">Hủy</button>
+          <button class="save-button">Lưu cài đặt</button>
         </div>
       </div>
 
       <!-- Network Settings -->
       <div class="card settings-card" style="display: none">
         <div class="card-header">
-          <div class="card-title">Network Settings</div>
+          <div class="card-title">Cài đặt mạng</div>
         </div>
         <div class="settings-container">
           <div class="settings-group">
-            <h3>Wi-Fi Configuration</h3>
+            <h3>Cấu hình Wi-Fi</h3>
             <div class="setting-item">
-              <label>Wi-Fi Status</label>
-              <div class="status-badge connected">Connected</div>
+              <label>Trạng thái Wi-Fi</label>
+              <div class="status-badge connected">Đã kết nối</div>
             </div>
             <div class="setting-item">
-              <label>Network Name (SSID)</label>
+              <label>Tên mạng (SSID)</label>
               <input type="text" value="Greenhouse_Network" />
             </div>
             <div class="setting-item">
-              <label>Password</label>
+              <label>Mật khẩu</label>
               <input type="password" value="************" />
             </div>
             <div class="setting-item">
-              <label>Security</label>
+              <label>Bảo mật</label>
               <select>
                 <option>WPA2-PSK</option>
                 <option>WPA3-PSK</option>
                 <option>WPA/WPA2-PSK</option>
-                <option>Open (Not Recommended)</option>
+                <option>Mở (Không được khuyến nghị)</option>
               </select>
             </div>
-            <button class="action-button">Scan for Networks</button>
+            <button class="action-button">Quét mạng</button>
           </div>
           <div class="settings-group">
-            <h3>Network Configuration</h3>
+            <h3>Cấu hình mạng</h3>
             <div class="setting-item">
-              <label>IP Configuration</label>
+              <label>Cấu hình IP</label>
               <div class="radio-group">
                 <label class="radio">
                   <input type="radio" name="ip-config" checked />
-                  <span>DHCP (Automatic)</span>
+                  <span>DHCP (Tự động)</span>
                 </label>
                 <label class="radio">
                   <input type="radio" name="ip-config" />
-                  <span>Static IP</span>
+                  <span>Địa chỉ IP tĩnh</span>
                 </label>
               </div>
             </div>
             <div class="setting-item">
-              <label>IP Address</label>
+              <label>Địa chỉ IP</label>
               <input type="text" value="192.168.1.100" disabled />
             </div>
             <div class="setting-item">
@@ -191,15 +191,15 @@
             </div>
           </div>
           <div class="settings-group">
-            <h3>Cloud Connection</h3>
+            <h3>Kết nối đám mây</h3>
             <div class="setting-item">
-              <label>Cloud Sync</label>
+              <label>Đồng bộ đám mây</label>
               <div class="toggle-switch active">
                 <div class="toggle-slider"></div>
               </div>
             </div>
             <div class="setting-item">
-              <label>Cloud Server</label>
+              <label>Máy chủ đám mây</label>
               <input type="text" value="cloud.greenhouse.io" />
             </div>
             <div class="setting-item">
@@ -207,20 +207,20 @@
               <input type="password" value="************" />
             </div>
             <div class="setting-item">
-              <label>Sync Interval</label>
+              <label>Khoảng thời gian đồng bộ</label>
               <select>
-                <option>5 minutes</option>
-                <option>15 minutes</option>
-                <option>30 minutes</option>
-                <option>1 hour</option>
+                <option>5 phút</option>
+                <option>15 phút</option>
+                <option>30 phút</option>
+                <option>1 giờ</option>
               </select>
             </div>
-            <button class="action-button">Test Connection</button>
+            <button class="action-button">Kiểm tra kết nối</button>
           </div>
         </div>
         <div class="settings-actions">
-          <button class="cancel-button">Cancel</button>
-          <button class="save-button">Save Settings</button>
+          <button class="cancel-button">Hủy</button>
+          <button class="save-button">Lưu cài đặt</button>
         </div>
       </div>
     </div>

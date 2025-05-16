@@ -3,10 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Greenhouse Monitoring</title>
+    <title>Giám sát Nhà kính thông minh</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      
+    
     />
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="./css/dht22.css" />
@@ -17,7 +19,7 @@
     <!-- Main Content -->
     <div class="main-content">
       <div class="header">
-        <h2>Greenhouse Dashboard</h2>
+        <h2>Bảng điều khiển nhà kính</h2>
         <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
       </div>
 
@@ -97,14 +99,14 @@
               <div class="card-icon light">
                 <i class="fas fa-sun"></i>
               </div>
-              <span>Light Intensity</span>
+              <span>Cường độ ánh sáng</span>
             </div>
             <i class="fas fa-ellipsis-v"></i>
           </div>
-          <div class="card-value">850<span class="card-unit">lux</span></div>
+          <div class="card-value" id="light_value">850<span class="card-unit">lux</span></div>
           <div class="progress-container">
             <div class="progress-info">
-              <span>Current Level</span>
+              <span>Mức hiện tại</span>
               <span>85%</span>
             </div>
             <div class="progress-bar">
@@ -127,14 +129,14 @@
               <div class="card-icon soil">
                 <i class="fas fa-water"></i>
               </div>
-              <span>Soil Moisture</span>
+              <span>Độ ẩm đất</span>
             </div>
             <i class="fas fa-ellipsis-v"></i>
           </div>
           <div class="card-value">45<span class="card-unit">%</span></div>
           <div class="progress-container">
             <div class="progress-info">
-              <span>Current Level</span>
+              <span>Mức hiện tại</span>
               <span>45%</span>
             </div>
             <div class="progress-bar">
@@ -156,7 +158,7 @@
         <!-- Temperature & Humidity Chart -->
         <div class="chart-card">
           <div class="chart-header">
-            <div class="chart-title">Temperature & Humidity</div>
+            <div class="chart-title">Nhiệt độ & Độ ẩm</div>
             <div class="chart-filters">
               <div class="chart-filter">Day</div>
               <div class="chart-filter active">Week</div>
@@ -169,7 +171,7 @@
         <!-- Light & Soil Moisture Chart -->
         <div class="chart-card">
           <div class="chart-header">
-            <div class="chart-title">Light & Soil Moisture</div>
+            <div class="chart-title">Ánh sáng & Độ ẩm đất</div>
             <div class="chart-filters">
               <div class="chart-filter">Day</div>
               <div class="chart-filter active">Week</div>
@@ -178,9 +180,21 @@
           </div>
           <div class="chart-placeholder"></div>
         </div>
+
+        <!-- Light History Chart Card (BH1750) -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">Lịch sử ánh sáng (BH1750)</div>
+          </div>
+          <div class="chart-placeholder" id="light-history-chart"></div>
+        </div>
       </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="./js/sidebar.js"></script>
     <script src="./js/dht22.js"></script>
+    <script src="./js/light.js"></script>
   </body>
 </html>

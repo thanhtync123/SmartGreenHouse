@@ -6,6 +6,7 @@ require("dotenv").config();
 const db = require("./config/database");
 const readingRoutes = require("./routes/dht22readings");
 const authRoutes = require("./routes/auth");
+const bh1750readingRouter = require("./routes/bh1750reading");
 
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
@@ -20,6 +21,7 @@ app.get("/register", (req, res) => {
 app.use(express.json());
 app.use("/api", authRoutes);
 app.use("/api", readingRoutes);
+app.use("/api/bh1750reading", bh1750readingRouter);
 
 // Thêm debug info để kiểm tra các route
 const publicPath = path.join(__dirname, "public");
@@ -112,7 +114,7 @@ function setupMqtt() {
     console.log("MQTT Connected");
     client.subscribe("dht22");
     client.subscribe("soil_moisture");
-    client.subscribe("bh1370");
+    client.subscribe("light_sensor");
     initializeDatabase();
   });
 
@@ -135,10 +137,12 @@ function setupMqtt() {
           "INSERT INTO soil_moisture (moisture) VALUES (?)",
           [data.moisture]
         );
-      } else if (topic === "bh1370") {
+      } else if (topic === "light_sensor") {
+        // Chỉnh sửa đoạn này theo gợi ý của bạn
+        const lightValue = data.light; // phải đúng key
         await connection.query(
           "INSERT INTO bh1370 (light_intensity) VALUES (?)",
-          [data.light_intensity]
+          [lightValue]
         );
       }
 

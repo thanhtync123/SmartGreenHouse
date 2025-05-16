@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notifications - Smart Greenhouse</title>
+    <title>Thông báo - Nhà kính thông minh</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -16,35 +16,35 @@
     <!-- Main Content -->
     <div class="main-content">
       <div class="header">
-        <h2>Notifications</h2>
-        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+        <h2>Thông báo</h2>
+        <div class="date-time">Thứ Năm, 8 tháng 5, 2025 | 15:48:40</div>
       </div>
 
       <!-- Notification Filters -->
       <div class="notification-filters card">
         <div class="filter-group">
-          <label>Filter By</label>
+          <label>Lọc theo</label>
           <div class="button-group">
-            <button class="filter-button active">All</button>
-            <button class="filter-button">Alerts</button>
-            <button class="filter-button">Warnings</button>
-            <button class="filter-button">Info</button>
+            <button class="filter-button active">Tất cả</button>
+            <button class="filter-button">Cảnh báo</button>
+            <button class="filter-button">Cảnh báo nhẹ</button>
+            <button class="filter-button">Thông tin</button>
           </div>
         </div>
         <div class="filter-group">
-          <label>Time Range</label>
+          <label>Khoảng thời gian</label>
           <select class="filter-select">
-            <option>Today</option>
-            <option>Last 3 Days</option>
-            <option>Last Week</option>
-            <option>Last Month</option>
-            <option>All Time</option>
+            <option>Hôm nay</option>
+            <option>3 ngày gần nhất</option>
+            <option>Tuần này</option>
+            <option>Tháng này</option>
+            <option>Tất cả</option>
           </select>
         </div>
         <div class="filter-group">
-          <label>Mark all as read</label>
+          <label>Đánh dấu tất cả là đã đọc</label>
           <button class="action-button">
-            <i class="fas fa-check-double"></i> Mark All Read
+            <i class="fas fa-check-double"></i> Đánh dấu đã đọc
           </button>
         </div>
       </div>
@@ -52,8 +52,8 @@
       <!-- Notifications List -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Recent Notifications</div>
-          <div class="notification-count">12 Unread</div>
+          <div class="card-title">Thông báo gần đây</div>
+          <div class="notification-count">12 chưa đọc</div>
         </div>
         <div class="notifications-list">
           <div class="notification-item unread alert">
@@ -61,12 +61,12 @@
               <i class="fas fa-exclamation-circle"></i>
             </div>
             <div class="notification-content">
-              <div class="notification-title">High Temperature Alert</div>
+              <div class="notification-title">Cảnh báo nhiệt độ cao</div>
               <div class="notification-message">
-                Temperature in Zone 3 has reached 30.1°C, exceeding the maximum
-                threshold of 30°C.
+                Nhiệt độ trong khu vực 3 đã đạt 30.1°C, vượt quá ngưỡng tối đa
+                30°C.
               </div>
-              <div class="notification-time">10 minutes ago</div>
+              <div class="notification-time">10 phút trước</div>
             </div>
             <div class="notification-actions">
               <button class="action-icon"><i class="fas fa-check"></i></button>
@@ -80,12 +80,12 @@
               <i class="fas fa-exclamation-triangle"></i>
             </div>
             <div class="notification-content">
-              <div class="notification-title">Low Soil Moisture Warning</div>
+              <div class="notification-title">Cảnh báo độ ẩm đất thấp</div>
               <div class="notification-message">
-                Soil moisture level has dropped to 45%, below the optimal range
-                of 50-70%.
+                Mức độ ẩm của đất đã giảm xuống còn 45%, dưới phạm vi tối ưu
+                50-70%.
               </div>
-              <div class="notification-time">25 minutes ago</div>
+              <div class="notification-time">25 phút trước</div>
             </div>
             <div class="notification-actions">
               <button class="action-icon"><i class="fas fa-check"></i></button>
@@ -99,11 +99,11 @@
               <i class="fas fa-info-circle"></i>
             </div>
             <div class="notification-content">
-              <div class="notification-title">Irrigation Cycle Completed</div>
+              <div class="notification-title">Chu kỳ tưới tiêu đã hoàn thành</div>
               <div class="notification-message">
-                Scheduled irrigation cycle has been completed successfully.
+                Chu kỳ tưới tiêu theo lịch đã được hoàn thành thành công.
               </div>
-              <div class="notification-time">1 hour ago</div>
+              <div class="notification-time">1 giờ trước</div>
             </div>
             <div class="notification-actions">
               <button class="action-icon"><i class="fas fa-check"></i></button>
@@ -117,11 +117,11 @@
               <i class="fas fa-info-circle"></i>
             </div>
             <div class="notification-content">
-              <div class="notification-title">System Update Available</div>
+              <div class="notification-title">Cập nhật hệ thống có sẵn</div>
               <div class="notification-message">
-                A new system update (v2.5.3) is available for installation.
+                Một bản cập nhật hệ thống mới (v2.5.3) đã có sẵn để cài đặt.
               </div>
-              <div class="notification-time">3 hours ago</div>
+              <div class="notification-time">3 giờ trước</div>
             </div>
             <div class="notification-actions">
               <button class="action-icon"><i class="fas fa-check"></i></button>
@@ -135,11 +135,11 @@
               <i class="fas fa-exclamation-triangle"></i>
             </div>
             <div class="notification-content">
-              <div class="notification-title">Battery Level Low</div>
+              <div class="notification-title">Pin dự phòng yếu</div>
               <div class="notification-message">
-                Backup battery level is at 20%. Please connect to power source.
+                Mức pin dự phòng còn 20%. Vui lòng kết nối với nguồn điện.
               </div>
-              <div class="notification-time">5 hours ago</div>
+              <div class="notification-time">5 giờ trước</div>
             </div>
             <div class="notification-actions">
               <button class="action-icon"><i class="fas fa-check"></i></button>
@@ -153,12 +153,12 @@
               <i class="fas fa-exclamation-circle"></i>
             </div>
             <div class="notification-content">
-              <div class="notification-title">Sensor Disconnected</div>
+              <div class="notification-title">Cảm biến bị ngắt kết nối</div>
               <div class="notification-message">
-                Light sensor in Zone 2 has been disconnected. Please check the
-                connection.
+                Cảm biến ánh sáng trong khu vực 2 đã bị ngắt kết nối. Vui lòng kiểm tra
+                lại kết nối.
               </div>
-              <div class="notification-time">Yesterday, 18:30</div>
+              <div class="notification-time">Hôm qua, 18:30</div>
             </div>
             <div class="notification-actions">
               <button class="action-icon"><i class="fas fa-check"></i></button>
@@ -184,84 +184,84 @@
       <!-- Notification Settings -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Notification Settings</div>
+          <div class="card-title">Cài đặt thông báo</div>
         </div>
         <div class="settings-container">
           <div class="settings-group">
-            <h3>Alert Preferences</h3>
+            <h3>Tùy chọn cảnh báo</h3>
             <div class="setting-item">
-              <label>Enable Notifications</label>
+              <label>Cho phép thông báo</label>
               <div class="toggle-switch active">
                 <div class="toggle-slider"></div>
               </div>
             </div>
             <div class="setting-item">
-              <label>Notification Sound</label>
+              <label>Âm thanh thông báo</label>
               <div class="toggle-switch active">
                 <div class="toggle-slider"></div>
               </div>
             </div>
             <div class="setting-item">
-              <label>Desktop Notifications</label>
-              <div class="toggle-switch active">
-                <div class="toggle-slider"></div>
-              </div>
-            </div>
-          </div>
-          <div class="settings-group">
-            <h3>Notification Types</h3>
-            <div class="setting-item">
-              <label>System Alerts</label>
-              <div class="toggle-switch active">
-                <div class="toggle-slider"></div>
-              </div>
-            </div>
-            <div class="setting-item">
-              <label>Sensor Warnings</label>
-              <div class="toggle-switch active">
-                <div class="toggle-slider"></div>
-              </div>
-            </div>
-            <div class="setting-item">
-              <label>Schedule Notifications</label>
-              <div class="toggle-switch active">
-                <div class="toggle-slider"></div>
-              </div>
-            </div>
-            <div class="setting-item">
-              <label>System Updates</label>
+              <label>Thông báo trên máy tính</label>
               <div class="toggle-switch active">
                 <div class="toggle-slider"></div>
               </div>
             </div>
           </div>
           <div class="settings-group">
-            <h3>External Notifications</h3>
+            <h3>Loại thông báo</h3>
             <div class="setting-item">
-              <label>Email Notifications</label>
+              <label>Cảnh báo hệ thống</label>
               <div class="toggle-switch active">
                 <div class="toggle-slider"></div>
               </div>
             </div>
             <div class="setting-item">
-              <label>Email Address</label>
+              <label>Cảnh báo cảm biến</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Thông báo lịch trình</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Cập nhật hệ thống</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h3>Thông báo bên ngoài</h3>
+            <div class="setting-item">
+              <label>Thông báo qua Email</label>
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Địa chỉ Email</label>
               <input type="email" value="user@example.com" />
             </div>
             <div class="setting-item">
-              <label>SMS Notifications</label>
+              <label>Thông báo qua SMS</label>
               <div class="toggle-switch">
                 <div class="toggle-slider"></div>
               </div>
             </div>
             <div class="setting-item">
-              <label>Phone Number</label>
+              <label>Số điện thoại</label>
               <input type="tel" value="+1 (555) 123-4567" disabled />
             </div>
           </div>
         </div>
         <div class="settings-actions">
-          <button class="cancel-button">Cancel</button>
-          <button class="save-button">Save Settings</button>
+          <button class="cancel-button">Hủy</button>
+          <button class="save-button">Lưu cài đặt</button>
         </div>
       </div>
     </div>
