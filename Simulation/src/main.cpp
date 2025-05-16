@@ -3,8 +3,9 @@
 #include <DHT.h>
 #include <ArduinoJson.h> // Thêm thư viện JSON
 
-#define DHTPIN 19     // Chân kết nối với DHT
+#define DHTPIN 14     // Chân kết nối với DHT
 #define DHTTYPE DHT22 // Sử dụng cảm biến DHT22
+
 
 const char *WIFI_SSID = "Wokwi-GUEST";
 const char *WIFI_PASSWORD = "";
@@ -16,6 +17,9 @@ const char *MQTT_ID = "hehehehhe";
 WiFiClient espClient;
 PubSubClient client(espClient);
 DHT dht(DHTPIN, DHTTYPE);
+// Cảm biến ánh sáng
+#define LIGHT_SENSOR_PIN 32  
+const char *MQTT_TOPIC_LIGHT = "light_sensor";
 
 void WIFIConnect()
 {
@@ -55,7 +59,6 @@ void setup()
 {
   Serial.begin(115200);
   dht.begin();
-
   WIFIConnect();
   client.setServer(MQTT_SERVER, MQTT_PORT);
 }
@@ -71,7 +74,9 @@ void loop()
   // Đọc nhiệt độ và độ ẩm từ cảm biến
   float h = dht.readHumidity();
   float t = dht.readTemperature(); // Mặc định là độ C
-
+  int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (65535 - 1);
+  Serial.print("Gia tri anh sang: ");
+  Serial.println(lux);
   if (isnan(h) || isnan(t))
   {
     Serial.println("Không thể đọc dữ liệu từ cảm biến DHT!");
