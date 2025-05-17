@@ -1,240 +1,303 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phân tích - Nhà kính thông minh</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="./css/style.css" />
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Cảm Biến | Smart Greenhouse</title>
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  </head>
-  <body>
-    <!-- Sidebar sẽ được load động từ sidebar.html -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
     <div id="sidebar-container"></div>
-    <!-- Main Content -->
     <div class="main-content">
-      <div class="header">
-        <h2>Phân tích</h2>
-        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
-      </div>
-
-      <!-- Analytics Filters -->
-      <div class="analytics-filters card">
-        <div class="filter-group">
-          <label>Khoảng thời gian</label>
-          <div class="filter-controls">
-            <select class="filter-select">
-              <option>Last 24 Hours</option>
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
-              <option>Custom Range</option>
-            </select>
-          </div>
+        <div class="header">
+            <h2>Phân Tích Dữ Liệu Cảm Biến</h2>
+            <div class="date-time" id="dateTime"></div>
         </div>
-        <div class="filter-group">
-          <label>Cảm biến</label>
-          <div class="filter-controls">
-            <div class="checkbox-group">
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Temperature</span>
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Humidity</span>
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Light</span>
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Soil Moisture</span>
-              </label>
+        <div class="analytics-filters">
+            <div class="filter-group">
+                <label for="date-range">Khoảng thời gian:</label>
+                <input type="date" id="date-from"> - <input type="date" id="date-to">
             </div>
-          </div>
-        </div>
-        <div class="filter-group">
-          <label>Khoảng cách</label>
-          <div class="filter-controls">
-            <div class="button-group">
-              <button class="filter-button active">Theo giờ</button>
-              <button class="filter-button">Theo ngày</button>
-              <button class="filter-button">Theo tuần</button>
+            <div class="filter-group">
+                <button class="action-button" onclick="applyFilter()">Lọc dữ liệu</button>
             </div>
-          </div>
         </div>
-        <button class="apply-button">Áp dụng bộ lọc</button>
-      </div>
-
-      <!-- Main Chart -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Xu hướng dữ liệu cảm biến</div>
-          <div class="chart-actions">
-            <button class="action-button">
-              <i class="fas fa-download"></i> Export
-            </button>
-            <button class="action-button">
-              <i class="fas fa-expand"></i> Fullscreen
-            </button>
-          </div>
-        </div>
-        <div class="main-chart">
-          <!-- Placeholder for the main chart -->
-          <div class="chart-placeholder" style="height: 400px"></div>
-        </div>
-      </div>
-
-      <!-- Statistics Cards -->
-      <div class="statistics-grid">
-        <div class="card stat-card">
-          <div class="stat-icon temperature">
-            <i class="fas fa-thermometer-half"></i>
-          </div>
-          <div class="stat-content">
-            <div class="stat-title">Nhiệt độ TB</div>
-            <div class="stat-value">26.8°C</div>
-            <div class="stat-change increase">
-              <i class="fas fa-arrow-up"></i> 2.3°C from last week
+        <div class="statistics-grid">
+            <div class="stat-card">
+                <div class="stat-icon temperature"><i class="fa fa-thermometer-half"></i></div>
+                <div class="stat-content">
+                    <div class="stat-title">Nhiệt độ (°C)</div>
+                    <div class="stat-value" id="stat-temp">27.5</div>
+                    <div class="stat-change increase">+0.5°C so với hôm qua</div>
+                </div>
             </div>
-          </div>
-        </div>
-
-        <div class="card stat-card">
-          <div class="stat-icon humidity">
-            <i class="fas fa-tint"></i>
-          </div>
-          <div class="stat-content">
-            <div class="stat-title">Độ ẩm TB</div>
-            <div class="stat-value">62%</div>
-            <div class="stat-change decrease">
-              <i class="fas fa-arrow-down"></i> 5% from last week
+            <div class="stat-card">
+                <div class="stat-icon humidity"><i class="fa fa-tint"></i></div>
+                <div class="stat-content">
+                    <div class="stat-title">Độ ẩm không khí (%)</div>
+                    <div class="stat-value" id="stat-humi">68</div>
+                    <div class="stat-change decrease">-2% so với hôm qua</div>
+                </div>
             </div>
-          </div>
-        </div>
-
-        <div class="card stat-card">
-          <div class="stat-icon light">
-            <i class="fas fa-sun"></i>
-          </div>
-          <div class="stat-content">
-            <div class="stat-title">Ánh sáng TB</div>
-            <div class="stat-value">780 lux</div>
-            <div class="stat-change increase">
-              <i class="fas fa-arrow-up"></i> 120 lux from last week
+            <div class="stat-card">
+                <div class="stat-icon light"><i class="fa fa-lightbulb-o"></i></div>
+                <div class="stat-content">
+                    <div class="stat-title">Ánh sáng (lux)</div>
+                    <div class="stat-value" id="stat-light">12000</div>
+                    <div class="stat-change stable">Không đổi</div>
+                </div>
             </div>
-          </div>
-        </div>
-
-        <div class="card stat-card">
-          <div class="stat-icon soil">
-            <i class="fas fa-water"></i>
-          </div>
-          <div class="stat-content">
-            <div class="stat-title">Độ ẩm đất TB</div>
-            <div class="stat-value">48%</div>
-            <div class="stat-change stable">
-              <i class="fas fa-equals"></i> No change from last week
+            <div class="stat-card">
+                <div class="stat-icon soil"><i class="fa fa-leaf"></i></div>
+                <div class="stat-content">
+                    <div class="stat-title">Độ ẩm đất (%)</div>
+                    <div class="stat-value" id="stat-soil">45</div>
+                    <div class="stat-change increase">+3% so với hôm qua</div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-
-      <!-- Data Table -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Nhật ký dữ liệu cảm biến</div>
-          <div class="table-actions">
-            <div class="search-box">
-              <i class="fas fa-search"></i>
-              <input type="text" placeholder="Search..." />
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Biểu đồ Nhiệt độ & Độ ẩm (DHT22)</div>
+                </div>
+                <canvas id="dht22Chart"></canvas>
             </div>
-            <button class="action-button">
-              <i class="fas fa-download"></i> Export
-            </button>
-          </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Biểu đồ Ánh sáng (BH1750)</div>
+                </div>
+                <canvas id="bh1750Chart"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Biểu đồ Độ ẩm đất</div>
+                </div>
+                <canvas id="soilChart"></canvas>
+            </div>
         </div>
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Temperature (°C)</th>
-                <th>Humidity (%)</th>
-                <th>Light (lux)</th>
-                <th>Soil Moisture (%)</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2025-05-08 15:30:00</td>
-                <td>28.5</td>
-                <td>65</td>
-                <td>850</td>
-                <td>45</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 14:30:00</td>
-                <td>29.1</td>
-                <td>63</td>
-                <td>920</td>
-                <td>44</td>
-                <td><span class="status-badge warning">Warning</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 13:30:00</td>
-                <td>27.8</td>
-                <td>67</td>
-                <td>780</td>
-                <td>46</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 12:30:00</td>
-                <td>26.5</td>
-                <td>70</td>
-                <td>650</td>
-                <td>48</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 11:30:00</td>
-                <td>25.2</td>
-                <td>72</td>
-                <td>520</td>
-                <td>50</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="table-container" style="margin-top:32px;">
+            <div style="text-align:right; margin-bottom:10px;">
+                <button class="action-button" onclick="exportTableToCSV()">
+                    <i class="fa fa-download"></i> Xuất CSV
+                </button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Nhiệt độ (°C)</th>
+                        <th>Độ ẩm không khí (%)</th>
+                        <th>Ánh sáng (lux)</th>
+                        <th>Độ ẩm đất (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>06:00</td>
+                        <td>25</td>
+                        <td>70</td>
+                        <td>1000</td>
+                        <td>40</td>
+                    </tr>
+                    <tr>
+                        <td>09:00</td>
+                        <td>26</td>
+                        <td>68</td>
+                        <td>5000</td>
+                        <td>42</td>
+                    </tr>
+                    <tr>
+                        <td>12:00</td>
+                        <td>28</td>
+                        <td>65</td>
+                        <td>12000</td>
+                        <td>45</td>
+                    </tr>
+                    <tr>
+                        <td>15:00</td>
+                        <td>29</td>
+                        <td>63</td>
+                        <td>11000</td>
+                        <td>47</td>
+                    </tr>
+                    <tr>
+                        <td>18:00</td>
+                        <td>27</td>
+                        <td>66</td>
+                        <td>4000</td>
+                        <td>46</td>
+                    </tr>
+                    <tr>
+                        <td>21:00</td>
+                        <td>26</td>
+                        <td>68</td>
+                        <td>800</td>
+                        <td>45</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="table-pagination">
-          <span>Hiển thị 1 đến 5 trong 120 bản ghi</span>
-          <div class="pagination-controls">
-            <button class="pagination-button" disabled>
-              <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="pagination-button active">1</button>
-            <button class="pagination-button">2</button>
-            <button class="pagination-button">3</button>
-            <span>...</span>
-            <button class="pagination-button">24</button>
-            <button class="pagination-button">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
-    <script src="./js/sidebar.js"></script>
-    <script src="./js/light_analytics.js"></script>
-  </body>
+    <script src="js/sidebar.js"></script>
+    <script>
+        // Hiển thị ngày giờ hiện tại
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('dateTime').textContent = now.toLocaleString('vi-VN');
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Dữ liệu ảo cho các biểu đồ
+        const dht22Data = {
+            labels: ['06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+            temperature: [25, 26, 28, 29, 27, 26],
+            humidity: [70, 68, 65, 63, 66, 68]
+        };
+        const bh1750Data = {
+            labels: ['06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+            light: [1000, 5000, 12000, 11000, 4000, 800]
+        };
+        const soilData = {
+            labels: ['06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+            moisture: [40, 42, 45, 47, 46, 45]
+        };
+
+        // Vẽ biểu đồ DHT22
+        let dht22Chart = new Chart(document.getElementById('dht22Chart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: dht22Data.labels,
+                datasets: [
+                    {
+                        label: 'Nhiệt độ (°C)',
+                        data: dht22Data.temperature,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        yAxisID: 'y-temp',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Độ ẩm (%)',
+                        data: dht22Data.humidity,
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        yAxisID: 'y-humi',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                stacked: false,
+                scales: {
+                    yTemp: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Nhiệt độ (°C)' }
+                    },
+                    yHumi: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Độ ẩm (%)' },
+                        grid: { drawOnChartArea: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+
+        // Vẽ biểu đồ BH1750
+        let bh1750Chart = new Chart(document.getElementById('bh1750Chart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: bh1750Data.labels,
+                datasets: [
+                    {
+                        label: 'Ánh sáng (lux)',
+                        data: bh1750Data.light,
+                        backgroundColor: '#f1c40f',
+                        borderColor: '#f39c12',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Lux' }
+                    }
+                }
+            }
+        });
+
+        // Vẽ biểu đồ Soil Moisture
+        let soilChart = new Chart(document.getElementById('soilChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: soilData.labels,
+                datasets: [
+                    {
+                        label: 'Độ ẩm đất (%)',
+                        data: soilData.moisture,
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Độ ẩm đất (%)' }
+                    }
+                }
+            }
+        });
+
+        // Hàm lọc dữ liệu (demo, chỉ cập nhật số liệu ảo)
+        function applyFilter() {
+            alert('Demo: Chức năng lọc dữ liệu chưa kết nối dữ liệu thực!');
+        }
+        // Thêm chức năng xuất dữ liệu bảng ra file CSV
+        function exportTableToCSV(filename = 'sensors_data.csv') {
+            const table = document.querySelector('.data-table');
+            let csv = [];
+            for (let row of table.rows) {
+                let rowData = [];
+                for (let cell of row.cells) {
+                    rowData.push('"' + cell.innerText.replace(/"/g, '""') + '"');
+                }
+                csv.push(rowData.join(','));
+            }
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
 </html>
