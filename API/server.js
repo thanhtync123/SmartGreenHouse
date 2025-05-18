@@ -104,12 +104,12 @@ function setupMqtt() {
   });
 
   client.on("message", async (topic, message) => {
-    console.log(
-      "Nhận tin nhắn từ chủ đề:",
-      topic,
-      "Dữ liệu:",
-      message.toString()
-    );
+    // console.log(
+    //   "Nhận tin nhắn từ chủ đề:",
+    //   topic,
+    //   "Dữ liệu:",
+    //   message.toString()
+    // );
     // Phần còn lại của mã
   });
 
@@ -157,7 +157,7 @@ function setupMqtt() {
       }
 
       connection.release();
-      console.log("Saved new reading:", data);
+      // console.log("Saved new reading:", data);
     } catch (error) {
       console.error("Error saving reading:", error);
     }

@@ -1,4 +1,4 @@
-(function() {
+(function () {
     // Tạo client Paho MQTT
     const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "webClient-" + parseInt(Math.random() * 1000));
 
@@ -22,6 +22,10 @@
         if (lux >= 200) return { class: "rainy", text: "Mưa", icon: "cloud-showers-heavy" };
         return { class: "danger", text: "Dưới ngưỡng", icon: "exclamation-circle" };
     }
+    //     ≥ 4000	Trời nắng	0% (tắt đèn)
+    // 1500 – 3999	Nhiều mây	25%
+    // 200 – 1499	Trời âm u / mưa	50% – 75%
+    // < 200	Rất tối / ban đêm	100%
 
     // Lưu thời gian cập nhật cuối
     let lastUpdate = null;
@@ -32,9 +36,9 @@
         const now = new Date();
         const diff = Math.floor((now - lastUpdate) / 1000);
         const text = diff === 0 ? "Vừa cập nhật" :
-                     diff < 60 ? `Cập nhật ${diff} giây trước` :
-                     diff < 3600 ? `Cập nhật ${Math.floor(diff / 60)} phút trước` :
-                     `Cập nhật ${Math.floor(diff / 3600)} giờ trước`;
+            diff < 60 ? `Cập nhật ${diff} giây trước` :
+                diff < 3600 ? `Cập nhật ${Math.floor(diff / 60)} phút trước` :
+                    `Cập nhật ${Math.floor(diff / 3600)} giờ trước`;
         $(".card:has(.card-icon.light) .card-footer span").first().text(text);
     }
 
