@@ -15,7 +15,11 @@ const char *MQTT_TOPIC = "dht22";
 const char *MQTT_ID = "hehehehhe";
 const char *MQTT_TOPIC_LIGHT = "light_sensor";
 const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
-
+bool isControlled = false;
+bool isWatering = false;
+unsigned long lastSoilCheck = 0;
+const unsigned long soilCheckInterval = 5000;
+const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
 WiFiClient espClient;
 PubSubClient client(espClient);
 DHT dht(DHTPIN, DHTTYPE);
@@ -23,8 +27,8 @@ DHT dht(DHTPIN, DHTTYPE);
 #define LIGHT_SENSOR_PIN 32
 #define DENCHIEUSANG_PIN 19
 #define MAICHE_PIN 17
-#define SOIL_SENSOR_PIN 13
-
+#define SOIL_SENSOR_PIN 33
+#define MOTOR_PIN 5
 Servo servoMaiChe;
 
 void WIFIConnect()
@@ -83,6 +87,7 @@ void setup()
   pinMode(DENCHIEUSANG_PIN, OUTPUT);
   servoMaiChe.attach(MAICHE_PIN);
   servoMaiChe.write(0);
+  pinMode(MOTOR_PIN, OUTPUT);
 }
 
 void loop()
@@ -171,7 +176,47 @@ void loop()
   soilDoc["soil_moisture"] = soilMoisturePercent;
   char soilBuffer[128];
   serializeJson(soilDoc, soilBuffer);
+  //
+  StaticJsonDocument<128> isWateringDoc;
+  if(!isControlled)
+  {
+    if (soilMoisturePercent <= 35 && !isWatering) {
+      isWatering = true;
+      digitalWrite(MOTOR_PIN, HIGH);
+      isWateringDoc["wateringState"] = String(isWatering);
+      char isWateringBuffer[128];
+      serializeJson(isWateringDoc, isWateringBuffer);
+      client.publish(MQTT_TOPIC_ISWATERING, isWateringBuffer);
+      
 
+      // lcd.clear();
+      // lcd.setCursor(0, 0);
+      // lcd.print("Dang tuoi tu dong...");
+      // lcd.setCursor(0, 1);
+      // lcd.print("Do am: ");
+      // lcd.print(soilMoisturePercent);
+      // lcd.print("%");
+      // char alertBuffer[128];
+      // client.publish(MQTT_TOPIC_ALERT, alertBuffer);
+    } else if (soilMoisturePercent >= 60 && isWatering) {
+      isWatering = false;
+      digitalWrite(MOTOR_PIN, LOW);
+      isWateringDoc["wateringState"] = String(isWatering);
+      char isWateringBuffer[128];
+      serializeJson(isWateringDoc, isWateringBuffer);
+      client.publish(MQTT_TOPIC_ISWATERING, isWateringBuffer);
+      // lcd.clear();
+      // lcd.setCursor(0, 0);
+      // lcd.print("Do am hop ly");
+      // lcd.setCursor(0, 1);
+      // lcd.print("Do am: ");
+      // lcd.print(soilMoisturePercent);
+      // lcd.print("%");
+    }
+  }
+  else{
+    
+  }
   // Gửi dữ liệu lên MQTT
   if (millis10s())
   {
