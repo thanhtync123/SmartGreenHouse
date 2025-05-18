@@ -14,22 +14,19 @@ const int MQTT_PORT = 1883;
 const char *MQTT_TOPIC = "dht22";
 const char *MQTT_ID = "hehehehhe";
 const char *MQTT_TOPIC_LIGHT = "light_sensor";
+const char *MQTT_TOPIC_LIGHT_MODULE = "light_sensor_module";
 const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
+const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
+
 bool isControlled = false;
 bool isWatering = false;
 unsigned long lastSoilCheck = 0;
 const unsigned long soilCheckInterval = 5000;
-const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 DHT dht(DHTPIN, DHTTYPE);
-
-const char *MQTT_ID = "hehehehhe";
-const char *MQTT_TOPIC = "dht22";
-const char *MQTT_TOPIC_LIGHT = "light_sensor";
-const char *MQTT_TOPIC_LIGHT_MODULE = "light_sensor_module";
-const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
-const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
+Servo servoMaiChe;
 
 #define LIGHT_SENSOR_PIN 32
 #define DENCHIEUSANG_PIN 19
@@ -37,78 +34,56 @@ const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
 #define SOIL_SENSOR_PIN 33
 #define MOTOR_PIN 5
 
-bool isControlled = false;
-bool isWatering = false;
-
-WiFiClient espClient;
-PubSubClient client(espClient);
-DHT dht(DHTPIN, DHTTYPE);
-Servo servoMaiChe;
-
 unsigned long lastMillis10s = 0;
 
-void WIFIConnect()
-{
-  Serial.println("Connecting to WiFi...");
+void WIFIConnect() {
+  Serial.println("Kết nối WiFi...");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("\nWiFi connected!");
-  Serial.print("IP Address: ");
+  Serial.println("\nWiFi đã kết nối!");
+  Serial.print("Địa chỉ IP: ");
   Serial.println(WiFi.localIP());
 }
 
-void MQTT_Reconnect()
-{
-  while (!client.connected())
-  {
-    Serial.print("Attempting MQTT connection...");
-    if (client.connect(MQTT_ID))
-    {
-      Serial.println("Connected to MQTT!");
+void MQTT_Reconnect() {
+  while (!client.connected()) {
+    Serial.print("Đang kết nối MQTT...");
+    if (client.connect(MQTT_ID)) {
+      Serial.println("Đã kết nối MQTT!");
       client.subscribe(MQTT_TOPIC);
-    }
-    else
-    {
-      Serial.print("Failed, rc=");
+    } else {
+      Serial.print("Thất bại, rc=");
       Serial.print(client.state());
-      Serial.println(" retrying in 5 seconds...");
+      Serial.println(" thử lại sau 5 giây...");
       delay(5000);
     }
   }
 }
 
-bool millis10s()
-{
-  if (millis() - lastMillis10s >= 10000)
-  {
+bool millis10s() {
+  if (millis() - lastMillis10s >= 10000) {
     lastMillis10s = millis();
     return true;
   }
   return false;
 }
 
-void setup()
-{
+void setup() {
   Serial.begin(115200);
   dht.begin();
   WIFIConnect();
   client.setServer(MQTT_SERVER, MQTT_PORT);
-
   pinMode(DENCHIEUSANG_PIN, OUTPUT);
   pinMode(MOTOR_PIN, OUTPUT);
   servoMaiChe.attach(MAICHE_PIN);
   servoMaiChe.write(0);
-  pinMode(MOTOR_PIN, OUTPUT);
 }
 
-void loop()
-{
-  if (!client.connected())
-  {
+void loop() {
+  if (!client.connected()) {
     MQTT_Reconnect();
   }
   client.loop();
@@ -117,20 +92,19 @@ void loop()
   float h = dht.readHumidity();
   float t = dht.readTemperature();
 
-  if (isnan(h) || isnan(t))
-  {
+  if (isnan(h) || isnan(t)) {
     Serial.println("Không thể đọc dữ liệu từ cảm biến DHT!");
     return;
   }
 
-  Serial.print("Nhiet do: ");
+  Serial.print("Nhiệt độ: ");
   Serial.print(t);
   Serial.println("°C");
-  Serial.print("Do am: ");
+  Serial.print("Độ ẩm: ");
   Serial.print(h);
   Serial.println("%");
 
-  StaticJsonDocument<200> dhtDoc;
+  DynamicJsonDocument dhtDoc(200);
   dhtDoc["temperature"] = t;
   dhtDoc["humidity"] = h;
   char dhtBuffer[200];
@@ -138,71 +112,61 @@ void loop()
 
   // Đọc cảm biến ánh sáng
   int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (6000 - 1);
-  Serial.print("Gia tri anh sang: ");
+  Serial.print("Giá trị ánh sáng: ");
   Serial.println(lux);
 
   int brightness_percent = 0;
-  if (lux >= 4000)
-  {
+  if (lux >= 4000) {
     brightness_percent = 0;
     digitalWrite(DENCHIEUSANG_PIN, LOW);
-  }
-  else if (lux >= 1500)
-  {
+  } else if (lux >= 1500) {
     brightness_percent = 25;
     digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-  else if (lux >= 200)
-  {
+  } else if (lux >= 200) {
     brightness_percent = 63;
     digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-  else
-  {
+  } else {
     brightness_percent = 100;
     digitalWrite(DENCHIEUSANG_PIN, HIGH);
   }
 
   const char *roofStatus;
-  if (lux >= 3000)
-  {
+  if (lux >= 3000) {
     servoMaiChe.write(90);
     roofStatus = "close";
-  }
-  else
-  {
+  } else {
     servoMaiChe.write(0);
     roofStatus = "open";
   }
 
   // Tạo JSON cho ánh sáng (light_sensor_module)
-  StaticJsonDocument<128> lightModuleDoc;
+  DynamicJsonDocument lightModuleDoc(128);
   lightModuleDoc["brightness_percent"] = brightness_percent;
   lightModuleDoc["roofStatus"] = roofStatus;
   char lightModuleBuffer[128];
   serializeJson(lightModuleDoc, lightModuleBuffer);
 
   // Tạo JSON cho ánh sáng (light_sensor)
-  StaticJsonDocument<128> lightDoc;
+  DynamicJsonDocument lightDoc(128);
   lightDoc["light"] = lux;
   char lightBuffer[128];
   serializeJson(lightDoc, lightBuffer);
 
-  // CODE ĐỘ ẨM ĐẤT 
+  // Đọc độ ẩm đất
   int soilMoisture = analogRead(SOIL_SENSOR_PIN);
   int soilMoisturePercent = map(soilMoisture, 4095, 0, 0, 100);
-  Serial.print("Do am dat: ");
+  Serial.print("Độ ẩm đất: ");
   Serial.print(soilMoisturePercent);
   Serial.println("%");
 
-  StaticJsonDocument<128> soilDoc;
+  DynamicJsonDocument soilDoc(128);
   soilDoc["soil_moisture"] = soilMoisturePercent;
   char soilBuffer[128];
   serializeJson(soilDoc, soilBuffer);
-  //
-  StaticJsonDocument<128> isWateringDoc;
-  if(!isControlled)
-  {
+
+  // Điều khiển bơm nước dựa vào độ ẩm đất
+  DynamicJsonDocument isWateringDoc(128);
+  if (!isControlled) {
     if (soilMoisturePercent <= 35 && !isWatering) {
       isWatering = true;
       digitalWrite(MOTOR_PIN, HIGH);
@@ -210,57 +174,18 @@ void loop()
       char isWateringBuffer[128];
       serializeJson(isWateringDoc, isWateringBuffer);
       client.publish(MQTT_TOPIC_ISWATERING, isWateringBuffer);
-  
-      // lcd.clear();
-      // lcd.setCursor(0, 0);
-      // lcd.print("Dang tuoi tu dong...");
-      // lcd.setCursor(0, 1);
-      // lcd.print("Do am: ");
-      // lcd.print(soilMoisturePercent);
-      // lcd.print("%");
-      // char alertBuffer[128];
-      // client.publish(MQTT_TOPIC_ALERT, alertBuffer);
     } else if (soilMoisturePercent >= 60 && isWatering) {
-  // Điều khiển bơm nước dựa vào độ ẩm đất (nếu không bị kiểm soát thủ công)
-  StaticJsonDocument<128> isWateringDoc;
-  if (!isControlled)
-  {
-    if (soilMoisturePercent <= 35 && !isWatering)
-    {
-      isWatering = true;
-      digitalWrite(MOTOR_PIN, HIGH);
-      isWateringDoc["wateringState"] = String(isWatering);
-      char isWateringBuffer[128];
-      serializeJson(isWateringDoc, isWateringBuffer);
-      client.publish(MQTT_TOPIC_ISWATERING, isWateringBuffer);
-    }
-    else if (soilMoisturePercent >= 60 && isWatering)
-    {
       isWatering = false;
       digitalWrite(MOTOR_PIN, LOW);
       isWateringDoc["wateringState"] = String(isWatering);
       char isWateringBuffer[128];
       serializeJson(isWateringDoc, isWateringBuffer);
       client.publish(MQTT_TOPIC_ISWATERING, isWateringBuffer);
-      // lcd.clear();
-      // lcd.setCursor(0, 0);
-      // lcd.print("Do am hop ly");
-      // lcd.setCursor(0, 1);
-      // lcd.print("Do am: ");
-      // lcd.print(soilMoisturePercent);
-      // lcd.print("%");
-    }
-  }
-  else{
-    
-  }
-  // Gửi dữ liệu lên MQTT
     }
   }
 
   // Gửi dữ liệu lên MQTT mỗi 10 giây
-  if (millis10s())
-  {
+  if (millis10s()) {
     client.publish(MQTT_TOPIC_LIGHT, lightBuffer);
     client.publish(MQTT_TOPIC_LIGHT_MODULE, lightModuleBuffer);
     client.publish(MQTT_TOPIC, dhtBuffer);
