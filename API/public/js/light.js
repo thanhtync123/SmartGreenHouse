@@ -26,7 +26,8 @@
     // 1500 – 3999	Nhiều mây	25%
     // 200 – 1499	Trời âm u / mưa	50% – 75%
     // < 200	Rất tối / ban đêm	100%
-
+    //        >= 3000 đóng rèm 
+     //       <= 3000 mở rèm
     // Lưu thời gian cập nhật cuối
     let lastUpdate = null;
 
