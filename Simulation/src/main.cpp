@@ -12,7 +12,6 @@ const char *WIFI_PASSWORD = "";
 const char *MQTT_SERVER = "broker.emqx.io";
 const int MQTT_PORT = 1883;
 const char *MQTT_TOPIC = "dht22";
-const char *MQTT_ID = "hehehehhe";
 const char *MQTT_TOPIC_LIGHT = "light_sensor";
 const char *MQTT_TOPIC_LIGHT_MODULE = "light_sensor_module";
 const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
@@ -20,8 +19,6 @@ const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
 
 bool isControlled = false;
 bool isWatering = false;
-unsigned long lastSoilCheck = 0;
-const unsigned long soilCheckInterval = 5000;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -35,6 +32,10 @@ Servo servoMaiChe;
 #define MOTOR_PIN 5
 
 unsigned long lastMillis10s = 0;
+
+// Biến lưu trạng thái cũ để phát hiện thay đổi
+int lastBrightness = -1;
+String lastRoof = "";
 
 void WIFIConnect() {
   Serial.println("Kết nối WiFi...");
@@ -51,7 +52,7 @@ void WIFIConnect() {
 void MQTT_Reconnect() {
   while (!client.connected()) {
     Serial.print("Đang kết nối MQTT...");
-    if (client.connect(MQTT_ID)) {
+    if (client.connect("hehehehhe")) {
       Serial.println("Đã kết nối MQTT!");
       client.subscribe(MQTT_TOPIC);
     } else {
@@ -146,6 +147,13 @@ void loop() {
   char lightModuleBuffer[128];
   serializeJson(lightModuleDoc, lightModuleBuffer);
 
+  // Gửi dữ liệu light_sensor_module chỉ khi trạng thái thay đổi
+  if (brightness_percent != lastBrightness || String(roofStatus) != lastRoof) {
+    lastBrightness = brightness_percent;
+    lastRoof = String(roofStatus);
+    client.publish(MQTT_TOPIC_LIGHT_MODULE, lightModuleBuffer);
+  }
+
   // Tạo JSON cho ánh sáng (light_sensor)
   DynamicJsonDocument lightDoc(128);
   lightDoc["light"] = lux;
@@ -184,10 +192,9 @@ void loop() {
     }
   }
 
-  // Gửi dữ liệu lên MQTT mỗi 10 giây
+  // Gửi dữ liệu còn lại mỗi 10 giây
   if (millis10s()) {
     client.publish(MQTT_TOPIC_LIGHT, lightBuffer);
-    client.publish(MQTT_TOPIC_LIGHT_MODULE, lightModuleBuffer);
     client.publish(MQTT_TOPIC, dhtBuffer);
     client.publish(MQTT_TOPIC_SOILSENSOR, soilBuffer);
   }
