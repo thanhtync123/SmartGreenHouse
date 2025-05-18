@@ -13,17 +13,24 @@ const char *MQTT_SERVER = "broker.emqx.io";
 const int MQTT_PORT = 1883;
 const char *MQTT_TOPIC = "dht22";
 const char *MQTT_ID = "hehehehhe";
-const char *MQTT_TOPIC_LIGHT = "light_sensor";
+
 const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
 
+// Khai báo các biến cho cảm biến ánh sáng
+const char *MQTT_TOPIC_LIGHT = "light_sensor";
+const char *MQTT_TOPIC_LIGHT_MODULE = "light_sensor_module";
+int lastBrightnessPercent = -1; // Giá trị ban đầu không hợp lệ để đảm bảo gửi lần đầu
+String lastRoofStatus = "";    // Giá trị ban đầu rỗng để đảm bảo gửi lần đầu
+#define LIGHT_SENSOR_PIN 32
+#define DENCHIEUSANG_PIN 19
+#define MAICHE_PIN 17
+// ----------------------------------------
 WiFiClient espClient;
 PubSubClient client(espClient);
 DHT dht(DHTPIN, DHTTYPE);
 
-#define LIGHT_SENSOR_PIN 32
-#define DENCHIEUSANG_PIN 19
-#define MAICHE_PIN 17
-#define SOIL_SENSOR_PIN 13
+
+#define SOIL_SENSOR_PIN 33
 
 Servo servoMaiChe;
 
@@ -93,27 +100,7 @@ void loop()
   }
   client.loop();
 
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
 
-  if (isnan(h) || isnan(t))
-  {
-    Serial.println("Không thể đọc dữ liệu từ cảm biến DHT!");
-    return;
-  }
-
-  Serial.print("Nhiet do: ");
-  Serial.print(t);
-  Serial.println("°C");
-  Serial.print("Do am: ");
-  Serial.print(h);
-  Serial.println("%");
-
-  StaticJsonDocument<200> doc;
-  doc["temperature"] = t;
-  doc["humidity"] = h;
-  char jsonBuffer[200];
-  serializeJson(doc, jsonBuffer);
 // -----------------CẢM BIẾN ÁNH SÁNG---------------------
   int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (6000 - 1);
   Serial.print("Gia tri anh sang: ");
@@ -156,10 +143,21 @@ void loop()
 
   StaticJsonDocument<128> lightDoc;
   lightDoc["light"] = lux;
-  lightDoc["brightness"] = brightness_percent;
-  lightDoc["roof"] = roofStatus;
-  char lightBuffer[128];
-  serializeJson(lightDoc, lightBuffer);
+  char lightBuffer1[128];
+  char lightBuffer2[128];
+  serializeJson(lightDoc, lightBuffer1);
+
+  StaticJsonDocument<128> lightModuleDoc;
+  lightModuleDoc["brightness_percent"] = brightness_percent;
+  lightModuleDoc["roofStatus"] = roofStatus;
+  serializeJson(lightModuleDoc, lightBuffer2);
+  if (brightness_percent != lastBrightnessPercent || String(roofStatus) != lastRoofStatus)
+  {
+    client.publish(MQTT_TOPIC_LIGHT_MODULE, lightBuffer2);
+    lastBrightnessPercent = brightness_percent; // Cập nhật giá trị trước đó
+    lastRoofStatus = roofStatus;               // Cập nhật trạng thái trước đó
+  }
+  
 // -----------------ĐỘ ẨM ĐẤT---------------------
   int soilMoisture = analogRead(SOIL_SENSOR_PIN);
   int soilMoisturePercent = map(soilMoisture, 4095, 0, 0, 100);
@@ -172,10 +170,32 @@ void loop()
   char soilBuffer[128];
   serializeJson(soilDoc, soilBuffer);
 
+// Độ ẩm đất
+    float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(h) || isnan(t))
+  {
+    Serial.println("Không thể đọc dữ liệu từ cảm biến DHT!");
+    return;
+  }
+
+  Serial.print("Nhiet do: ");
+  Serial.print(t);
+  Serial.println("°C");
+  Serial.print("Do am: ");
+  Serial.print(h);
+  Serial.println("%");
+
+  StaticJsonDocument<200> doc;
+  doc["temperature"] = t;
+  doc["humidity"] = h;
+  char jsonBuffer[200];
+  serializeJson(doc, jsonBuffer);
   // Gửi dữ liệu lên MQTT
   if (millis10s())
   {
-    client.publish(MQTT_TOPIC_LIGHT, lightBuffer);
+    client.publish(MQTT_TOPIC_LIGHT, lightBuffer1);
     client.publish(MQTT_TOPIC, jsonBuffer);
     client.publish(MQTT_TOPIC_SOILSENSOR, soilBuffer);
   }
