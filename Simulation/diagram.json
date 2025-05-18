@@ -110,7 +110,6 @@
     [ "esp:RX", "$serialMonitor:TX", "", [] ],
     [ "esp:5V", "bb1:1b.j", "red", [ "h0" ] ],
     [ "esp:CMD", "bb1:2b.j", "blue", [ "h0" ] ],
-    [ "esp:13", "bb1:4b.j", "yellow", [ "h0" ] ],
     [ "dht1:VCC", "bb1:1b.i", "red", [ "v67.2", "h-57.6" ] ],
     [ "dht1:SDA", "bb1:3b.i", "yellow", [ "v76.8", "h-47.9" ] ],
     [ "dht1:GND", "bb1:2b.i", "blue", [ "v38.4", "h-76.8" ] ],
@@ -145,7 +144,8 @@
     [ "bb2:15b.j", "led1:A", "green", [ "v201.6", "h326.4", "v67.2", "h-28.8" ] ],
     [ "led2:C", "gnd1:GND", "green", [ "v0", "h-57.2" ] ],
     [ "led1:C", "gnd2:GND", "green", [ "v0" ] ],
-    [ "led3:C", "gnd3:GND", "green", [ "v0" ] ]
+    [ "led3:C", "gnd3:GND", "green", [ "v0" ] ],
+    [ "esp:33", "bb1:4b.j", "green", [ "h-28.65", "v48", "h-211.2" ] ]
   ],
   "dependencies": {}
 }
