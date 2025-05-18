@@ -98,7 +98,7 @@ function updateSensorData(data) {
 // Thiết lập kết nối MQTT với Paho
 const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "webClient-" + parseInt(Math.random() * 1000));
 
-// Callback khi kết nối thành công
+// Callback khi kết nối bị mất
 client.onConnectionLost = (responseObject) => {
   if (responseObject.errorCode !== 0) {
     console.error("Kết nối bị mất:", responseObject.errorMessage);
@@ -109,7 +109,7 @@ client.onConnectionLost = (responseObject) => {
   }
 };
 
-// Callback khi nhận được tin nhắn
+// Callback khi nhận được tin nhắn (bao gồm retained message)
 client.onMessageArrived = (message) => {
   try {
     const data = JSON.parse(message.payloadString);
@@ -128,6 +128,7 @@ client.connect({
     client.subscribe("dht22", {
       onSuccess: () => {
         console.log("Đã subscribe topic dht22");
+        // Giao diện sẽ tự động cập nhật khi nhận retained message
       },
       onFailure: (err) => {
         console.error("Lỗi khi subscribe topic dht22:", err.errorMessage);
@@ -146,4 +147,5 @@ client.connect({
 // Gọi hàm cập nhật khi tải trang
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Trang đã tải, bắt đầu kết nối MQTT...");
+  // Không cần gọi thêm hàm updateSensorData vì retained message sẽ tự động kích hoạt onMessageArrived
 });
