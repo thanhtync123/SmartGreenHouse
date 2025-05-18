@@ -17,9 +17,9 @@
 
     // Xác định trạng thái ánh sáng
     function getLightStatus(lux) {
-        if (lux >= 32000) return { class: "sunny", text: "Trời nắng", icon: "sun" };
-        if (lux >= 1000) return { class: "cloudy", text: "Trời nhiều mây", icon: "cloud" };
-        if (lux >= 100) return { class: "rainy", text: "Mưa", icon: "cloud-showers-heavy" };
+        if (lux >= 4000) return { class: "sunny", text: "Trời nắng", icon: "sun" };
+        if (lux >= 1500) return { class: "cloudy", text: "Trời nhiều mây", icon: "cloud" };
+        if (lux >= 200) return { class: "rainy", text: "Mưa", icon: "cloud-showers-heavy" };
         return { class: "danger", text: "Dưới ngưỡng", icon: "exclamation-circle" };
     }
 

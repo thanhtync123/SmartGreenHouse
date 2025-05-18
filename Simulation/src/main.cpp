@@ -65,6 +65,7 @@ void setup()
 }
 
 void loop()
+
 {
   if (!client.connected())
   {
@@ -98,7 +99,7 @@ void loop()
 
   // Xử lý cảm biến ánh sáng--------------------------------------------------------
 
-  int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (65535 - 1);
+  int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (6000 - 1);
   Serial.print("Gia tri anh sang: ");
   Serial.println(lux);
   StaticJsonDocument<100> lightDoc;

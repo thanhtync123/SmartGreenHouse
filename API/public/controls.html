@@ -49,12 +49,12 @@
 
       <!-- Control Panels -->
       <div class="control-panels">
-        <!-- Climate Control -->
+        <!-- Fan Control -->
         <div class="card control-panel">
           <div class="card-header">
             <div class="card-title">
-              <i class="fas fa-temperature-high"></i>
-              Điều khiển khí hậu
+              <i class="fas fa-fan"></i>
+              Quạt thông gió
             </div>
             <div class="control-status active">
               <span>Đang hoạt động</span>
@@ -63,7 +63,7 @@
           <div class="control-items">
             <div class="control-item">
               <div class="control-info">
-                <div class="control-name">Quạt thông gió</div>
+                <div class="control-name">Quạt</div>
                 <div class="control-value">Tốc độ: 65%</div>
               </div>
               <div class="control-actions">
@@ -75,60 +75,15 @@
                 </div>
               </div>
             </div>
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Hệ thống sưởi</div>
-                <div class="control-value">Tắt</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch">
-                  <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="0" disabled />
-                </div>
-              </div>
-            </div>
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Hệ thống làm mát</div>
-                <div class="control-value">Công suất: 40%</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch active">
-                  <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="40" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="control-settings">
-            <div class="setting-item">
-              <label>Nhiệt độ mục tiêu</label>
-              <div class="setting-input">
-                <input type="number" value="25" min="15" max="35" />
-                <span class="unit">°C</span>
-              </div>
-            </div>
-            <div class="setting-item">
-              <label>Độ ẩm mục tiêu</label>
-              <div class="setting-input">
-                <input type="number" value="60" min="40" max="80" />
-                <span class="unit">%</span>
-              </div>
-            </div>
-            <button class="apply-button">Áp dụng cài đặt</button>
           </div>
         </div>
 
-        <!-- Lighting Control -->
+        <!-- Light Control -->
         <div class="card control-panel">
           <div class="card-header">
             <div class="card-title">
               <i class="fas fa-lightbulb"></i>
-              Điều khiển chiếu sáng
+              Đèn
             </div>
             <div class="control-status active">
               <span>Đang hoạt động</span>
@@ -137,7 +92,7 @@
           <div class="control-items">
             <div class="control-item">
               <div class="control-info">
-                <div class="control-name">Đèn chính</div>
+                <div class="control-name">Đèn</div>
                 <div class="control-value">Độ sáng: 75%</div>
               </div>
               <div class="control-actions">
@@ -149,62 +104,15 @@
                 </div>
               </div>
             </div>
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Đèn bổ sung</div>
-                <div class="control-value">Tắt</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch">
-                  <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="0" disabled />
-                </div>
-              </div>
-            </div>
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Đèn UV</div>
-                <div class="control-value">Cường độ: 30%</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch active">
-                  <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="30" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="control-settings">
-            <div class="setting-item">
-              <label>Thời gian chiếu sáng</label>
-              <div class="setting-input">
-                <input type="number" value="14" min="8" max="18" />
-                <span class="unit">giờ</span>
-              </div>
-            </div>
-            <div class="setting-item">
-              <label>Quang phổ ánh sáng</label>
-              <select class="setting-select">
-                <option>Quang phổ đầy đủ</option>
-                <option>Tăng trưởng sinh dưỡng</option>
-                <option>Ra hoa</option>
-                <option>Tùy chỉnh</option>
-              </select>
-            </div>
-            <button class="apply-button">Áp dụng cài đặt</button>
           </div>
         </div>
 
-        <!-- Irrigation Control -->
+        <!-- Water Pump Control -->
         <div class="card control-panel">
           <div class="card-header">
             <div class="card-title">
               <i class="fas fa-faucet"></i>
-              Điều khiển tưới tiêu
+              Bơm nước
             </div>
             <div class="control-status inactive">
               <span>Không hoạt động</span>
@@ -213,63 +121,41 @@
           <div class="control-items">
             <div class="control-item">
               <div class="control-info">
-                <div class="control-name">Bơm nước chính</div>
+                <div class="control-name">Bơm nước</div>
                 <div class="control-value">Tắt</div>
               </div>
               <div class="control-actions">
                 <div class="toggle-switch">
                   <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="0" disabled />
-                </div>
-              </div>
-            </div>
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Hệ thống nhỏ giọt</div>
-                <div class="control-value">Tắt</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch">
-                  <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="0" disabled />
-                </div>
-              </div>
-            </div>
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Hệ thống sương mù</div>
-                <div class="control-value">Tắt</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch">
-                  <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="0" disabled />
                 </div>
               </div>
             </div>
           </div>
-          <div class="control-settings">
-            <div class="setting-item">
-              <label>Khối lượng nước</label>
-              <div class="setting-input">
-                <input type="number" value="500" min="100" max="2000" />
-                <span class="unit">ml</span>
+        </div>
+
+        <!-- Roof Control -->
+        <div class="card control-panel">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-warehouse"></i>
+              Mái che
+            </div>
+            <div class="control-status inactive">
+              <span>Đang đóng</span>
+            </div>
+          </div>
+          <div class="control-items">
+            <div class="control-item">
+              <div class="control-info">
+                <div class="control-name">Mái che</div>
+                <div class="control-value">Đóng</div>
+              </div>
+              <div class="control-actions">
+                <div class="toggle-switch">
+                  <div class="toggle-slider"></div>
+                </div>
               </div>
             </div>
-            <div class="setting-item">
-              <label>Độ ẩm đất mục tiêu</label>
-              <div class="setting-input">
-                <input type="number" value="60" min="30" max="80" />
-                <span class="unit">%</span>
-              </div>
-            </div>
-            <button class="apply-button">Áp dụng cài đặt</button>
           </div>
         </div>
       </div>
