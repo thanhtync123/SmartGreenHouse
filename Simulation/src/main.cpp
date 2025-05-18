@@ -3,7 +3,7 @@
 #include <DHT.h>
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
-
+//1
 #define DHTPIN 14
 #define DHTTYPE DHT22
 
