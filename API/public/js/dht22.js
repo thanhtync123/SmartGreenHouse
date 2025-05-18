@@ -24,38 +24,12 @@ function getHumidityStatus(humidity) {
   return { class: "optimal", text: "Tối ưu" };
 }
 
-// Hàm gọi API và cập nhật giao diện
-async function updateSensorData() {
+// Hàm cập nhật giao diện với dữ liệu cảm biến
+function updateSensorData(data) {
   try {
-    console.log(
-      "Fetching data from http://localhost:3000/api/dht22readings?limit=1"
-    );
-    const response = await fetch(
-      "http://localhost:3000/api/dht22readings?limit=1"
-    );
-    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-    const { data } = await response.json();
-    console.log("Data received:", data);
-
-    // Kiểm tra dữ liệu rỗng
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      console.error("No data returned from API");
-      document.getElementById("temperature-value").innerHTML =
-        "Không có dữ liệu<span class='card-unit'>°C</span>";
-      document.getElementById("humidity-value").innerHTML =
-        "Không có dữ liệu<span class='card-unit'>%</span>";
-      return;
-    }
-
-    // Lấy bản ghi mới nhất
-    const latestReading = data[0];
-
-    // Kiểm tra xem temperature và humidity có tồn tại không
-    if (
-      typeof latestReading.temperature === "undefined" ||
-      typeof latestReading.humidity === "undefined"
-    ) {
-      console.error("Missing temperature or humidity in data:", latestReading);
+    // Kiểm tra dữ liệu
+    if (!data || typeof data.temperature === "undefined" || typeof data.humidity === "undefined") {
+      console.error("Dữ liệu không hợp lệ:", data);
       document.getElementById("temperature-value").innerHTML =
         "Lỗi dữ liệu<span class='card-unit'>°C</span>";
       document.getElementById("humidity-value").innerHTML =
@@ -63,8 +37,9 @@ async function updateSensorData() {
       return;
     }
 
-    const temperature = latestReading.temperature;
-    const humidity = latestReading.humidity;
+    const temperature = data.temperature;
+    const humidity = data.humidity;
+    const timestamp = data.timestamp || new Date().toISOString();
     const temperatureStatus = getTemperatureStatus(temperature);
     const humidityStatus = getHumidityStatus(humidity);
 
@@ -89,7 +64,7 @@ async function updateSensorData() {
         : "exclamation-circle"
     }"></i><span>${temperatureStatus.text}</span>`;
     document.getElementById("temperature-updated").textContent = getTimeAgo(
-      latestReading.timestamp
+      timestamp
     );
 
     // Cập nhật độ ẩm
@@ -109,7 +84,7 @@ async function updateSensorData() {
       humidityStatus.class === "optimal" ? "check-circle" : "exclamation-circle"
     }"></i><span>${humidityStatus.text}</span>`;
     document.getElementById("humidity-updated").textContent = getTimeAgo(
-      latestReading.timestamp
+      timestamp
     );
   } catch (error) {
     console.error("Lỗi khi cập nhật dữ liệu cảm biến:", error);
@@ -120,8 +95,55 @@ async function updateSensorData() {
   }
 }
 
-// Gọi hàm cập nhật khi tải trang
-document.addEventListener("DOMContentLoaded", updateSensorData);
+// Thiết lập kết nối MQTT với Paho
+const client = new Paho.MQTT.Client("broker.emqx.io", 8084, "webClient-" + parseInt(Math.random() * 1000));
 
-// Cập nhật định kỳ mỗi 10 giây
-setInterval(updateSensorData, 10000);
+// Callback khi kết nối thành công
+client.onConnectionLost = (responseObject) => {
+  if (responseObject.errorCode !== 0) {
+    console.error("Kết nối bị mất:", responseObject.errorMessage);
+    document.getElementById("temperature-value").innerHTML =
+      "Lỗi kết nối<span class='card-unit'>°C</span>";
+    document.getElementById("humidity-value").innerHTML =
+      "Lỗi kết nối<span class='card-unit'>%</span>";
+  }
+};
+
+// Callback khi nhận được tin nhắn
+client.onMessageArrived = (message) => {
+  try {
+    const data = JSON.parse(message.payloadString);
+    console.log("Dữ liệu nhận được từ topic dht22:", data);
+    updateSensorData(data);
+  } catch (error) {
+    console.error("Lỗi khi xử lý dữ liệu MQTT:", error);
+  }
+};
+
+// Kết nối tới broker
+client.connect({
+  useSSL: true,
+  onSuccess: () => {
+    console.log("Đã kết nối tới broker.emqx.io");
+    client.subscribe("dht22", {
+      onSuccess: () => {
+        console.log("Đã subscribe topic dht22");
+      },
+      onFailure: (err) => {
+        console.error("Lỗi khi subscribe topic dht22:", err.errorMessage);
+      }
+    });
+  },
+  onFailure: (err) => {
+    console.error("Lỗi kết nối MQTT:", err.errorMessage);
+    document.getElementById("temperature-value").innerHTML =
+      "Lỗi kết nối<span class='card-unit'>°C</span>";
+    document.getElementById("humidity-value").innerHTML =
+      "Lỗi kết nối<span class='card-unit'>%</span>";
+  }
+});
+
+// Gọi hàm cập nhật khi tải trang
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Trang đã tải, bắt đầu kết nối MQTT...");
+});

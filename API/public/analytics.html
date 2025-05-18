@@ -20,7 +20,7 @@
     <div class="main-content">
       <div class="header">
         <h2>Phân tích</h2>
-        <div class="date-time">Thursday, May 8, 2025 | 15:48:40</div>
+        <div class="date-time" id="current-time">Thursday, May 8, 2025 | 15:48:40</div>
       </div>
 
       <!-- Analytics Filters -->
@@ -29,67 +29,36 @@
           <label>Khoảng thời gian</label>
           <div class="filter-controls">
             <select class="filter-select">
-              <option>Last 24 Hours</option>
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
-              <option>Custom Range</option>
+              <option value="Last 1 Hour" selected>Last 1 Hour</option>
+              <option value="Last 3 Hours">Last 3 Hours</option>
+              <option value="Last 24 Hours" >Last 24 Hours</option>
+              <option value="Last 7 Days">Last 7 Days</option>
+              <option value="Last 30 Days">Last 30 Days</option>
             </select>
           </div>
         </div>
-        <div class="filter-group">
-          <label>Cảm biến</label>
-          <div class="filter-controls">
-            <div class="checkbox-group">
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Temperature</span>
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Humidity</span>
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Light</span>
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" checked />
-                <span>Soil Moisture</span>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="filter-group">
-          <label>Khoảng cách</label>
-          <div class="filter-controls">
-            <div class="button-group">
-              <button class="filter-button active">Theo giờ</button>
-              <button class="filter-button">Theo ngày</button>
-              <button class="filter-button">Theo tuần</button>
-            </div>
-          </div>
-        </div>
-        <button class="apply-button">Áp dụng bộ lọc</button>
+        
+       
+        <button class="apply-button" id="apply-button">Áp dụng bộ lọc</button>
       </div>
 
       <!-- Main Chart -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Xu hướng dữ liệu cảm biến</div>
-          <div class="chart-actions">
-            <button class="action-button">
-              <i class="fas fa-download"></i> Export
-            </button>
-            <button class="action-button">
-              <i class="fas fa-expand"></i> Fullscreen
-            </button>
-          </div>
-        </div>
-        <div class="main-chart">
-          <!-- Placeholder for the main chart -->
-          <div class="chart-placeholder" style="height: 400px"></div>
-        </div>
+        <div class="card">
+    <div class="card-header">
+      <div class="card-title">Biểu đồ</div>
+      <div class="chart-actions">
+        <button class="action-button" onclick="exportChart()">
+          <i class="fas fa-download"></i> Export
+        </button>
+        <button class="action-button" onclick="toggleFullscreen()">
+          <i class="fas fa-expand"></i> Fullscreen
+        </button>
       </div>
+    </div>
+    <div class="main-chart">
+      <canvas id="dht22Chart" class="chart-placeholder"></canvas>
+    </div>
+  </div>
 
       <!-- Statistics Cards -->
       <div class="statistics-grid">
@@ -99,10 +68,8 @@
           </div>
           <div class="stat-content">
             <div class="stat-title">Nhiệt độ TB</div>
-            <div class="stat-value">26.8°C</div>
-            <div class="stat-change increase">
-              <i class="fas fa-arrow-up"></i> 2.3°C from last week
-            </div>
+            <div class="stat-value-temp" id="temperature">27.8°C</div>
+            
           </div>
         </div>
 
@@ -112,10 +79,8 @@
           </div>
           <div class="stat-content">
             <div class="stat-title">Độ ẩm TB</div>
-            <div class="stat-value">62%</div>
-            <div class="stat-change decrease">
-              <i class="fas fa-arrow-down"></i> 5% from last week
-            </div>
+            <div class="stat-value-humi" id="humidity">62%</div>
+            
           </div>
         </div>
 
@@ -126,9 +91,7 @@
           <div class="stat-content">
             <div class="stat-title">Ánh sáng TB</div>
             <div class="stat-value">780 lux</div>
-            <div class="stat-change increase">
-              <i class="fas fa-arrow-up"></i> 120 lux from last week
-            </div>
+            
           </div>
         </div>
 
@@ -139,9 +102,7 @@
           <div class="stat-content">
             <div class="stat-title">Độ ẩm đất TB</div>
             <div class="stat-value">48%</div>
-            <div class="stat-change stable">
-              <i class="fas fa-equals"></i> No change from last week
-            </div>
+            
           </div>
         </div>
       </div>
@@ -161,61 +122,24 @@
           </div>
         </div>
         <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Temperature (°C)</th>
-                <th>Humidity (%)</th>
-                <th>Light (lux)</th>
-                <th>Soil Moisture (%)</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2025-05-08 15:30:00</td>
-                <td>28.5</td>
-                <td>65</td>
-                <td>850</td>
-                <td>45</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 14:30:00</td>
-                <td>29.1</td>
-                <td>63</td>
-                <td>920</td>
-                <td>44</td>
-                <td><span class="status-badge warning">Warning</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 13:30:00</td>
-                <td>27.8</td>
-                <td>67</td>
-                <td>780</td>
-                <td>46</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 12:30:00</td>
-                <td>26.5</td>
-                <td>70</td>
-                <td>650</td>
-                <td>48</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-              <tr>
-                <td>2025-05-08 11:30:00</td>
-                <td>25.2</td>
-                <td>72</td>
-                <td>520</td>
-                <td>50</td>
-                <td><span class="status-badge optimal">Optimal</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Temperature (°C)</th>
+          <th>Humidity (%)</th>
+          <th>Light (lux)</th>
+          <th>Soil Moisture (%)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="data-table-body">
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
+  </div>
+    <div id="loading" class="loading">Loading...</div>
+      <div id="error" class="error-message" style="display: none;"></div>
         <div class="table-pagination">
           <span>Hiển thị 1 đến 5 trong 120 bản ghi</span>
           <div class="pagination-controls">
@@ -236,5 +160,10 @@
     </div>
     <script src="./js/sidebar.js"></script>
     <script src="./js/light_analytics.js"></script>
+    
   </body>
 </html>
+<!-- <script src="./js/chart.js"></script> -->
+<script src="./js/time.js"></script>
+<script src="./js/filter.js"></script>
+
