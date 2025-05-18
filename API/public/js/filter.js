@@ -39,6 +39,7 @@ const chart = new Chart(ctx, {
 async function fetchSensorData() {
   try {
     const response = await fetch('http://localhost:3000/api/dht22readings/all');
+    const response_light = await fetch('http://localhost:3000/api/bh1750reading');
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
