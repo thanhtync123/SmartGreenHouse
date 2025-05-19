@@ -116,32 +116,49 @@ function filterData(data, timeRange) {
 // Function to calculate averages from DHT22 data
 async function calculateAverages(timeRange) {
   try {
-    const apiData = await fetchSensorData();
-    const readings = filterData(apiData, timeRange);
+    const [dhtApiData, lightApiData] = await Promise.all([
+      fetchDHT22Data(),
+      fetchLightData(),
+    ]);
 
-    if (readings.data.length > 0) {
-      const total = readings.data.length;
-      const tempSum = readings.data.reduce(
+    const dhtReadings = filterData(dhtApiData, timeRange);
+    const lightReadings = filterData(lightApiData, timeRange);
+
+    const total = dhtReadings.data.length;
+
+    if (total > 0) {
+      const tempSum = dhtReadings.data.reduce(
         (sum, r) => sum + (r.temperature || 0),
         0
       );
-      const humSum = readings.data.reduce(
+      const humSum = dhtReadings.data.reduce(
         (sum, r) => sum + (r.humidity || 0),
         0
       );
 
+      // Đồng bộ độ dài dữ liệu ánh sáng theo dhtReadings để tính trung bình ánh sáng
+      const lightValues = dhtReadings.data.map((_, index) => {
+        const lightRecord = lightReadings.data[index];
+        return lightRecord ? lightRecord.light_intensity || 0 : 0;
+      });
+
+      const lightSum = lightValues.reduce((sum, l) => sum + l, 0);
+
       const avgTemperature = (tempSum / total).toFixed(1);
       const avgHumidity = (humSum / total).toFixed(1);
+      const avgLight = (lightSum / total).toFixed(1);
+
       return {
         averageTemperature: avgTemperature,
         averageHumidity: avgHumidity,
+        averageLight: avgLight,
         dataCount: total,
       };
     } else {
-      console.warn("No data available for averages.");
       return {
         averageTemperature: 0,
         averageHumidity: 0,
+        averageLight: 0,
         dataCount: 0,
       };
     }
@@ -150,6 +167,7 @@ async function calculateAverages(timeRange) {
     return {
       averageTemperature: 0,
       averageHumidity: 0,
+      averageLight: 0,
       dataCount: 0,
     };
   }
@@ -208,6 +226,9 @@ async function updateChartAndAverages(timeRange) {
     document.getElementById(
       "humidity"
     ).innerHTML = `${averages.averageHumidity}<span class='card-unit'>%</span>`;
+    document.getElementById(
+      "tb_light"
+    ).innerHTML = `${averages.averageLight}<span class='card-unit'> lux</span>`;
     await updateDashboard(timeRange);
   } catch (error) {
     console.error("Error updating chart and averages:", error.message);
