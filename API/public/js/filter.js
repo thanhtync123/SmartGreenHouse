@@ -315,10 +315,22 @@ async function updateDashboard(timeRange) {
     const lightReadings = filterData(lightData, timeRange);
 
     // Kết hợp dữ liệu DHT22 và BH1750
-    const combinedData = dhtReadings.data.map((dht, index) => ({
+    let combinedData = dhtReadings.data.map((dht, index) => ({
       ...dht,
       light_intensity: lightReadings.data[index]?.light_intensity || "N/A",
     }));
+
+    // Filter by date if date pickers have values
+    const tableStartDate = document.getElementById('table-start-date').value;
+    const tableEndDate = document.getElementById('table-end-date').value;
+    
+    if (tableStartDate && tableEndDate) {
+      combinedData = filterTableByDate(
+        combinedData,
+        new Date(tableStartDate),
+        new Date(tableEndDate)
+      );
+    }
 
     // Pagination calculations
     totalRecords = combinedData.length;
@@ -464,6 +476,7 @@ function determineStatus(item) {
 
 // Initialize datetime pickers
 function initializeDateTimePickers() {
+  // Chart datetime pickers
   const startDatePicker = flatpickr("#start-date", {
     enableTime: true,
     dateFormat: "Y-m-d H:i",
@@ -486,10 +499,48 @@ function initializeDateTimePickers() {
     }
   });
 
-  return { startDatePicker, endDatePicker };
+  // Table datetime pickers
+  const tableStartDatePicker = flatpickr("#table-start-date", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true,
+    locale: "vi",
+    onChange: function(selectedDates, dateStr) {
+      // Update table end date picker's min date
+      tableEndDatePicker.set("minDate", selectedDates[0]);
+    }
+  });
+
+  const tableEndDatePicker = flatpickr("#table-end-date", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true,
+    locale: "vi",
+    onChange: function(selectedDates, dateStr) {
+      // Update table start date picker's max date
+      tableStartDatePicker.set("maxDate", selectedDates[0]);
+    }
+  });
+
+  return { 
+    startDatePicker, 
+    endDatePicker,
+    tableStartDatePicker,
+    tableEndDatePicker
+  };
 }
 
-// Event listeners
+// Function to filter table data by date range
+function filterTableByDate(data, startDate, endDate) {
+  if (!startDate || !endDate) return data;
+
+  return data.filter(record => {
+    const recordDate = new Date(record.timestamp);
+    return recordDate >= startDate && recordDate <= endDate;
+  });
+}
+
+// Add event listeners
 document.getElementById("apply-button").addEventListener("click", async () => {
   currentPage = 1;
   const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
@@ -513,6 +564,13 @@ document.getElementById('show-temp-humid').addEventListener('change', () => {
 document.getElementById('show-light').addEventListener('change', () => {
   const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
   updateChartAndAverages(timeRange);
+});
+
+// Add event listener for table search button
+document.getElementById('table-search-button').addEventListener('click', () => {
+  currentPage = 1; // Reset to first page when searching
+  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
+  updateDashboard(timeRange);
 });
 
 // Initialize on page load

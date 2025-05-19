@@ -2189,3 +2189,69 @@ body {
 .flatpickr-time .flatpickr-am-pm:focus {
   background: #f8f9fa;
 }
+
+.table-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.table-date-filter {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.table-date-filter .datetime-picker {
+  width: 150px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.table-date-filter .datetime-picker:hover {
+  border-color: #457b9d;
+}
+
+.table-date-filter .datetime-picker:focus {
+  outline: none;
+  border-color: #457b9d;
+  box-shadow: 0 0 0 2px rgba(69, 123, 157, 0.2);
+}
+
+.table-date-filter .action-button {
+  padding: 8px 12px;
+  background-color: #457b9d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.table-date-filter .action-button:hover {
+  background-color: #2c5282;
+}
+
+@media (max-width: 768px) {
+  .table-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .table-date-filter {
+    flex-direction: column;
+  }
+  
+  .table-date-filter .datetime-picker {
+    width: 100%;
+  }
+}

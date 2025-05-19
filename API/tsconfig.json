@@ -6,7 +6,10 @@
     "outDir": "./public/js",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true
+    "strict": true,
+    "skipLibCheck": true,         // Bỏ qua việc kiểm tra các file .d.ts trong node_modules
+    "moduleResolution": "node"    // Sử dụng phương thức Node để tìm modules
   },
-  "include": ["public/ts/**/*"]
+  "include": ["public/ts/**/*"],
+  "exclude": ["node_modules"]     // Loại trừ thư mục node_modules khỏi quá trình biên dịch
 }
