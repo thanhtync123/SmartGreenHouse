@@ -1,21 +1,25 @@
 {
-  "name": "api",
+  "name": "smart-greenhouse",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Smart Greenhouse Monitoring System",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "watch": "tsc -w",
+    "compile": "ts-node compile.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mqtt": "^5.12.1",
-    "mysql2": "^3.14.1",
-    "paho-mqtt": "^1.1.0"
+    "paho-mqtt": "^1.1.0",
+    "chart.js": "^4.4.1",
+    "jquery": "^3.7.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.29",
+    "@types/node": "^20.11.24",
+    "@types/paho-mqtt": "^1.0.3",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
   }
 }
