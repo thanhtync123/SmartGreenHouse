@@ -42,6 +42,28 @@
   //       <= 3000 mở rèm
   // Lưu thời gian cập nhật cuối
   let lastUpdate = null;
+  let connectionCheckInterval = null;
+
+  // Kiểm tra kết nối MQTT
+  function checkMQTTConnection() {
+    if (!lastUpdate) return;
+    const now = new Date();
+    const diff = Math.floor((now - lastUpdate) / 1000);
+    
+    if (diff >= 23) {
+      // Hiển thị lỗi kết nối
+      $(".card:has(.card-icon.light) #light_value").html(
+        "Lỗi kết nối<span class='card-unit'>lux</span>"
+      );
+      $(".card:has(.card-icon.light) .progress.light").css("width", "0%");
+      $(".card:has(.card-icon.light) .progress-info span:last-child").text("0%");
+      const statusDiv = $(".card:has(.card-icon.light) .card-footer .status");
+      statusDiv.removeClass().addClass("status light-status danger");
+      statusDiv.html(
+        `<i class='fas fa-exclamation-circle'></i><span>Mất kết nối</span>`
+      );
+    }
+  }
 
   // Cập nhật thời gian hiển thị
   function updateTimeAgo() {
@@ -95,8 +117,9 @@
     }
   };
 
-  // Cập nhật thời gian mỗi 10s
+  // Cập nhật thời gian mỗi 10s và kiểm tra kết nối mỗi 5s
   setInterval(updateTimeAgo, 10000);
+  setInterval(checkMQTTConnection, 5000);
 
   // Khởi tạo Chart.js
   let lightChartInstance = null;
