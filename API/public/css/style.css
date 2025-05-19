@@ -2045,10 +2045,8 @@ body {
 
 .datetime-controls {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .date-input-group {
@@ -2141,4 +2139,53 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.datetime-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.datetime-picker {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.datetime-picker:hover {
+  border-color: #457b9d;
+}
+
+.datetime-picker:focus {
+  outline: none;
+  border-color: #457b9d;
+  box-shadow: 0 0 0 2px rgba(69, 123, 157, 0.2);
+}
+
+/* Flatpickr custom styles */
+.flatpickr-calendar {
+  box-shadow: 0 3px 13px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.flatpickr-day.selected {
+  background: #457b9d;
+  border-color: #457b9d;
+}
+
+.flatpickr-day.selected:hover {
+  background: #2c5282;
+  border-color: #2c5282;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time .flatpickr-am-pm:hover,
+.flatpickr-time input:focus,
+.flatpickr-time .flatpickr-am-pm:focus {
+  background: #f8f9fa;
 }

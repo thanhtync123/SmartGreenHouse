@@ -78,29 +78,42 @@ async function fetchSensorData() {
 function filterData(data, timeRange) {
   const now = new Date();
   let startTime;
-  switch (timeRange) {
-    case "Last 1 Hour":
-      startTime = new Date(now.getTime() - 1 * 60 * 60 * 1000);
-      break;
-    case "Last 3 Hours":
-      startTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
-      break;
-    case "Last 24 Hours":
-      startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      break;
-    case "Last 7 Days":
-      startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      break;
-    case "Last 30 Days":
-      startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      break;
-    default:
-      startTime = new Date(0);
+  let endTime = now;
+
+  // Check if datetime pickers are being used
+  const startDatePicker = document.getElementById('start-date');
+  const endDatePicker = document.getElementById('end-date');
+  
+  if (startDatePicker.value && endDatePicker.value) {
+    // Use datetime picker values
+    startTime = new Date(startDatePicker.value);
+    endTime = new Date(endDatePicker.value);
+  } else {
+    // Use select dropdown values
+    switch (timeRange) {
+      case "Last 1 Hour":
+        startTime = new Date(now.getTime() - 1 * 60 * 60 * 1000);
+        break;
+      case "Last 3 Hours":
+        startTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+        break;
+      case "Last 24 Hours":
+        startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      case "Last 7 Days":
+        startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "Last 30 Days":
+        startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      default:
+        startTime = new Date(0);
+    }
   }
 
   const filteredData = data.data.filter((record) => {
     const recordTime = new Date(record.timestamp);
-    return recordTime >= startTime && recordTime <= now;
+    return recordTime >= startTime && recordTime <= endTime;
   });
 
   return {
@@ -198,20 +211,25 @@ async function updateChartAndAverages(timeRange) {
       })
     );
 
-    // Gán dữ liệu nhiệt độ và độ ẩm
-    chart.data.datasets[0].data = dhtReadings.data.map(
-      (r) => r.temperature || 0
-    );
-    chart.data.datasets[1].data = dhtReadings.data.map((r) => r.humidity || 0);
+    // Lấy trạng thái của các checkbox
+    const showTempHumid = document.getElementById('show-temp-humid').checked;
+    const showLight = document.getElementById('show-light').checked;
 
-    // Đồng bộ dữ liệu ánh sáng với nhãn
-    chart.data.datasets[2].data = chart.data.labels.map((_, index) => {
+    // Cập nhật dữ liệu và hiển thị cho từng dataset
+    chart.data.datasets[0].data = showTempHumid ? dhtReadings.data.map((r) => r.temperature || 0) : [];
+    chart.data.datasets[0].hidden = !showTempHumid;
+
+    chart.data.datasets[1].data = showTempHumid ? dhtReadings.data.map((r) => r.humidity || 0) : [];
+    chart.data.datasets[1].hidden = !showTempHumid;
+
+    chart.data.datasets[2].data = showLight ? chart.data.labels.map((_, index) => {
       const lightRecord = lightReadings.data[index];
       return lightRecord ? lightRecord.light_intensity || 0 : 0;
-    });
+    }) : [];
+    chart.data.datasets[2].hidden = !showLight;
 
     // Kiểm tra dữ liệu ánh sáng
-    if (chart.data.datasets[2].data.every((val) => val === 0)) {
+    if (showLight && chart.data.datasets[2].data.every((val) => val === 0)) {
       console.warn("No valid light intensity data to display.");
     }
 
@@ -444,11 +462,37 @@ function determineStatus(item) {
   return "Optimal";
 }
 
+// Initialize datetime pickers
+function initializeDateTimePickers() {
+  const startDatePicker = flatpickr("#start-date", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true,
+    locale: "vi",
+    onChange: function(selectedDates, dateStr) {
+      // Update end date picker's min date
+      endDatePicker.set("minDate", selectedDates[0]);
+    }
+  });
+
+  const endDatePicker = flatpickr("#end-date", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true,
+    locale: "vi",
+    onChange: function(selectedDates, dateStr) {
+      // Update start date picker's max date
+      startDatePicker.set("maxDate", selectedDates[0]);
+    }
+  });
+
+  return { startDatePicker, endDatePicker };
+}
+
 // Event listeners
 document.getElementById("apply-button").addEventListener("click", async () => {
   currentPage = 1;
-  const timeRange =
-    document.querySelector(".filter-select")?.value || "Last 1 Hour";
+  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
   await updateChartAndAverages(timeRange);
 });
 
@@ -460,9 +504,21 @@ document
   .getElementById("fullscreen-button")
   ?.addEventListener("click", toggleFullscreen);
 
+// Add event listeners for checkboxes
+document.getElementById('show-temp-humid').addEventListener('change', () => {
+  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
+  updateChartAndAverages(timeRange);
+});
+
+document.getElementById('show-light').addEventListener('change', () => {
+  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
+  updateChartAndAverages(timeRange);
+});
+
 // Initialize on page load
 window.addEventListener("load", async () => {
   currentPage = 1;
   const defaultTimeRange = "Last 1 Hour";
+  initializeDateTimePickers();
   await updateChartAndAverages(defaultTimeRange);
 });
