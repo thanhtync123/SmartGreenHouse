@@ -42,7 +42,6 @@ const client = new Paho.MQTT.Client(
 
 client.onMessageArrived = function (msg) {
   const json = JSON.parse(msg.payloadString);
-  // Giả sử json có thuộc tính brightness_percent
   const brightness_percent = json.brightness_percent;
   const tg_bulb = document.getElementById("tg_bulb");
   if (tg_bulb && tg_bulb.parentElement) {
