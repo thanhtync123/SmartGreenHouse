@@ -81,9 +81,9 @@ function filterData(data, timeRange) {
   let endTime = now;
 
   // Check if datetime pickers are being used
-  const startDatePicker = document.getElementById('start-date');
-  const endDatePicker = document.getElementById('end-date');
-  
+  const startDatePicker = document.getElementById("start-date");
+  const endDatePicker = document.getElementById("end-date");
+
   if (startDatePicker.value && endDatePicker.value) {
     // Use datetime picker values
     startTime = new Date(startDatePicker.value);
@@ -212,20 +212,26 @@ async function updateChartAndAverages(timeRange) {
     );
 
     // Lấy trạng thái của các checkbox
-    const showTempHumid = document.getElementById('show-temp-humid').checked;
-    const showLight = document.getElementById('show-light').checked;
+    const showTempHumid = document.getElementById("show-temp-humid").checked;
+    const showLight = document.getElementById("show-light").checked;
 
     // Cập nhật dữ liệu và hiển thị cho từng dataset
-    chart.data.datasets[0].data = showTempHumid ? dhtReadings.data.map((r) => r.temperature || 0) : [];
+    chart.data.datasets[0].data = showTempHumid
+      ? dhtReadings.data.map((r) => r.temperature || 0)
+      : [];
     chart.data.datasets[0].hidden = !showTempHumid;
 
-    chart.data.datasets[1].data = showTempHumid ? dhtReadings.data.map((r) => r.humidity || 0) : [];
+    chart.data.datasets[1].data = showTempHumid
+      ? dhtReadings.data.map((r) => r.humidity || 0)
+      : [];
     chart.data.datasets[1].hidden = !showTempHumid;
 
-    chart.data.datasets[2].data = showLight ? chart.data.labels.map((_, index) => {
-      const lightRecord = lightReadings.data[index];
-      return lightRecord ? lightRecord.light_intensity || 0 : 0;
-    }) : [];
+    chart.data.datasets[2].data = showLight
+      ? chart.data.labels.map((_, index) => {
+          const lightRecord = lightReadings.data[index];
+          return lightRecord ? lightRecord.light_intensity || 0 : 0;
+        })
+      : [];
     chart.data.datasets[2].hidden = !showLight;
 
     // Kiểm tra dữ liệu ánh sáng
@@ -321,9 +327,9 @@ async function updateDashboard(timeRange) {
     }));
 
     // Filter by date if date pickers have values
-    const tableStartDate = document.getElementById('table-start-date').value;
-    const tableEndDate = document.getElementById('table-end-date').value;
-    
+    const tableStartDate = document.getElementById("table-start-date").value;
+    const tableEndDate = document.getElementById("table-end-date").value;
+
     if (tableStartDate && tableEndDate) {
       combinedData = filterTableByDate(
         combinedData,
@@ -482,10 +488,10 @@ function initializeDateTimePickers() {
     dateFormat: "Y-m-d H:i",
     time_24hr: true,
     locale: "vi",
-    onChange: function(selectedDates, dateStr) {
+    onChange: function (selectedDates, dateStr) {
       // Update end date picker's min date
       endDatePicker.set("minDate", selectedDates[0]);
-    }
+    },
   });
 
   const endDatePicker = flatpickr("#end-date", {
@@ -493,10 +499,10 @@ function initializeDateTimePickers() {
     dateFormat: "Y-m-d H:i",
     time_24hr: true,
     locale: "vi",
-    onChange: function(selectedDates, dateStr) {
+    onChange: function (selectedDates, dateStr) {
       // Update start date picker's max date
       startDatePicker.set("maxDate", selectedDates[0]);
-    }
+    },
   });
 
   // Table datetime pickers
@@ -505,10 +511,10 @@ function initializeDateTimePickers() {
     dateFormat: "Y-m-d H:i",
     time_24hr: true,
     locale: "vi",
-    onChange: function(selectedDates, dateStr) {
+    onChange: function (selectedDates, dateStr) {
       // Update table end date picker's min date
       tableEndDatePicker.set("minDate", selectedDates[0]);
-    }
+    },
   });
 
   const tableEndDatePicker = flatpickr("#table-end-date", {
@@ -516,17 +522,17 @@ function initializeDateTimePickers() {
     dateFormat: "Y-m-d H:i",
     time_24hr: true,
     locale: "vi",
-    onChange: function(selectedDates, dateStr) {
+    onChange: function (selectedDates, dateStr) {
       // Update table start date picker's max date
       tableStartDatePicker.set("maxDate", selectedDates[0]);
-    }
+    },
   });
 
-  return { 
-    startDatePicker, 
+  return {
+    startDatePicker,
     endDatePicker,
     tableStartDatePicker,
-    tableEndDatePicker
+    tableEndDatePicker,
   };
 }
 
@@ -534,7 +540,7 @@ function initializeDateTimePickers() {
 function filterTableByDate(data, startDate, endDate) {
   if (!startDate || !endDate) return data;
 
-  return data.filter(record => {
+  return data.filter((record) => {
     const recordDate = new Date(record.timestamp);
     return recordDate >= startDate && recordDate <= endDate;
   });
@@ -543,7 +549,8 @@ function filterTableByDate(data, startDate, endDate) {
 // Add event listeners
 document.getElementById("apply-button").addEventListener("click", async () => {
   currentPage = 1;
-  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
+  const timeRange =
+    document.querySelector(".filter-select")?.value || "Last 1 Hour";
   await updateChartAndAverages(timeRange);
 });
 
@@ -556,20 +563,23 @@ document
   ?.addEventListener("click", toggleFullscreen);
 
 // Add event listeners for checkboxes
-document.getElementById('show-temp-humid').addEventListener('change', () => {
-  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
+document.getElementById("show-temp-humid").addEventListener("change", () => {
+  const timeRange =
+    document.querySelector(".filter-select")?.value || "Last 1 Hour";
   updateChartAndAverages(timeRange);
 });
 
-document.getElementById('show-light').addEventListener('change', () => {
-  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
+document.getElementById("show-light").addEventListener("change", () => {
+  const timeRange =
+    document.querySelector(".filter-select")?.value || "Last 1 Hour";
   updateChartAndAverages(timeRange);
 });
 
 // Add event listener for table search button
-document.getElementById('table-search-button').addEventListener('click', () => {
+document.getElementById("table-search-button").addEventListener("click", () => {
   currentPage = 1; // Reset to first page when searching
-  const timeRange = document.querySelector(".filter-select")?.value || "Last 1 Hour";
+  const timeRange =
+    document.querySelector(".filter-select")?.value || "Last 1 Hour";
   updateDashboard(timeRange);
 });
 
