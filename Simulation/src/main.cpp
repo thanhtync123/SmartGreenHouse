@@ -21,7 +21,7 @@ const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
 
 bool isControlled = false;
 bool isWatering = false;
-
+bool lightModule_auto = true;
 WiFiClient espClient;
 PubSubClient client(espClient);
 DHT dht(DHTPIN, DHTTYPE);
@@ -92,17 +92,9 @@ void callback(char *topic, byte *payload, unsigned int length)
     DeserializationError err = deserializeJson(doc, payload, length);
     String mode = doc["mode"];
     if (mode == "manual")
-    {
-      lcd.setCursor(0, 0);
-      lcd.print("                      ");
-      lcd.print("L_MD:Manual");
-    }
+      lightModule_auto = false;
     else if (mode == "auto")
-    {
-      lcd.setCursor(0, 0);
-      lcd.print("                     ");
-      lcd.print("L_MD:Auto");
-    }
+      lightModule_auto = true;
   }
 }
 void setup()
@@ -156,54 +148,61 @@ void loop()
   int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (6000 - 1);
   Serial.print("Giá trị ánh sáng: ");
   Serial.println(lux);
-
-  int brightness_percent = 0;
-  if (lux >= 4000)
-  {
-    brightness_percent = 0;
-    digitalWrite(DENCHIEUSANG_PIN, LOW);
-  }
-  else if (lux >= 1500)
-  {
-    brightness_percent = 25;
-    digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-  else if (lux >= 200)
-  {
-    brightness_percent = 63;
-    digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-  else
-  {
-    brightness_percent = 100;
-    digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-
   const char *roofStatus;
-  if (lux >= 3000)
+  int brightness_percent = 0;
+  if (lightModule_auto)
   {
-    servoMaiChe.write(90);
-    roofStatus = "close";
+    lcd.setCursor(0, 1);
+    lcd.print("L_MD:Auto1");
+    if (lux >= 4000)
+    {
+      brightness_percent = 0;
+      digitalWrite(DENCHIEUSANG_PIN, LOW);
+    }
+    else if (lux >= 1500)
+    {
+      brightness_percent = 25;
+      digitalWrite(DENCHIEUSANG_PIN, HIGH);
+    }
+    else if (lux >= 200)
+    {
+      brightness_percent = 63;
+      digitalWrite(DENCHIEUSANG_PIN, HIGH);
+    }
+    else
+    {
+      brightness_percent = 100;
+      digitalWrite(DENCHIEUSANG_PIN, HIGH);
+    }
+    if (lux >= 3000)
+    {
+      servoMaiChe.write(90);
+      roofStatus = "close";
+    }
+    else
+    {
+      servoMaiChe.write(0);
+      roofStatus = "open";
+    }
+    // Tạo JSON cho ánh sáng (light_sensor_module)
+    DynamicJsonDocument lightModuleDoc(128);
+    lightModuleDoc["brightness_percent"] = brightness_percent;
+    lightModuleDoc["roofStatus"] = roofStatus;
+    char lightModuleBuffer[128];
+    serializeJson(lightModuleDoc, lightModuleBuffer);
+
+    // Gửi dữ liệu light_sensor_module chỉ khi trạng thái thay đổi
+    if (brightness_percent != lastBrightness || String(roofStatus) != lastRoof)
+    {
+      lastBrightness = brightness_percent;
+      lastRoof = String(roofStatus);
+      client.publish(MQTT_TOPIC_LIGHT_MODULE, lightModuleBuffer);
+    }
   }
   else
   {
-    servoMaiChe.write(0);
-    roofStatus = "open";
-  }
-
-  // Tạo JSON cho ánh sáng (light_sensor_module)
-  DynamicJsonDocument lightModuleDoc(128);
-  lightModuleDoc["brightness_percent"] = brightness_percent;
-  lightModuleDoc["roofStatus"] = roofStatus;
-  char lightModuleBuffer[128];
-  serializeJson(lightModuleDoc, lightModuleBuffer);
-
-  // Gửi dữ liệu light_sensor_module chỉ khi trạng thái thay đổi
-  if (brightness_percent != lastBrightness || String(roofStatus) != lastRoof)
-  {
-    lastBrightness = brightness_percent;
-    lastRoof = String(roofStatus);
-    client.publish(MQTT_TOPIC_LIGHT_MODULE, lightModuleBuffer);
+    lcd.setCursor(0, 1);
+    lcd.print("L_MD:Manual1");
   }
 
   // Tạo JSON cho ánh sáng (light_sensor)
