@@ -93,14 +93,17 @@
             <div class="control-item">
               <div class="control-info">
                 <div class="control-name">Đèn</div>
-                <div class="control-value">Độ sáng: 75%</div>
+                <div class="control-value">
+                  <span>Độ sáng: </span>
+                  <span id="brightness_percent">75%</span>
+                </div>
               </div>
               <div class="control-actions">
                 <div class="toggle-switch active">
                   <div class="toggle-slider"id="tg_bulb" ></div>
                 </div>
                 <div class="control-slider">
-                  <input type="range" min="0" max="100" value="75" />
+                  <input type="range" min="0" max="100" value="75" id="light_range" />
                 </div>
               </div>
             </div>
@@ -140,19 +143,19 @@
               <i class="fas fa-warehouse"></i>
               Mái che
             </div>
-            <div class="control-status inactive">
-              <span>Đang đóng</span>
+            <div class="control-status active">
+              <span>Đang hoạt động</span>
             </div>
           </div>
           <div class="control-items">
             <div class="control-item">
               <div class="control-info">
                 <div class="control-name">Mái che</div>
-                <div class="control-value">Đóng</div>
+                <span id="roof_status">Đang đóng</span>
               </div>
               <div class="control-actions">
                 <div class="toggle-switch">
-                  <div class="toggle-slider"></div>
+                  <div class="toggle-slider" id="roof_slider"></div>
                 </div>
               </div>
             </div>
