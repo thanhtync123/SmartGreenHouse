@@ -52,8 +52,15 @@ if (auto_mode) {
 if (tg_bulb) {
   tg_bulb.addEventListener("click", function () {
     if (current_mode === "manual") {
-      if (tg_bulb?.parentElement)
+      if (tg_bulb?.parentElement) {
         tg_bulb.parentElement.classList.toggle("active");
+        const message = new Paho.MQTT.Message(
+          JSON.stringify({ mode: "manual", status: "toggle" })
+        );
+        message.destinationName = "light_sensor_module";
+        client.send(message);
+      }
+
       // Gửi lệnh bật/tắt đèn ở đây nếu cần
     } else {
       alert("Chỉ có thể điều khiển khi ở chế độ THỦ CÔNG.");
@@ -64,27 +71,22 @@ client.onMessageArrived = function (msg) {
   const json = JSON.parse(msg.payloadString);
   const brightness_percent = json.brightness_percent;
   const roof_status_value = json.roofStatus?.toLowerCase();
-  if (current_mode === "auto" || current_mode === "manual") {
-    if (tg_bulb?.parentElement)
-      tg_bulb.parentElement.classList.toggle(
-        "active",
-        brightness_percent !== 0
-      );
 
-    if (lb_brightness_percent)
-      lb_brightness_percent.innerText = brightness_percent + "%";
-    if (light_range)
-      (light_range as HTMLInputElement).value = brightness_percent;
-    if (roof_slider?.parentElement) {
-      roof_slider.parentElement.classList.toggle(
-        "active",
-        roof_status_value === "open"
-      );
-    }
-    if (roof_status)
-      roof_status.innerText =
-        roof_status_value === "open" ? "Đang mở" : "Đang đóng";
+  if (tg_bulb?.parentElement)
+    tg_bulb.parentElement.classList.toggle("active", brightness_percent !== 0);
 
-    console.log(JSON.stringify(json, null, 2)); // 1
+  if (lb_brightness_percent)
+    lb_brightness_percent.innerText = brightness_percent + "%";
+  if (light_range) (light_range as HTMLInputElement).value = brightness_percent;
+  if (roof_slider?.parentElement) {
+    roof_slider.parentElement.classList.toggle(
+      "active",
+      roof_status_value === "open"
+    );
   }
+  if (roof_status)
+    roof_status.innerText =
+      roof_status_value === "open" ? "Đang mở" : "Đang đóng";
+
+  console.log(JSON.stringify(json, null, 2)); // 1
 };
