@@ -22,11 +22,11 @@
 
       <!-- Mode Selection -->
       <div class="card mode-selection">
-        <div class="card-header">
+        <div class="card-header" >
           <div class="card-title">Chế độ hoạt động</div>
         </div>
-        <div class="mode-options">
-          <div class="mode-option active">
+        <div class="mode-options" >
+          <div class="mode-option active" id="auto-mode">
             <i class="fas fa-robot"></i>
             <span>Tự động</span>
             <p>
@@ -34,7 +34,7 @@
               tối ưu
             </p>
           </div>
-          <div class="mode-option">
+          <div class="mode-option" id="manual-mode">
             <i class="fas fa-user-cog"></i>
             <span>Thủ công</span>
             <p>Điều khiển thủ công toàn bộ hệ thống và thông số</p>
@@ -97,7 +97,7 @@
               </div>
               <div class="control-actions">
                 <div class="toggle-switch active">
-                  <div class="toggle-slider"></div>
+                  <div class="toggle-slider"id="tg_bulb" ></div>
                 </div>
                 <div class="control-slider">
                   <input type="range" min="0" max="100" value="75" />
@@ -190,6 +190,8 @@
       </div>
     </div>
     <script src="./js/sidebar.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
     <script src="./js/light_control.js"></script>
+
   </body>
 </html>
