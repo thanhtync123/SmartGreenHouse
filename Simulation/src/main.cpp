@@ -15,7 +15,8 @@ const char *MQTT_SERVER = "broker.emqx.io";
 const int MQTT_PORT = 1883;
 const char *MQTT_TOPIC = "dht22";
 const char *MQTT_TOPIC_LIGHT = "light_sensor";
-const char *MQTT_TOPIC_LIGHT_MODULE = "light_sensor_module";
+const char *MQTT_TOPIC_LIGHT_MODULE_STATE = "light_module_state";
+const char *MQTT_TOPIC_LIGHT_MODULE_CONTROL = "light_module_control";
 const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
 const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
 
@@ -35,9 +36,27 @@ Servo servoMaiChe;
 unsigned long lastMillis10s = 0;
 
 // Biến lưu trạng thái cũ để phát hiện thay đổi
-int lastBrightness = -1;
-String lastRoof = "";
-
+int lastBulb_state = -1;
+int lastRoof_state = -1;
+String mode_L = "auto";
+int bulb_state = -1;
+int roof_state = -1;
+int last_bulb_state = -1;
+int last_roof_state = -1;
+void sendLightModuleStateIfChanged()
+{
+  if (last_bulb_state != bulb_state || last_roof_state != roof_state)
+  {
+    last_bulb_state = bulb_state;
+    last_roof_state = roof_state;
+    DynamicJsonDocument doc(128);
+    doc["bulb_state"] = bulb_state;
+    doc["roof_state"] = roof_state;
+    char buffer[128];
+    serializeJson(doc, buffer);
+    client.publish(MQTT_TOPIC_LIGHT_MODULE_STATE, buffer);
+  }
+}
 void WIFIConnect()
 {
   Serial.println("Kết nối WiFi...");
@@ -61,6 +80,7 @@ void MQTT_Reconnect()
     {
       Serial.println("Đã kết nối MQTT!");
       client.subscribe(MQTT_TOPIC);
+      client.subscribe(MQTT_TOPIC_LIGHT_MODULE_CONTROL);
     }
     else
     {
@@ -81,6 +101,47 @@ bool millis10s()
   }
   return false;
 }
+void callback(char *topic, byte *payload, unsigned int length)
+{
+  if (String(topic) == "light_module_control")
+  {
+    payload[length] = '\0';                   // Kết thúc chuỗi
+    String message = String((char *)payload); // Chuyển payload thành chuỗi
+    JsonDocument doc;
+    deserializeJson(doc, message);
+    const char *action = doc["action"];
+    const char *mode = doc["mode"];
+    mode_L = String(doc["mode"].as<String>());
+    String action_L = doc["action"];
+    if (action_L == "turn_on_light")
+    {
+      digitalWrite(DENCHIEUSANG_PIN, HIGH);
+      bulb_state = 1;
+      sendLightModuleStateIfChanged();
+    }
+    else if (action_L == "turn_off_light")
+    {
+      digitalWrite(DENCHIEUSANG_PIN, LOW);
+      bulb_state = 0;
+      sendLightModuleStateIfChanged();
+    }
+    else if (action_L == "open_roof")
+    {
+      servoMaiChe.write(0);
+      roof_state = 1;
+      sendLightModuleStateIfChanged();
+    }
+    else if (action_L == "close_roof")
+    {
+      servoMaiChe.write(90);
+      roof_state = 0;
+
+      sendLightModuleStateIfChanged();
+    }
+
+    Serial.println(mode_L);
+  }
+}
 
 void setup()
 {
@@ -95,6 +156,7 @@ void setup()
   pinMode(MOTOR_PIN, OUTPUT);
   servoMaiChe.attach(MAICHE_PIN);
   servoMaiChe.write(0);
+  client.setCallback(callback);
 }
 
 void loop()
@@ -115,12 +177,12 @@ void loop()
     return;
   }
 
-  Serial.print("Nhiệt độ: ");
-  Serial.print(t);
-  Serial.println("°C");
-  Serial.print("Độ ẩm: ");
-  Serial.print(h);
-  Serial.println("%");
+  // Serial.print("Nhiệt độ: ");
+  // Serial.print(t);
+  // Serial.println("°C");
+  // Serial.print("Độ ẩm: ");
+  // Serial.print(h);
+  // Serial.println("%");
 
   DynamicJsonDocument dhtDoc(200);
   dhtDoc["temperature"] = t;
@@ -131,9 +193,9 @@ void loop()
   // Đọc độ ẩm đất
   int soilMoisture = analogRead(SOIL_SENSOR_PIN);
   int soilMoisturePercent = map(soilMoisture, 4095, 0, 0, 100);
-  Serial.print("Độ ẩm đất: ");
-  Serial.print(soilMoisturePercent);
-  Serial.println("%");
+  // Serial.print("Độ ẩm đất: ");
+  // Serial.print(soilMoisturePercent);
+  // Serial.println("%");
 
   DynamicJsonDocument soilDoc(128);
   soilDoc["soil_moisture"] = soilMoisturePercent;
@@ -166,27 +228,37 @@ void loop()
 
   // CẢM BIẾN ÁNH SÁNG ----------------------------------------
   int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (10000 - 1);
-  if (lux < 4000)
+  if (mode_L == "auto")
   {
-    digitalWrite(DENCHIEUSANG_PIN, HIGH);
-    servoMaiChe.write(90);
-  }
-  else
-  {
-    digitalWrite(DENCHIEUSANG_PIN, LOW);
-    servoMaiChe.write(0);
+    if (lux < 4000)
+    {
+      digitalWrite(DENCHIEUSANG_PIN, 0);
+      servoMaiChe.write(90);
+      bulb_state = 0;
+      roof_state = 0;
+    }
+    else
+    {
+      digitalWrite(DENCHIEUSANG_PIN, 1);
+      servoMaiChe.write(0);
+      bulb_state = 1;
+      roof_state = 1;
+    }
   }
 
+  sendLightModuleStateIfChanged();
+
+  // tạo json cho cảm biến ánh sáng
   DynamicJsonDocument lightDoc(128);
   lightDoc["light"] = lux;
   char lightBuffer[128];
   serializeJson(lightDoc, lightBuffer);
-  // CẢM BIẾN ÁNH SÁNG ----------------------------------------
+  // -------------------------------------------------------
 
   if (millis10s())
   {
-    client.publish(MQTT_TOPIC_LIGHT, lightBuffer);
-    client.publish(MQTT_TOPIC, dhtBuffer);
-    client.publish(MQTT_TOPIC_SOILSENSOR, soilBuffer);
+    client.publish(MQTT_TOPIC_LIGHT, lightBuffer, true);
+    client.publish(MQTT_TOPIC, dhtBuffer, true);
+    client.publish(MQTT_TOPIC_SOILSENSOR, soilBuffer, true);
   }
 }

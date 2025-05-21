@@ -27,7 +27,7 @@
 
   // Xác định trạng thái ánh sáng
   function getLightStatus(lux) {
-    if (lux > 4000) return { class: "sunny", text: "Lý tưởng", icon: "sun" };
+    if (lux > 4000) return { class: "optimal", text: "Lý tưởng", icon: "sun" };
     return {
       class: "warning",
       text: "Thiếu ánh sáng",
@@ -81,7 +81,7 @@
     try {
       const data = JSON.parse(message.payloadString);
       const lux = data.light;
-      const percent = Math.round((lux / 6000) * 100); // Đã sửa max thành 6000
+      const percent = Math.round((lux / 10000) * 100);
       const status = getLightStatus(lux);
 
       // Cập nhật card
@@ -268,7 +268,7 @@
         updateChartData(lux, timestamp);
 
         // Cập nhật card nếu không có MQTT
-        const percent = Math.round((lux / 6000) * 100); // Đã sửa max thành 6000
+        const percent = Math.round((lux / 6000) * 100);
         const status = getLightStatus(lux);
         $(".card:has(.card-icon.light) #light_value").html(
           `${lux}<span class='card-unit'>lux</span>`
