@@ -11,82 +11,57 @@ client.connect({
   },
 });
 
-// Lấy phần tử theo id
+// Lấy phần tử DOM
 const manual_mode = document.getElementById("manual-mode");
 const auto_mode = document.getElementById("auto-mode");
 const tg_bulb = document.getElementById("tg_bulb");
+const btn_toggle_bulb = document.getElementById("btn_toggle_bulb");
 const lb_brightness_percent = document.getElementById("brightness_percent");
 const light_range = document.getElementById("light_range");
 const roof_status = document.getElementById("roof_status");
 const roof_slider = document.getElementById("roof_slider");
-let current_mode = "auto";
-console.log(current_mode);
 
+// Gửi mode: manual
 if (manual_mode) {
   manual_mode.addEventListener("click", function () {
-    if (auto_mode) auto_mode.classList.remove("active");
-    {
-      manual_mode.classList.add("active");
-      current_mode = "manual";
-      console.log(current_mode);
-      const message = new Paho.MQTT.Message(JSON.stringify({ mode: "manual" }));
-      message.destinationName = "light_sensor_module";
-      client.send(message);
-    }
+    auto_mode?.classList.remove("active");
+    manual_mode.classList.add("active");
   });
 }
-// Sự kiện click cho nút tự động
+
+// Gửi mode: auto
 if (auto_mode) {
   auto_mode.addEventListener("click", function () {
-    if (manual_mode) manual_mode.classList.remove("active");
-    {
-      auto_mode.classList.add("active");
-      current_mode = "auto";
-      console.log(current_mode);
-      const message = new Paho.MQTT.Message(JSON.stringify({ mode: "auto" }));
-      message.destinationName = "light_sensor_module";
-      client.send(message);
-    }
+    manual_mode?.classList.remove("active");
+    auto_mode.classList.add("active");
   });
 }
-if (tg_bulb) {
-  tg_bulb.addEventListener("click", function () {
-    if (current_mode === "manual") {
-      if (tg_bulb?.parentElement) {
-        tg_bulb.parentElement.classList.toggle("active");
-        const message = new Paho.MQTT.Message(
-          JSON.stringify({ mode: "manual", status: "toggle" })
-        );
-        message.destinationName = "light_sensor_module";
-        client.send(message);
-      }
 
-      // Gửi lệnh bật/tắt đèn ở đây nếu cần
-    } else {
-      alert("Chỉ có thể điều khiển khi ở chế độ THỦ CÔNG.");
-    }
-  });
-}
+// Nhận trạng thái từ MQTT và đồng bộ giao diện
 client.onMessageArrived = function (msg) {
   const json = JSON.parse(msg.payloadString);
   const brightness_percent = json.brightness_percent;
   const roof_status_value = json.roofStatus?.toLowerCase();
+
+  // Đồng bộ giao diện chỉ khi ở chế độ auto
 
   if (tg_bulb?.parentElement)
     tg_bulb.parentElement.classList.toggle("active", brightness_percent !== 0);
 
   if (lb_brightness_percent)
     lb_brightness_percent.innerText = brightness_percent + "%";
+
   if (light_range) (light_range as HTMLInputElement).value = brightness_percent;
-  if (roof_slider?.parentElement) {
+
+  if (roof_slider?.parentElement)
     roof_slider.parentElement.classList.toggle(
       "active",
       roof_status_value === "open"
     );
-  }
+
   if (roof_status)
     roof_status.innerText =
       roof_status_value === "open" ? "Đang mở" : "Đang đóng";
 
-  console.log(JSON.stringify(json, null, 2)); // 1
+  console.log("Dữ liệu gửi:", JSON.stringify(json, null, 2));
 };
