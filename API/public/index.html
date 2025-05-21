@@ -153,6 +153,86 @@
           </div>
         </div>
       </div>
+      <!-- Kết thúc .dashboard -->
+
+      <!-- Quản lý tình trạng thiết bị -->
+      <div class="device-status-section">
+        <h3>Quản lý tình trạng thiết bị</h3>
+        <table class="device-status-table">
+          <thead>
+            <tr>
+              <th>Thiết bị/Cảm biến</th>
+              <th>Tình trạng</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nhiệt độ &amp; Độ ẩm</td>
+              <td>
+                <span id="lb_dht22_state" class="status-connected"
+                  >Đã kết nối</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Cảm biến ánh sáng</td>
+              <td>
+                <span id="lb_light_state" class="status-connected"
+                  >Đã kết nối</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Cảm biến độ ẩm đất</td>
+              <td>
+                <span id="lb_soil_state" class="status-connected"
+                  >Đã kết nối</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Mái che</td>
+              <td>
+                <span id="lb_roof_state" class="status-connected"
+                  >Đã kết nối</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Đèn chiếu sáng</td>
+              <td>
+                <span id="lb_lamp_state" class="status-connected"
+                  >Đã kết nối</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Quạt</td>
+              <td>
+                <span id="lb_fan_state" class="status-connected"
+                  >Đã kết nối</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Máy bơm</td>
+              <td>
+                <span id="lb_pump_state" class="status-connected"
+                  >Đã kết nối</span
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="light-threshold-setting">
+        Thiết lập ngưỡng cho cảm biến ánh sáng
+        <span>Ngưỡng hiện tại:</span>
+        <span id="lb_current_threshold"></span>
+
+        <input type="text" id="txb_light_threshold" />
+        <button id="btn_threshold_set">Xác nhận</button>
+      </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script
@@ -165,5 +245,6 @@
     <script src="./js/light.js"></script>
     <script src="./js/soilsensor.js"></script>
     <script src="./js/time.js"></script>
+    <script src="./js/light_threshold.js"></script>
   </body>
 </html>

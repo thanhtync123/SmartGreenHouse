@@ -9,7 +9,6 @@ const dht22AllreadingRoutes = require("./routes/dht22Allreadings");
 const authRoutes = require("./routes/auth");
 const bh1750readingRouter = require("./routes/bh1750reading");
 
-
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
 // Route
@@ -20,14 +19,11 @@ app.get("/register", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "register.html"));
 });
 
-
 app.use(express.json());
-app.use('/api', authRoutes);
-app.use('/api', dht22readingRoutes);
-app.use('/api', dht22AllreadingRoutes);
-app.use('/api', bh1750readingRouter);
-
-
+app.use("/api", authRoutes);
+app.use("/api", dht22readingRoutes);
+app.use("/api", dht22AllreadingRoutes);
+app.use("/api", bh1750readingRouter);
 
 // Thêm debug info để kiểm tra các route
 const publicPath = path.join(__dirname, "public");
@@ -144,7 +140,7 @@ function setupMqtt() {
           [data.moisture]
         );
       } else if (topic === "light_sensor") {
-        const lightValue = data.light; 
+        const lightValue = data.light;
         await connection.query(
           "INSERT INTO bh1370 (light_intensity) VALUES (?)",
           [lightValue]

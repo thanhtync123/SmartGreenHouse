@@ -33,3 +33,43 @@
 .status.danger {
     color: #dc3545;
 }
+.device-status-section {
+  margin: 32px 0 0 0;
+  padding: 24px;
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.05);
+}
+.device-status-section h3 {
+  margin-top: 0;
+  color: #2980b9;
+  margin-bottom: 18px;
+}
+.device-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.device-status-table th, .device-status-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+.device-status-table th {
+  background: #f1f8ff;
+  color: #2980b9;
+  font-weight: 600;
+}
+.device-status-table tr:last-child td {
+  border-bottom: none;
+}
+.status-connected {
+  color: #43a047;
+  font-weight: bold;
+}
+.status-failed {
+  color: #e53935;
+  font-weight: bold;
+}

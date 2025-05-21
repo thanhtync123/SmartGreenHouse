@@ -2353,3 +2353,61 @@ body {
 
 
 }
+/* ...existing code... */
+.light-threshold-setting {
+  margin: 32px auto 0 auto;
+  padding: 20px 28px;
+  max-width: 480px;
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  font-size: 1.08rem;
+  color: #222;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.light-threshold-setting span {
+  font-weight: 500;
+  color: #0d6efd;
+}
+
+#lb_current_threshold {
+  font-weight: bold;
+  color: #e67e22;
+  margin: 0 4px;
+}
+
+#txb_light_threshold {
+  width: 80px;
+  padding: 6px 10px;
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-left: 8px;
+  margin-right: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#txb_light_threshold:focus {
+  border-color: #0d6efd;
+}
+
+#btn_threshold_set {
+  padding: 7px 18px;
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#btn_threshold_set:hover {
+  background: #0b5ed7;
+}
+/* ...existing code... */

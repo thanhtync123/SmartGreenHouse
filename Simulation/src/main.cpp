@@ -5,7 +5,7 @@
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(0x27, 40, 4);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 #define DHTPIN 14
 #define DHTTYPE DHT22
 
@@ -19,6 +19,7 @@ const char *MQTT_TOPIC_LIGHT_MODULE_STATE = "light_module_state";
 const char *MQTT_TOPIC_LIGHT_MODULE_CONTROL = "light_module_control";
 const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
 const char *MQTT_TOPIC_ISWATERING = "isWatering_pt";
+const char *MQTT_TOPIC_LIGHT_THRESHOLD = "light_threshold";
 
 bool isControlled = false;
 bool isWatering = false;
@@ -43,6 +44,7 @@ int bulb_state = -1;
 int roof_state = -1;
 int last_bulb_state = -1;
 int last_roof_state = -1;
+int light_threshold = 4000;
 void sendLightModuleStateIfChanged()
 {
   if (last_bulb_state != bulb_state || last_roof_state != roof_state)
@@ -81,6 +83,7 @@ void MQTT_Reconnect()
       Serial.println("Đã kết nối MQTT!");
       client.subscribe(MQTT_TOPIC);
       client.subscribe(MQTT_TOPIC_LIGHT_MODULE_CONTROL);
+      client.subscribe(MQTT_TOPIC_LIGHT_THRESHOLD);
     }
     else
     {
@@ -141,8 +144,18 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     Serial.println(mode_L);
   }
+  else if (String(topic) == "light_threshold")
+  {
+    payload[length] = '\0'; // Thêm dấu kết thúc chuỗi
+    String msg = String((char *)payload);
+    light_threshold = msg.toInt();
+    Serial.print("Độ sáng ngưỡng: ");
+    Serial.println(light_threshold);
+  }
 }
-
+void device_check()
+{
+}
 void setup()
 {
   lcd.init();      // Khởi tạo LCD
@@ -230,7 +243,7 @@ void loop()
   int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (10000 - 1);
   if (mode_L == "auto")
   {
-    if (lux < 4000)
+    if (lux > light_threshold)
     {
       digitalWrite(DENCHIEUSANG_PIN, 0);
       servoMaiChe.write(90);
@@ -255,10 +268,33 @@ void loop()
   serializeJson(lightDoc, lightBuffer);
   // -------------------------------------------------------
 
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(t);
+  lcd.print("C");
+  lcd.print("        ");
+  lcd.setCursor(0, 1);
+  lcd.print("Humidity: ");
+  lcd.print(h);
+  lcd.print("%");
+  lcd.print("        ");
+  lcd.setCursor(0, 2);
+  lcd.print("Soil: ");
+  lcd.print(soilMoisturePercent);
+  lcd.print("%");
+  lcd.print("        ");
+  lcd.setCursor(0, 3);
+  lcd.print("Lux: ");
+  lcd.print(lux);
+  lcd.print("        ");
+
   if (millis10s())
   {
     client.publish(MQTT_TOPIC_LIGHT, lightBuffer, true);
     client.publish(MQTT_TOPIC, dhtBuffer, true);
     client.publish(MQTT_TOPIC_SOILSENSOR, soilBuffer, true);
+    char thresholdBuffer[16];
+    snprintf(thresholdBuffer, sizeof(thresholdBuffer), "%d", light_threshold);
+    client.publish(MQTT_TOPIC_LIGHT_THRESHOLD, thresholdBuffer, true);
   }
 }
