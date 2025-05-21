@@ -20,12 +20,37 @@ const lb_brightness_percent = document.getElementById("brightness_percent");
 const light_range = document.getElementById("light_range");
 const roof_status = document.getElementById("roof_status");
 const roof_slider = document.getElementById("roof_slider");
+const btn_batden = document.getElementById(
+  "btn_batden"
+) as HTMLButtonElement | null;
+const btn_tatden = document.getElementById(
+  "btn_tatden"
+) as HTMLButtonElement | null;
 
+if (btn_batden) btn_batden.disabled = true;
+if (btn_tatden) btn_tatden.disabled = true;
+
+btn_batden?.addEventListener("click", function () {
+  const message = new Paho.MQTT.Message(
+    JSON.stringify({ mode: "auto", bulb: "high" })
+  );
+  message.destinationName = "light_sensor_module";
+  client.send(message);
+});
+btn_tatden?.addEventListener("click", function () {
+  const message = new Paho.MQTT.Message(
+    JSON.stringify({ mode: "manual", bulb: "low" })
+  );
+  message.destinationName = "light_sensor_module";
+  client.send(message);
+});
 // Gửi mode: manual
 if (manual_mode) {
   manual_mode.addEventListener("click", function () {
     auto_mode?.classList.remove("active");
     manual_mode.classList.add("active");
+    if (btn_batden) btn_batden.disabled = false;
+    if (btn_tatden) btn_tatden.disabled = false;
   });
 }
 
@@ -34,6 +59,8 @@ if (auto_mode) {
   auto_mode.addEventListener("click", function () {
     manual_mode?.classList.remove("active");
     auto_mode.classList.add("active");
+    if (btn_batden) btn_batden.disabled = true;
+    if (btn_tatden) btn_tatden.disabled = true;
   });
 }
 

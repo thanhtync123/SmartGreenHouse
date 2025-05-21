@@ -22,10 +22,10 @@
 
       <!-- Mode Selection -->
       <div class="card mode-selection">
-        <div class="card-header" >
+        <div class="card-header">
           <div class="card-title">Chế độ hoạt động</div>
         </div>
-        <div class="mode-options" >
+        <div class="mode-options">
           <div class="mode-option active" id="auto-mode">
             <i class="fas fa-robot"></i>
             <span>Tự động</span>
@@ -49,35 +49,6 @@
 
       <!-- Control Panels -->
       <div class="control-panels">
-        <!-- Fan Control -->
-        <div class="card control-panel">
-          <div class="card-header">
-            <div class="card-title">
-              <i class="fas fa-fan"></i>
-              Quạt thông gió
-            </div>
-            <div class="control-status active">
-              <span>Đang hoạt động</span>
-            </div>
-          </div>
-          <div class="control-items">
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Quạt</div>
-                <div class="control-value">Tốc độ: 65%</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch active">
-                  <div class="toggle-slider"></div>
-                </div>
-                <div class="control-slider">
-                  <input type="range" min="0" max="100" value="65" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Light Control -->
         <div class="card control-panel">
           <div class="card-header">
@@ -100,42 +71,23 @@
               </div>
               <div class="control-actions">
                 <div class="toggle-switch active">
-                  <div class="toggle-slider"id="tg_bulb" ></div>
+                  <div class="toggle-slider" id="tg_bulb"></div>
                 </div>
                 <div class="control-slider">
-                  <input type="range" min="0" max="100" value="75" id="light_range" />
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="75"
+                    id="light_range"
+                  />
                 </div>
               </div>
             </div>
+            <button id="btn_batden">Bật đèn</button>
+            <button id="btn_tatden">Tắt đèn</button>
           </div>
         </div>
-
-        <!-- Water Pump Control -->
-        <div class="card control-panel">
-          <div class="card-header">
-            <div class="card-title">
-              <i class="fas fa-faucet"></i>
-              Bơm nước
-            </div>
-            <div class="control-status inactive">
-              <span>Không hoạt động</span>
-            </div>
-          </div>
-          <div class="control-items">
-            <div class="control-item">
-              <div class="control-info">
-                <div class="control-name">Bơm nước</div>
-                <div class="control-value">Tắt</div>
-              </div>
-              <div class="control-actions">
-                <div class="toggle-switch">
-                  <div class="toggle-slider"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Roof Control -->
         <div class="card control-panel">
           <div class="card-header">
@@ -157,6 +109,60 @@
                 <div class="toggle-switch">
                   <div class="toggle-slider" id="roof_slider"></div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Fan Control -->
+      <div class="card control-panel">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-fan"></i>
+            Quạt thông gió
+          </div>
+          <div class="control-status active">
+            <span>Đang hoạt động</span>
+          </div>
+        </div>
+        <div class="control-items">
+          <div class="control-item">
+            <div class="control-info">
+              <div class="control-name">Quạt</div>
+              <div class="control-value">Tốc độ: 65%</div>
+            </div>
+            <div class="control-actions">
+              <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+              </div>
+              <div class="control-slider">
+                <input type="range" min="0" max="100" value="65" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Water Pump Control -->
+      <div class="card control-panel">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-faucet"></i>
+            Bơm nước
+          </div>
+          <div class="control-status inactive">
+            <span>Không hoạt động</span>
+          </div>
+        </div>
+        <div class="control-items">
+          <div class="control-item">
+            <div class="control-info">
+              <div class="control-name">Bơm nước</div>
+              <div class="control-value">Tắt</div>
+            </div>
+            <div class="control-actions">
+              <div class="toggle-switch">
+                <div class="toggle-slider"></div>
               </div>
             </div>
           </div>
@@ -193,8 +199,10 @@
       </div>
     </div>
     <script src="./js/sidebar.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"
+      type="text/javascript"
+    ></script>
     <script src="./js/light_control.js"></script>
-
   </body>
 </html>

@@ -16,11 +16,31 @@ const lb_brightness_percent = document.getElementById("brightness_percent");
 const light_range = document.getElementById("light_range");
 const roof_status = document.getElementById("roof_status");
 const roof_slider = document.getElementById("roof_slider");
+const btn_batden = document.getElementById("btn_batden");
+const btn_tatden = document.getElementById("btn_tatden");
+if (btn_batden)
+    btn_batden.disabled = true;
+if (btn_tatden)
+    btn_tatden.disabled = true;
+btn_batden === null || btn_batden === void 0 ? void 0 : btn_batden.addEventListener("click", function () {
+    const message = new Paho.MQTT.Message(JSON.stringify({ bulb: "high" }));
+    message.destinationName = "light_sensor_module";
+    client.send(message);
+});
+btn_tatden === null || btn_tatden === void 0 ? void 0 : btn_tatden.addEventListener("click", function () {
+    const message = new Paho.MQTT.Message(JSON.stringify({ bulb: "low" }));
+    message.destinationName = "light_sensor_module";
+    client.send(message);
+});
 // Gửi mode: manual
 if (manual_mode) {
     manual_mode.addEventListener("click", function () {
         auto_mode === null || auto_mode === void 0 ? void 0 : auto_mode.classList.remove("active");
         manual_mode.classList.add("active");
+        if (btn_batden)
+            btn_batden.disabled = false;
+        if (btn_tatden)
+            btn_tatden.disabled = false;
     });
 }
 // Gửi mode: auto
@@ -28,6 +48,10 @@ if (auto_mode) {
     auto_mode.addEventListener("click", function () {
         manual_mode === null || manual_mode === void 0 ? void 0 : manual_mode.classList.remove("active");
         auto_mode.classList.add("active");
+        if (btn_batden)
+            btn_batden.disabled = true;
+        if (btn_tatden)
+            btn_tatden.disabled = true;
     });
 }
 // Nhận trạng thái từ MQTT và đồng bộ giao diện
