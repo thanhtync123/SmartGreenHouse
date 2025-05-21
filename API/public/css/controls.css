@@ -1,0 +1,96 @@
+/* Khối tổng thể card */
+.card.control-panel {
+  background: linear-gradient(135deg, #ffffff, #f1f1f1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 20px 0;
+  font-family: 'Segoe UI', sans-serif;
+  transition: transform 0.3s;
+}
+
+.card.control-panel:hover {
+  transform: scale(1.02);
+}
+
+/* Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-title i {
+  color: #f39c12;
+  font-size: 1.5rem;
+}
+
+/* Trạng thái */
+.control-status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #fff;
+  background-color: #27ae60;
+  font-weight: bold;
+}
+
+.control-status.inactive {
+  background-color: #e74c3c;
+}
+
+/* Các mục điều khiển */
+.control-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.control-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.control-name {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.control-actions span {
+  font-weight: bold;
+  color: #2980b9;
+}
+
+/* Nút */
+.control-items button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #3498db;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.control-items button:hover {
+  background-color: #2980b9;
+}
+
+.control-items button:active {
+  transform: scale(0.97);
+}

@@ -40,6 +40,10 @@ if (
   console.error("Một hoặc nhiều phần tử không tồn tại trong DOM.");
   throw new Error("Một hoặc nhiều phần tử không tồn tại trong DOM.");
 }
+btn_batden.hidden = true;
+btn_tatden.hidden = true;
+btn_momaiche.hidden = true;
+btn_dongmaiche.hidden = true;
 client.onMessageArrived = (message: any) => {
   if (message.destinationName === "light_module_state") {
     const data = JSON.parse(message.payloadString);
