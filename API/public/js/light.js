@@ -27,36 +27,31 @@
 
   // Xác định trạng thái ánh sáng
   function getLightStatus(lux) {
-    if (lux >= 4000) return { class: "sunny", text: "Trời nắng", icon: "sun" };
-    if (lux >= 1500)
-      return { class: "cloudy", text: "Trời nhiều mây", icon: "cloud" };
-    if (lux >= 200)
-      return { class: "rainy", text: "Mưa", icon: "cloud-showers-heavy" };
-    return { class: "danger", text: "Dưới ngưỡng", icon: "exclamation-circle" };
+    if (lux > 4000) return { class: "sunny", text: "Lý tưởng", icon: "sun" };
+    return {
+      class: "warning",
+      text: "Thiếu ánh sáng",
+      icon: "exclamation-circle",
+    };
   }
-  //     ≥ 4000	Trời nắng	0% (tắt đèn)
-  // 1500 – 3999	Nhiều mây	25%
-  // 200 – 1499	Trời âm u / mưa	50% – 75%
-  // < 200	Rất tối / ban đêm	100%
-  //        >= 3000 đóng rèm
-  //       <= 3000 mở rèm
-  // Lưu thời gian cập nhật cuối
+
   let lastUpdate = null;
   let connectionCheckInterval = null;
 
   // Kiểm tra kết nối MQTT
   function checkMQTTConnection() {
     if (!lastUpdate) return;
-    const now = new Date();
-    const diff = Math.floor((now - lastUpdate) / 1000);
-    
+    let lastUpdate = null;
+
     if (diff >= 23) {
       // Hiển thị lỗi kết nối
       $(".card:has(.card-icon.light) #light_value").html(
         "Lỗi kết nối<span class='card-unit'>lux</span>"
       );
       $(".card:has(.card-icon.light) .progress.light").css("width", "0%");
-      $(".card:has(.card-icon.light) .progress-info span:last-child").text("0%");
+      $(".card:has(.card-icon.light) .progress-info span:last-child").text(
+        "0%"
+      );
       const statusDiv = $(".card:has(.card-icon.light) .card-footer .status");
       statusDiv.removeClass().addClass("status light-status danger");
       statusDiv.html(
@@ -86,7 +81,7 @@
     try {
       const data = JSON.parse(message.payloadString);
       const lux = data.light;
-      const percent = Math.round(((lux - 1) / (65535 - 1)) * 100);
+      const percent = Math.round((lux / 6000) * 100); // Đã sửa max thành 6000
       const status = getLightStatus(lux);
 
       // Cập nhật card
@@ -273,7 +268,7 @@
         updateChartData(lux, timestamp);
 
         // Cập nhật card nếu không có MQTT
-        const percent = Math.round(((lux - 1) / (65535 - 1)) * 100);
+        const percent = Math.round((lux / 6000) * 100); // Đã sửa max thành 6000
         const status = getLightStatus(lux);
         $(".card:has(.card-icon.light) #light_value").html(
           `${lux}<span class='card-unit'>lux</span>`
@@ -299,6 +294,13 @@
 
   // Khởi tạo khi trang tải
   $(document).ready(() => {
+    restoreChartData(); // Khôi phục dữ liệu từ localStorage
+    initChart();
+    ajaxUpdateChart();
+    setInterval(ajaxUpdateChart, 5000); // Cập nhật mỗi 5s
+  });
+  // Khởi tạo khi trang tải
+  $(function () {
     restoreChartData(); // Khôi phục dữ liệu từ localStorage
     initChart();
     ajaxUpdateChart();

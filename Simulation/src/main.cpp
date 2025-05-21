@@ -128,68 +128,6 @@ void loop()
   char dhtBuffer[200];
   serializeJson(dhtDoc, dhtBuffer);
 
-  // Đọc cảm biến ánh sáng
-  int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (6000 - 1);
-  Serial.print("Giá trị ánh sáng: ");
-  Serial.println(lux);
-  const char *roofStatus;
-  int brightness_percent = 0;
-
-  lcd.setCursor(0, 1);
-  lcd.print("L_MD:Auto1");
-
-  if (lux >= 4000)
-  {
-    brightness_percent = 0;
-    digitalWrite(DENCHIEUSANG_PIN, LOW);
-  }
-  else if (lux >= 1500)
-  {
-    brightness_percent = 25;
-    digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-  else if (lux >= 200)
-  {
-    brightness_percent = 63;
-    digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-  else
-  {
-    brightness_percent = 100;
-    digitalWrite(DENCHIEUSANG_PIN, HIGH);
-  }
-  if (lux >= 3000)
-  {
-    servoMaiChe.write(90);
-    roofStatus = "close";
-  }
-  else
-  {
-    servoMaiChe.write(0);
-    roofStatus = "open";
-  }
-
-  // Tạo JSON cho ánh sáng (light_sensor_module)
-  DynamicJsonDocument lightModuleDoc(128);
-  lightModuleDoc["brightness_percent"] = brightness_percent;
-  lightModuleDoc["roofStatus"] = roofStatus;
-  char lightModuleBuffer[128];
-  serializeJson(lightModuleDoc, lightModuleBuffer);
-
-  // Gửi dữ liệu light_sensor_module chỉ khi trạng thái thay đổi
-  if (brightness_percent != lastBrightness || String(roofStatus) != lastRoof)
-  {
-    lastBrightness = brightness_percent;
-    lastRoof = String(roofStatus);
-    client.publish(MQTT_TOPIC_LIGHT_MODULE, lightModuleBuffer);
-  }
-
-  // Tạo JSON cho ánh sáng (light_sensor)
-  DynamicJsonDocument lightDoc(128);
-  lightDoc["light"] = lux;
-  char lightBuffer[128];
-  serializeJson(lightDoc, lightBuffer);
-
   // Đọc độ ẩm đất
   int soilMoisture = analogRead(SOIL_SENSOR_PIN);
   int soilMoisturePercent = map(soilMoisture, 4095, 0, 0, 100);
@@ -226,7 +164,25 @@ void loop()
     }
   }
 
-  // Gửi dữ liệu còn lại mỗi 10 giây
+  // CẢM BIẾN ÁNH SÁNG ----------------------------------------
+  int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (10000 - 1);
+  if (lux < 4000)
+  {
+    digitalWrite(DENCHIEUSANG_PIN, HIGH);
+    servoMaiChe.write(90);
+  }
+  else
+  {
+    digitalWrite(DENCHIEUSANG_PIN, LOW);
+    servoMaiChe.write(0);
+  }
+
+  DynamicJsonDocument lightDoc(128);
+  lightDoc["light"] = lux;
+  char lightBuffer[128];
+  serializeJson(lightDoc, lightBuffer);
+  // CẢM BIẾN ÁNH SÁNG ----------------------------------------
+
   if (millis10s())
   {
     client.publish(MQTT_TOPIC_LIGHT, lightBuffer);
