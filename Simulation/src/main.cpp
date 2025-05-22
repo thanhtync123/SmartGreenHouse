@@ -5,6 +5,7 @@
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
 #include <LiquidCrystal_I2C.h>
+
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 #define DHTPIN 14
 #define DHTTYPE DHT22
@@ -34,9 +35,27 @@ Servo servoMaiChe;
 #define SOIL_SENSOR_PIN 33
 #define MOTOR_PIN 5
 
-int WATERING_THRESHOLD = 35;      // Ngưỡng cần tưới (mặc định Ớt)
-int STOP_WATERING_THRESHOLD = 60; // Ngưỡng ngưng tưới (mặc định Ớt)
-String plantType = "ot";          // Mặc định Ớt
+// Define pins for new devices
+#define FAN_PIN 18
+#define MIST_MAKER_PIN 23
+#define HEATER_PIN 27
+
+// Device states
+bool isFanOn = false;
+bool isMistMakerOn = false;
+bool isHeaterOn = false;
+
+// Thresholds for device control
+const float FAN_ON_TEMP = 30.0;       // Turn on fan if temperature > 30°C
+const float FAN_OFF_TEMP = 28.0;      // Turn off fan if temperature < 28°C
+const float MIST_ON_HUMIDITY = 60.0;  // Turn on mist maker if humidity < 60%
+const float MIST_OFF_HUMIDITY = 80.0; // Turn off mist maker if humidity > 80%
+const float HEATER_ON_TEMP = 20.0;    // Turn on heater if temperature < 20°C
+const float HEATER_OFF_TEMP = 22.0;   // Turn off heater if temperature > 22°C
+
+int WATERING_THRESHOLD = 35;      // Default for chili
+int STOP_WATERING_THRESHOLD = 60; // Default for chili
+String plantType = "ot";          // Default chili
 
 unsigned long lastMillis10s = 0;
 int lastSoilMoisturePercent = -1;
@@ -63,19 +82,6 @@ void sendLightModuleStateIfChanged()
     client.publish(MQTT_TOPIC_LIGHT_MODULE_STATE, buffer);
   }
 }
-int lastBrightness = -1;
-String lastRoof = "";
-
-// dht22
-//  Định nghĩa chân cho các thiết bị mới
-#define FAN_PIN 18
-#define MIST_MAKER_PIN 23
-#define HEATER_PIN 27
-
-// Biến trạng thái cho các thiết bị
-bool isFanOn = false;
-bool isMistMakerOn = false;
-bool isHeaterOn = false;
 
 void controlFan(bool state)
 {
@@ -84,7 +90,7 @@ void controlFan(bool state)
   Serial.print("Quạt: ");
   Serial.println(state ? "BẬT" : "TẮT");
 
-  // Gửi trạng thái quạt qua MQTT
+  // Send fan state via MQTT
   DynamicJsonDocument fanDoc(128);
   fanDoc["fanState"] = String(state);
   char fanBuffer[128];
@@ -99,7 +105,7 @@ void controlMistMaker(bool state)
   Serial.print("Phun sương: ");
   Serial.println(state ? "BẬT" : "TẮT");
 
-  // Gửi trạng thái phun sương qua MQTT
+  // Send mist maker state via MQTT
   DynamicJsonDocument mistDoc(128);
   mistDoc["mistMakerState"] = String(state);
   char mistBuffer[128];
@@ -114,48 +120,12 @@ void controlHeater(bool state)
   Serial.print("Máy sưởi: ");
   Serial.println(state ? "BẬT" : "TẮT");
 
-  // Gửi trạng thái máy sưởi qua MQTT
+  // Send heater state via MQTT
   DynamicJsonDocument heaterDoc(128);
   heaterDoc["heaterState"] = String(state);
   char heaterBuffer[128];
   serializeJson(heaterDoc, heaterBuffer);
   client.publish("heater_state_pt", heaterBuffer);
-}
-
-void controlDevicesBasedOnDHT(float temperature, float humidity)
-{
-  // Điều khiển quạt dựa trên nhiệt độ
-  if (!isControlled)
-  { // Chỉ điều khiển tự động nếu không ở chế độ thủ công
-    if (temperature > 30.0 && !isFanOn)
-    {
-      controlFan(true); // Bật quạt nếu nhiệt độ > 30°C
-    }
-    else if (temperature <= 28.0 && isFanOn)
-    {
-      controlFan(false); // Tắt quạt nếu nhiệt độ <= 28°C (hysteresis)
-    }
-
-    // Điều khiển phun sương dựa trên độ ẩm
-    if (humidity < 40.0 && !isMistMakerOn)
-    {
-      controlMistMaker(true); // Bật phun sương nếu độ ẩm < 40%
-    }
-    else if (humidity >= 50.0 && isMistMakerOn)
-    {
-      controlMistMaker(false); // Tắt phun sương nếu độ ẩm >= 50% (hysteresis)
-    }
-
-    // Điều khiển máy sưởi dựa trên nhiệt độ
-    if (temperature < 20.0 && !isHeaterOn)
-    {
-      controlHeater(true); // Bật máy sưởi nếu nhiệt độ < 20°C
-    }
-    else if (temperature >= 22.0 && isHeaterOn)
-    {
-      controlHeater(false); // Tắt máy sưởi nếu nhiệt độ >= 22°C (hysteresis)
-    }
-  }
 }
 
 void WIFIConnect()
@@ -207,60 +177,65 @@ bool millis10s()
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
+  payload[length] = '\0'; // Null-terminate the payload
+  String message = String((char *)payload);
+
+  // Parse JSON message
+  DynamicJsonDocument doc(128);
+  DeserializationError error = deserializeJson(doc, message);
+  if (error)
+  {
+    Serial.print("JSON parse error: ");
+    Serial.println(error.c_str());
+    return;
+  }
+
+  // Handle light module control
   if (String(topic) == "light_module_control")
   {
-    payload[length] = '\0';
-    String message = String((char *)payload);
-    JsonDocument doc;
-    deserializeJson(doc, message);
-    const char *action = doc["action"];
-    const char *mode = doc["mode"];
-    mode_L = String(doc["mode"].as<String>());
-    String action_L = doc["action"];
-    if (action_L == "turn_on_light")
+    String action = doc["action"].as<String>();
+    mode_L = doc["mode"].as<String>();
+
+    if (action == "turn_on_light")
     {
       digitalWrite(DENCHIEUSANG_PIN, HIGH);
       bulb_state = 1;
       sendLightModuleStateIfChanged();
     }
-    else if (action_L == "turn_off_light")
+    else if (action == "turn_off_light")
     {
       digitalWrite(DENCHIEUSANG_PIN, LOW);
       bulb_state = 0;
       sendLightModuleStateIfChanged();
     }
-    else if (action_L == "open_roof")
+    else if (action == "open_roof")
     {
       servoMaiChe.write(0);
       roof_state = 1;
       sendLightModuleStateIfChanged();
     }
-    else if (action_L == "close_roof")
+    else if (action == "close_roof")
     {
       servoMaiChe.write(90);
       roof_state = 0;
       sendLightModuleStateIfChanged();
     }
-    Serial.println(mode_L);
+    Serial.println("Mode: " + mode_L);
   }
+  // Handle light threshold
   else if (String(topic) == "light_threshold")
   {
-    payload[length] = '\0';
-    String msg = String((char *)payload);
-    light_threshold = msg.toInt();
-    Serial.print("Độ sáng ngưỡng: ");
+    light_threshold = message.toInt();
+    Serial.print("Light threshold: ");
     Serial.println(light_threshold);
   }
+  // Handle soil threshold
   else if (String(topic) == "soil_threshold")
   {
-    payload[length] = '\0';
-    String message = String((char *)payload);
-    DynamicJsonDocument doc(128);
-    deserializeJson(doc, message);
     plantType = doc["plantType"].as<String>();
     WATERING_THRESHOLD = doc["wateringThreshold"];
     STOP_WATERING_THRESHOLD = doc["stopWateringThreshold"];
-    Serial.println("Cập nhật ngưỡng: Loại cây=" + plantType + ", Tưới=" + String(WATERING_THRESHOLD) + "%, Ngưng=" + String(STOP_WATERING_THRESHOLD) + "%");
+    Serial.println("Updated thresholds: Plant=" + plantType + ", Watering=" + String(WATERING_THRESHOLD) + "%, Stop=" + String(STOP_WATERING_THRESHOLD) + "%");
   }
 }
 
@@ -275,9 +250,9 @@ void setup()
   client.setServer(MQTT_SERVER, MQTT_PORT);
   pinMode(DENCHIEUSANG_PIN, OUTPUT);
   pinMode(MOTOR_PIN, OUTPUT);
-  pinMode(FAN_PIN, OUTPUT);        // Khởi tạo chân quạt
-  pinMode(MIST_MAKER_PIN, OUTPUT); // Khởi tạo chân phun sương
-  pinMode(HEATER_PIN, OUTPUT);     // Khởi tạo chân máy sưởi
+  pinMode(FAN_PIN, OUTPUT);
+  pinMode(MIST_MAKER_PIN, OUTPUT);
+  pinMode(HEATER_PIN, OUTPUT);
   servoMaiChe.attach(MAICHE_PIN);
   servoMaiChe.write(0);
   client.setCallback(callback);
@@ -291,7 +266,7 @@ void loop()
   }
   client.loop();
 
-  // Đọc cảm biến DHT22
+  // Read DHT22 sensor
   float h = dht.readHumidity();
   float t = dht.readTemperature();
 
@@ -301,24 +276,49 @@ void loop()
     return;
   }
 
-  // Serial.print("Nhiệt độ: ");
-  // Serial.print(t);
-  // Serial.println("°C");
-  // Serial.print("Độ ẩm: ");
-  // Serial.print(h);
-  // Serial.println("%");
+  // Control devices based on sensor data
+  // Fan control
+  if (t > FAN_ON_TEMP && !isFanOn)
+  {
+    controlFan(true);
+  }
+  else if (t < FAN_OFF_TEMP && isFanOn)
+  {
+    controlFan(false);
+  }
 
+  // Mist maker control
+  if (h < MIST_ON_HUMIDITY && !isMistMakerOn)
+  {
+    controlMistMaker(true);
+  }
+  else if (h > MIST_OFF_HUMIDITY && isMistMakerOn)
+  {
+    controlMistMaker(false);
+  }
+
+  // Heater control
+  if (t < HEATER_ON_TEMP && !isHeaterOn)
+  {
+    controlHeater(true);
+  }
+  else if (t > HEATER_OFF_TEMP && isHeaterOn)
+  {
+    controlHeater(false);
+  }
+
+  // Publish DHT data
   DynamicJsonDocument dhtDoc(200);
   dhtDoc["temperature"] = t;
   dhtDoc["humidity"] = h;
   char dhtBuffer[200];
   serializeJson(dhtDoc, dhtBuffer);
 
-  // Đọc độ ẩm đất
+  // Read soil moisture
   int soilMoisture = analogRead(SOIL_SENSOR_PIN);
   int soilMoisturePercentNow = map(soilMoisture, 4095, 0, 0, 100);
 
-  // Điều khiển bơm nước dựa vào độ ẩm đất
+  // Control water pump based on soil moisture
   if (!isControlled)
   {
     if (soilMoisturePercentNow <= WATERING_THRESHOLD && !isWatering)
@@ -333,7 +333,7 @@ void loop()
     }
   }
 
-  // Gửi dữ liệu nếu độ ẩm đất thay đổi
+  // Publish soil moisture data if changed
   if (soilMoisturePercentNow != lastSoilMoisturePercent)
   {
     DynamicJsonDocument soilDoc(256);
@@ -350,7 +350,7 @@ void loop()
     lastSoilMoisturePercent = soilMoisturePercentNow;
   }
 
-  // CẢM BIẾN ÁNH SÁNG
+  // Light sensor handling
   int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (10000 - 1);
   if (mode_L == "auto")
   {
@@ -376,6 +376,7 @@ void loop()
   char lightBuffer[128];
   serializeJson(lightDoc, lightBuffer);
 
+  // Update LCD
   lcd.setCursor(0, 0);
   lcd.print("Temp: ");
   lcd.print(t);
@@ -396,6 +397,7 @@ void loop()
   lcd.print(lux);
   lcd.print("        ");
 
+  // Publish data every 10 seconds
   if (millis10s())
   {
     client.publish(MQTT_TOPIC_LIGHT, lightBuffer, true);
