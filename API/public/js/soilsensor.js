@@ -17,6 +17,7 @@
   function onConnect() {
     console.log("Đã kết nối MQTT cho soil sensor!");
     client.subscribe("soil_sensor_pt");
+    client.subscribe("soil_threshold");
   }
 
   // Xác định trạng thái độ ẩm đất
@@ -51,35 +52,125 @@
   client.onMessageArrived = (message) => {
     try {
       const data = JSON.parse(message.payloadString);
-      const soilMoisture = data.soil_moisture;
-      const status = getSoilStatus(soilMoisture);
+      if (message.destinationName === "soil_sensor_pt") {
+        const soilMoisture = data.soilMoisturePercentNow;
+        if (soilMoisture === undefined || soilMoisture === null) {
+          console.error("soilMoisturePercentNow không xác định:", data);
+          return;
+        }
+        const status = getSoilStatus(soilMoisture);
 
-      // Cập nhật card
-      $("#soilsensor_value").html(
-        `${soilMoisture}<span class='card-unit'>%</span>`
-      );
-      $(".card:has(.card-icon.soil) .progress.soil").css(
-        "width",
-        soilMoisture + "%"
-      );
-      $(".card:has(.card-icon.soil) .progress-info span:last-child").text(
-        soilMoisture + "%"
-      );
-      const statusDiv = $(".card:has(.card-icon.soil) .card-footer .status");
-      statusDiv.removeClass().addClass("status soil-status " + status.class);
-      statusDiv.html(
-        `<i class='fas fa-${status.icon}'></i><span>${status.text}</span>`
-      );
+        // Cập nhật card
+        $("#soilsensor_value").html(
+          `${soilMoisture}<span class='card-unit'>%</span>`
+        );
+        $(".card:has(.card-icon.soil) .progress.soil").css(
+          "width",
+          soilMoisture + "%"
+        );
+        $(".card:has(.card-icon.soil) .progress-info span:last-child").text(
+          soilMoisture + "%"
+        );
+        const statusDiv = $(".card:has(.card-icon.soil) .card-footer .status");
+        statusDiv.removeClass().addClass("status soil-status " + status.class);
+        statusDiv.html(
+          `<i class='fas fa-${status.icon}'></i><span>${status.text}</span>`
+        );
 
-      // Cập nhật thời gian
-      lastUpdate = new Date();
-      updateTimeAgo();
+        // Cập nhật loại cây
+        const plantType = data.plantType || "Ớt";
+        $("#current-plant-type").text(
+          plantType === "rau_muong"
+            ? "Rau muống, cải xanh"
+            : plantType === "ca_chua"
+            ? "Cà chua"
+            : plantType === "ot"
+            ? "Ớt"
+            : "Tùy chỉnh"
+        );
 
-      // Thêm dữ liệu mới vào chart
-      updateChartData(soilMoisture, lastUpdate);
+        // Cập nhật thời gian
+        lastUpdate = new Date();
+        updateTimeAgo();
+
+        // Thêm dữ liệu mới vào chart
+        updateChartData(soilMoisture, lastUpdate);
+      } else if (message.destinationName === "soil_threshold") {
+        // Cập nhật ngưỡng từ MQTT
+        $("#current-watering-threshold").text(data.wateringThreshold + "%");
+        $("#current-stop-watering-threshold").text(
+          data.stopWateringThreshold + "%"
+        );
+        $("#current-plant-type").text(
+          data.plantType === "rau_muong"
+            ? "Rau muống, cải xanh"
+            : data.plantType === "ca_chua"
+            ? "Cà chua"
+            : data.plantType === "ot"
+            ? "Ớt"
+            : "Tùy chỉnh"
+        );
+      }
     } catch (e) {
-      console.error("Lỗi parse JSON: ", e);
+      console.error("Lỗi parse JSON: ", e, message.payloadString);
     }
+  };
+
+  // Xử lý radio button tùy chỉnh
+  $(document).ready(() => {
+    $('input[name="plant-type"]').change(function () {
+      const isCustom = $(this).val() === "custom";
+      $("#custom-watering-threshold").prop("disabled", !isCustom);
+      $("#custom-stop-watering-threshold").prop("disabled", !isCustom);
+    });
+  });
+
+  // Gửi ngưỡng qua MQTT
+  window.setSoilThreshold = function () {
+    const selectedPlant = $('input[name="plant-type"]:checked').val();
+    let wateringThreshold, stopWateringThreshold;
+
+    if (selectedPlant === "custom") {
+      wateringThreshold = parseInt($("#custom-watering-threshold").val());
+      stopWateringThreshold = parseInt(
+        $("#custom-stop-watering-threshold").val()
+      );
+    } else {
+      wateringThreshold = parseInt(
+        $('input[name="plant-type"]:checked').data("watering")
+      );
+      stopWateringThreshold = parseInt(
+        $('input[name="plant-type"]:checked').data("stop")
+      );
+    }
+
+    if (isNaN(wateringThreshold) || isNaN(stopWateringThreshold)) {
+      alert("Vui lòng nhập ngưỡng hợp lệ!");
+      return;
+    }
+
+    const message = new Paho.MQTT.Message(
+      JSON.stringify({
+        plantType: selectedPlant,
+        wateringThreshold: wateringThreshold,
+        stopWateringThreshold: stopWateringThreshold,
+      })
+    );
+    message.destinationName = "soil_threshold";
+    client.send(message);
+
+    // Cập nhật giao diện
+    $("#current-watering-threshold").text(wateringThreshold + "%");
+    $("#current-stop-watering-threshold").text(stopWateringThreshold + "%");
+    $("#current-plant-type").text(
+      selectedPlant === "rau_muong"
+        ? "Rau muống, cải xanh"
+        : selectedPlant === "ca_chua"
+        ? "Cà chua"
+        : selectedPlant === "ot"
+        ? "Ớt"
+        : "Tùy chỉnh"
+    );
   };
 
   // Cập nhật thời gian mỗi 10s
@@ -105,8 +196,6 @@
       const parsedData = JSON.parse(savedData);
       const now = Date.now();
       const fiveMinutesAgo = now - 300000; // 5 phút
-
-      // Lọc dữ liệu trong 5 phút
       parsedData.timestamps.forEach((ts, index) => {
         if (ts >= fiveMinutesAgo) {
           chartData.labels.push(parsedData.labels[index]);
@@ -203,7 +292,7 @@
     chartData.values.push(soilMoisture);
     chartData.timestamps.push(date.getTime());
 
-    // Lọc dữ liệu trong 5 phút (300000 ms)
+    // Lọc dữ liệu trong 5 phút
     const now = Date.now();
     const fiveMinutesAgo = now - 300000;
     while (
@@ -234,6 +323,7 @@
         const data = res.data;
         if (!data || !data[0]) return;
         const soilMoisture = data[0].soil_moisture;
+        if (soilMoisture === undefined || soilMoisture === null) return;
         const timestamp = new Date(data[0].timestamp);
         updateChartData(soilMoisture, timestamp);
 
@@ -263,9 +353,9 @@
 
   // Khởi tạo khi trang tải
   $(document).ready(() => {
-    restoreChartData(); // Khôi phục dữ liệu từ localStorage
+    restoreChartData();
     initChart();
     ajaxUpdateChart();
-    setInterval(ajaxUpdateChart, 5000); // Cập nhật mỗi 5s
+    setInterval(ajaxUpdateChart, 5000);
   });
 })();

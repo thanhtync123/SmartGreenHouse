@@ -7,7 +7,6 @@ client.connect({
         console.log("Đã kết nối và subscribe.");
     },
 });
-alert("10");
 const lb_trthaiden = document.getElementById("lb_trthaiden");
 const lb_trthaimaiche = document.getElementById("lb_trthaimaiche");
 const btn_batden = document.getElementById("btn_batden");

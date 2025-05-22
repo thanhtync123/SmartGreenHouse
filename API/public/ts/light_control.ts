@@ -10,7 +10,6 @@ client.connect({
     console.log("Đã kết nối và subscribe.");
   },
 });
-alert("10");
 const lb_trthaiden = document.getElementById(
   "lb_trthaiden"
 ) as HTMLElement | null;
