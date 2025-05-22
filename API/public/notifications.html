@@ -9,6 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/trash-notification.css" />
   </head>
   <body>
     <!-- Sidebar sẽ được load động từ sidebar.html -->
@@ -19,16 +20,12 @@
         <h2>Thông báo</h2>
         <div class="date-time">Thứ Năm, 8 tháng 5, 2025 | 15:48:40</div>
       </div>
-
       <!-- Notification Filters -->
       <div class="notification-filters card">
         <div class="filter-group">
           <label>Lọc theo</label>
           <div class="button-group">
             <button class="filter-button active">Tất cả</button>
-            <button class="filter-button">Cảnh báo</button>
-            <button class="filter-button">Cảnh báo nhẹ</button>
-            <button class="filter-button">Thông tin</button>
           </div>
         </div>
         <div class="filter-group">
@@ -268,5 +265,7 @@
       </div>
     </div>
     <script src="./js/sidebar.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="./js/show_alert.js"></script>
   </body>
 </html>

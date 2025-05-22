@@ -8,6 +8,7 @@ const db = require("./config/database");
 const dht22AllreadingRoutes = require("./routes/dht22Allreadings");
 const authRoutes = require("./routes/auth");
 const bh1750readingRouter = require("./routes/bh1750reading");
+const alert_readingRouter = require("./routes/alert_reading");
 
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
@@ -80,7 +81,7 @@ app.get("/settings", isAuthenticated, (req, res) => {
 // API routes có thể cần xác thực hoặc không tùy theo yêu cầu
 app.use("/api", dht22AllreadingRoutes);
 app.use("/api", bh1750readingRouter);
-
+app.use("/api", alert_readingRouter);
 // Thêm debug info để kiểm tra các route
 const publicPath = path.join(__dirname, "public");
 console.log("Serving static files from:", publicPath);
@@ -173,6 +174,7 @@ function setupMqtt() {
     client.subscribe("dht22");
     client.subscribe("soil_moisture");
     client.subscribe("light_sensor");
+    client.subscribe("light_over_threshold");
     initializeDatabase();
   });
 
@@ -203,12 +205,18 @@ function setupMqtt() {
         );
       }
 
-      // Insert alert if exists
-      if (topic) {
-        await connection.query(
-          "INSERT INTO alerts (sensor_type, value, message) VALUES (?, ?, ?)",
-          [data.sensorType, data.value || null, data.alert]
+      if (topic === "light_over_threshold") {
+        // Kiểm tra xem đã có cảnh báo tương tự trong 5 phút gần nhất chưa
+        const [existingAlerts] = await connection.query(
+          "SELECT id FROM alerts WHERE sensor_type = ? AND message = ? AND timestamp >= NOW() - INTERVAL 5 MINUTE",
+          [data.sensor_type, data.message]
         );
+        if (existingAlerts.length === 0) {
+          await connection.query(
+            "INSERT INTO alerts (sensor_type, value, message) VALUES (?, ?, ?)",
+            [data.sensor_type, data.value || null, data.message]
+          );
+        }
       }
 
       connection.release();

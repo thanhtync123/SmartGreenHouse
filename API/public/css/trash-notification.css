@@ -1,0 +1,83 @@
+/* Định dạng cho thông báo khi đưa thông báo vào thùng rác */
+.trash-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(44, 62, 80, 0.9);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.trash-message {
+  margin-right: 15px;
+  font-size: 14px;
+}
+
+.undo-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.undo-button:hover {
+  background-color: #2980b9;
+}
+
+/* Định dạng cho nút thùng rác */
+.trash-bin-button {
+  display: flex;
+  align-items: center;
+  background-color: var(--light);
+  border: 1px solid #ddd;
+  padding: 8px 15px;
+  border-radius: 20px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.trash-bin-button:hover {
+  background-color: #e9ecef;
+}
+
+.trash-bin-button i {
+  margin-right: 8px;
+  color: var(--danger);
+}
+
+.trash-bin-count {
+  background-color: var(--danger);
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}

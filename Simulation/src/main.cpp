@@ -20,6 +20,7 @@ const char *MQTT_TOPIC_LIGHT_MODULE_CONTROL = "light_module_control";
 const char *MQTT_TOPIC_SOILSENSOR = "soil_sensor_pt";
 const char *MQTT_TOPIC_LIGHT_THRESHOLD = "light_threshold";
 const char *MQTT_TOPIC_SOIL_THRESHOLD = "soil_threshold";
+const char *MQTT_TOPIC_LIGHT_OVERTHRESHOLD = "light_over_threshold";
 
 bool isControlled = false;
 bool isWatering = false;
@@ -354,6 +355,7 @@ void loop()
   int lux = 1 + (analogRead(LIGHT_SENSOR_PIN) / 4095.0) * (10000 - 1);
   if (mode_L == "auto")
   {
+    
     if (lux > light_threshold)
     {
       digitalWrite(DENCHIEUSANG_PIN, 0);
@@ -369,7 +371,19 @@ void loop()
       roof_state = 1;
     }
   }
-  sendLightModuleStateIfChanged();
+    sendLightModuleStateIfChanged();
+   if(lux > light_threshold )
+   {
+      JsonDocument light_overthreshold;
+      light_overthreshold["sensor_type"] = "bh1750";
+      light_overthreshold["value"] = lux;
+      light_overthreshold["message"] = "Vượt ngưỡng ánh sáng " + String(light_threshold);
+      char lightBuffer[128];
+      serializeJson(light_overthreshold, lightBuffer);
+      client.publish(MQTT_TOPIC_LIGHT_OVERTHRESHOLD, lightBuffer, true);
+   }
+
+
 
   DynamicJsonDocument lightDoc(128);
   lightDoc["light"] = lux;
