@@ -35,9 +35,28 @@
       <i class="fas fa-bell"></i>
       <span>Notifications</span>
     </a>
-    <a class="menu-item" href="logout.html">
+    <a class="menu-item" id="logout-btn" href="javascript:void(0)">
       <i class="fas fa-sign-out-alt"></i>
       <span>Logout</span>
     </a>
   </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+  // Xử lý đăng xuất khi nhấn vào nút logout
+  $(document).ready(function () {
+    $("#logout-btn").on("click", function () {
+      $.ajax({
+        url: "/api/logout",
+        method: "POST",
+        success: function () {
+          window.location.href = "/login";
+        },
+        error: function (xhr) {
+          alert("Đăng xuất thất bại. Vui lòng thử lại.");
+        },
+      });
+    });
+  });
+</script>

@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const mqtt = require("mqtt");
+const session = require("express-session");
 require("dotenv").config();
 const db = require("./config/database");
 const dht22AllreadingRoutes = require("./routes/dht22Allreadings");
@@ -10,16 +11,73 @@ const bh1750readingRouter = require("./routes/bh1750reading");
 
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
-// Route
+app.use(express.json());
+
+// Thiết lập session middleware
+app.use(
+  session({
+    secret: "smart_greenhouse_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000, // 1 ngày
+    },
+  })
+);
+
+// Middleware kiểm tra xác thực
+const isAuthenticated = (req, res, next) => {
+  if (req.session && req.session.isLoggedIn) {
+    return next();
+  }
+  res.redirect("/login");
+};
+
+// Các route không cần xác thực
 app.get("/login", (req, res) => {
+  if (req.session && req.session.isLoggedIn) {
+    return res.redirect("/");
+  }
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
+
 app.get("/register", (req, res) => {
+  if (req.session && req.session.isLoggedIn) {
+    return res.redirect("/");
+  }
   res.sendFile(path.join(__dirname, "public", "register.html"));
 });
 
-app.use(express.json());
+// API routes
 app.use("/api", authRoutes);
+
+// Route cần xác thực
+app.get("/", isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.get("/controls", isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "controls.html"));
+});
+
+app.get("/analytics", isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "analytics.html"));
+});
+
+app.get("/notifications", isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "notifications.html"));
+});
+
+app.get("/schedule", isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "schedule.html"));
+});
+
+app.get("/settings", isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "settings.html"));
+});
+
+// API routes có thể cần xác thực hoặc không tùy theo yêu cầu
 app.use("/api", dht22AllreadingRoutes);
 app.use("/api", bh1750readingRouter);
 

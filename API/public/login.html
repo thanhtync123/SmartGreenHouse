@@ -79,7 +79,6 @@
         Bạn chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
       </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
       $("#login-form").on("submit", function (e) {
@@ -96,6 +95,10 @@
           contentType: "application/json",
           data: JSON.stringify({ username, password }),
           success: function (res) {
+            // Lưu thông tin người dùng vào localStorage
+            localStorage.setItem("username", res.username);
+            localStorage.setItem("role", res.role || "user");
+
             alert("Đăng nhập thành công!");
             window.location.href = "index.html";
           },
@@ -103,6 +106,19 @@
             alert(xhr.responseJSON?.error || "Đăng nhập thất bại");
           },
         });
+      });
+
+      // Kiểm tra nếu đã đăng nhập thì chuyển đến trang chính
+      $(document).ready(function () {
+        if (localStorage.getItem("username")) {
+          $.ajax({
+            url: "/",
+            method: "GET",
+            success: function () {
+              window.location.href = "/";
+            },
+          });
+        }
       });
     </script>
   </body>

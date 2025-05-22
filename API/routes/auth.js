@@ -53,7 +53,13 @@ router.post("/login", async (req, res) => {
     if (user.password !== password) {
       return res.status(401).json({ error: "Incorrect password" });
     }
-    // Đăng nhập thành công
+    // Đăng nhập thành công - tạo session
+    req.session.isLoggedIn = true;
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      role: user.role
+    };
     res.json({
       message: "Login successful",
       username: user.username,
@@ -61,6 +67,22 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// API đăng xuất
+router.post("/logout", (req, res) => {
+  // Xóa session
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Không thể đăng xuất" });
+      }
+      res.clearCookie('connect.sid'); // Xóa cookie
+      res.json({ message: "Đăng xuất thành công" });
+    });
+  } else {
+    res.json({ message: "Đăng xuất thành công" });
   }
 });
 
