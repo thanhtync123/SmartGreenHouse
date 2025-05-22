@@ -233,6 +233,34 @@
         <input type="text" id="txb_light_threshold" />
         <button id="btn_threshold_set">Xác nhận</button>
       </div>
+      <div class="soil-threshold-setting">
+  <h3>Thiết lập ngưỡng cho cảm biến độ ẩm đất</h3>
+  <p>Loại cây hiện tại: <span id="current-plant-type">Ớt</span></p>
+  <p>Ngưỡng tưới: <span id="current-watering-threshold">35</span>% | Ngưỡng ngưng tưới: <span id="current-stop-watering-threshold">60</span>%</p>
+  <div class="radio-group">
+    <div class="radio-row">
+      <input type="radio" name="plant-type" value="rau_muong" data-watering="40" data-stop="70" id="rau_muong">
+      <label for="rau_muong">Rau muống, cải xanh</label>
+    </div>
+    <div class="radio-row">
+      <input type="radio" name="plant-type" value="ca_chua" data-watering="45" data-stop="75" id="ca_chua">
+      <label for="ca_chua">Cà chua</label>
+    </div>
+    <div class="radio-row">
+      <input type="radio" name="plant-type" value="ot" data-watering="35" data-stop="60" id="ot" checked>
+      <label for="ot">Ớt</label>
+    </div>
+    <div class="radio-row">
+      <input type="radio" name="plant-type" value="custom" data-watering="35" data-stop="60" id="custom">
+      <label for="custom">Tùy chỉnh</label>
+      <input type="number" id="custom-watering-threshold" min="0" max="100" value="35" disabled>
+      <input type="number" id="custom-stop-watering-threshold" min="0" max="100" value="60" disabled>
+    </div>
+  </div>
+  <button onclick="setSoilThreshold()">Áp dụng</button>
+</div>
+    </div>
+  </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script
