@@ -59,6 +59,101 @@ void sendLightModuleStateIfChanged()
     client.publish(MQTT_TOPIC_LIGHT_MODULE_STATE, buffer);
   }
 }
+int lastBrightness = -1;
+String lastRoof = "";
+
+// dht22
+//  Định nghĩa chân cho các thiết bị mới
+#define FAN_PIN 18
+#define MIST_MAKER_PIN 23
+#define HEATER_PIN 27
+
+// Biến trạng thái cho các thiết bị
+bool isFanOn = false;
+bool isMistMakerOn = false;
+bool isHeaterOn = false;
+
+void controlFan(bool state)
+{
+  digitalWrite(FAN_PIN, state ? HIGH : LOW);
+  isFanOn = state;
+  Serial.print("Quạt: ");
+  Serial.println(state ? "BẬT" : "TẮT");
+
+  // Gửi trạng thái quạt qua MQTT
+  DynamicJsonDocument fanDoc(128);
+  fanDoc["fanState"] = String(state);
+  char fanBuffer[128];
+  serializeJson(fanDoc, fanBuffer);
+  client.publish("fan_state_pt", fanBuffer);
+}
+
+void controlMistMaker(bool state)
+{
+  digitalWrite(MIST_MAKER_PIN, state ? HIGH : LOW);
+  isMistMakerOn = state;
+  Serial.print("Phun sương: ");
+  Serial.println(state ? "BẬT" : "TẮT");
+
+  // Gửi trạng thái phun sương qua MQTT
+  DynamicJsonDocument mistDoc(128);
+  mistDoc["mistMakerState"] = String(state);
+  char mistBuffer[128];
+  serializeJson(mistDoc, mistBuffer);
+  client.publish("mist_maker_state_pt", mistBuffer);
+}
+
+void controlHeater(bool state)
+{
+  digitalWrite(HEATER_PIN, state ? HIGH : LOW);
+  isHeaterOn = state;
+  Serial.print("Máy sưởi: ");
+  Serial.println(state ? "BẬT" : "TẮT");
+
+  // Gửi trạng thái máy sưởi qua MQTT
+  DynamicJsonDocument heaterDoc(128);
+  heaterDoc["heaterState"] = String(state);
+  char heaterBuffer[128];
+  serializeJson(heaterDoc, heaterBuffer);
+  client.publish("heater_state_pt", heaterBuffer);
+}
+
+void controlDevicesBasedOnDHT(float temperature, float humidity)
+{
+  // Điều khiển quạt dựa trên nhiệt độ
+  if (!isControlled)
+  { // Chỉ điều khiển tự động nếu không ở chế độ thủ công
+    if (temperature > 30.0 && !isFanOn)
+    {
+      controlFan(true); // Bật quạt nếu nhiệt độ > 30°C
+    }
+    else if (temperature <= 28.0 && isFanOn)
+    {
+      controlFan(false); // Tắt quạt nếu nhiệt độ <= 28°C (hysteresis)
+    }
+
+    // Điều khiển phun sương dựa trên độ ẩm
+    if (humidity < 40.0 && !isMistMakerOn)
+    {
+      controlMistMaker(true); // Bật phun sương nếu độ ẩm < 40%
+    }
+    else if (humidity >= 50.0 && isMistMakerOn)
+    {
+      controlMistMaker(false); // Tắt phun sương nếu độ ẩm >= 50% (hysteresis)
+    }
+
+    // Điều khiển máy sưởi dựa trên nhiệt độ
+    if (temperature < 20.0 && !isHeaterOn)
+    {
+      controlHeater(true); // Bật máy sưởi nếu nhiệt độ < 20°C
+    }
+    else if (temperature >= 22.0 && isHeaterOn)
+    {
+      controlHeater(false); // Tắt máy sưởi nếu nhiệt độ >= 22°C (hysteresis)
+    }
+  }
+}
+
 void WIFIConnect()
 {
   Serial.println("Kết nối WiFi...");
@@ -167,6 +262,9 @@ void setup()
   client.setServer(MQTT_SERVER, MQTT_PORT);
   pinMode(DENCHIEUSANG_PIN, OUTPUT);
   pinMode(MOTOR_PIN, OUTPUT);
+  pinMode(FAN_PIN, OUTPUT);        // Khởi tạo chân quạt
+  pinMode(MIST_MAKER_PIN, OUTPUT); // Khởi tạo chân phun sương
+  pinMode(HEATER_PIN, OUTPUT);     // Khởi tạo chân máy sưởi
   servoMaiChe.attach(MAICHE_PIN);
   servoMaiChe.write(0);
   client.setCallback(callback);
@@ -181,27 +279,6 @@ void loop()
   client.loop();
 
   // Đọc cảm biến DHT22
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
-
-  if (isnan(h) || isnan(t))
-  {
-    Serial.println("Không thể đọc dữ liệu từ cảm biến DHT!");
-    return;
-  }
-
-  // Serial.print("Nhiệt độ: ");
-  // Serial.print(t);
-  // Serial.println("°C");
-  // Serial.print("Độ ẩm: ");
-  // Serial.print(h);
-  // Serial.println("%");
-
-  DynamicJsonDocument dhtDoc(200);
-  dhtDoc["temperature"] = t;
-  dhtDoc["humidity"] = h;
-  char dhtBuffer[200];
-  serializeJson(dhtDoc, dhtBuffer);
 
   // Đọc độ ẩm đất
   int soilMoisture = analogRead(SOIL_SENSOR_PIN);
@@ -296,5 +373,35 @@ void loop()
     char thresholdBuffer[16];
     snprintf(thresholdBuffer, sizeof(thresholdBuffer), "%d", light_threshold);
     client.publish(MQTT_TOPIC_LIGHT_THRESHOLD, thresholdBuffer, true);
+
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+
+    controlDevicesBasedOnDHT(t, h);
+
+    if (millis10s())
+    {
+      Serial.print("Nhiệt độ: ");
+      Serial.print(t);
+      Serial.println("°C");
+      Serial.print("Độ ẩm: ");
+      Serial.print(h);
+      Serial.println("%");
+
+      if (isnan(h) || isnan(t))
+      {
+        Serial.println("Không thể đọc dữ liệu từ cảm biến DHT!");
+        return;
+      }
+
+      DynamicJsonDocument dhtDoc(200);
+      dhtDoc["temperature"] = t;
+      dhtDoc["humidity"] = h;
+      char dhtBuffer[200];
+      serializeJson(dhtDoc, dhtBuffer);
+
+      client.publish(MQTT_TOPIC_LIGHT, lightBuffer, true);
+      client.publish(MQTT_TOPIC, dhtBuffer, true);
+      client.publish(MQTT_TOPIC_SOILSENSOR, soilBuffer, true);
+    }
   }
-}

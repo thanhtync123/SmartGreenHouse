@@ -4,7 +4,6 @@ const app = express();
 const mqtt = require("mqtt");
 require("dotenv").config();
 const db = require("./config/database");
-const dht22readingRoutes = require("./routes/dht22readings");
 const dht22AllreadingRoutes = require("./routes/dht22Allreadings");
 const authRoutes = require("./routes/auth");
 const bh1750readingRouter = require("./routes/bh1750reading");
@@ -21,7 +20,6 @@ app.get("/register", (req, res) => {
 
 app.use(express.json());
 app.use("/api", authRoutes);
-app.use("/api", dht22readingRoutes);
 app.use("/api", dht22AllreadingRoutes);
 app.use("/api", bh1750readingRouter);
 
