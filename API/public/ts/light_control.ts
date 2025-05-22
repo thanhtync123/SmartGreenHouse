@@ -1,12 +1,12 @@
-const client = new Paho.MQTT.Client(
+const clientl = new Paho.MQTT.Client(
   "broker.emqx.io",
   8084,
   "client_" + Math.random()
 );
-client.connect({
+clientl.connect({
   useSSL: true,
   onSuccess: () => {
-    client.subscribe("light_module_state");
+    clientl.subscribe("light_module_state");
     console.log("Đã kết nối và subscribe.");
   },
 });
@@ -43,7 +43,7 @@ btn_batden.hidden = true;
 btn_tatden.hidden = true;
 btn_momaiche.hidden = true;
 btn_dongmaiche.hidden = true;
-client.onMessageArrived = (message: any) => {
+clientl.onMessageArrived = (message: any) => {
   if (message.destinationName === "light_module_state") {
     const data = JSON.parse(message.payloadString);
     if (typeof data.bulb_state === "number") {
@@ -70,7 +70,7 @@ autoMode.addEventListener("click", () => {
     JSON.stringify({ action: "no", mode: "auto" })
   );
   message.destinationName = "light_module_control";
-  client.send(message);
+  clientl.send(message);
   manualMode.style.backgroundColor = "white"; // Lighter gray
   autoMode.style.backgroundColor = "#90caf9"; // Lighter blue
   btn_batden.style.display = "none";
@@ -83,7 +83,7 @@ btn_batden.addEventListener("click", () => {
     JSON.stringify({ action: "turn_on_light", mode: "manual" })
   );
   message.destinationName = "light_module_control";
-  client.send(message);
+  clientl.send(message);
 });
 
 btn_tatden.addEventListener("click", () => {
@@ -91,7 +91,7 @@ btn_tatden.addEventListener("click", () => {
     JSON.stringify({ action: "turn_off_light", mode: "manual" })
   );
   message.destinationName = "light_module_control";
-  client.send(message);
+  clientl.send(message);
 });
 
 btn_momaiche.addEventListener("click", () => {
@@ -99,7 +99,7 @@ btn_momaiche.addEventListener("click", () => {
     JSON.stringify({ action: "open_roof", mode: "manual" })
   );
   message.destinationName = "light_module_control";
-  client.send(message);
+  clientl.send(message);
 });
 
 btn_dongmaiche.addEventListener("click", () => {
@@ -107,5 +107,5 @@ btn_dongmaiche.addEventListener("click", () => {
     JSON.stringify({ action: "close_roof", mode: "manual" })
   );
   message.destinationName = "light_module_control";
-  client.send(message);
+  clientl.send(message);
 });
