@@ -115,13 +115,15 @@
         </div>
       </div>
       <!-- Fan Control -->
-      <div class="card control-panel">
+
+      <!-- Control Panels -->
+      <div class="card control-panel" id="fan-control">
         <div class="card-header">
           <div class="card-title">
             <i class="fas fa-fan"></i>
             Quạt thông gió
           </div>
-          <div class="control-status active">
+          <div class="control-status" id="fan-status">
             <span>Đang hoạt động</span>
           </div>
         </div>
@@ -129,17 +131,94 @@
           <div class="control-item">
             <div class="control-info">
               <div class="control-name">Quạt</div>
-              <div class="control-value">Tốc độ: 65%</div>
+              <div class="control-value" id="fan-value">Tốc độ: 65%</div>
             </div>
             <div class="control-actions">
-              <div class="toggle-switch active">
+              <div class="toggle-switch active" id="fan-toggle">
                 <div class="toggle-slider"></div>
               </div>
               <div class="control-slider">
-                <input type="range" min="0" max="100" value="65" />
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="65"
+                  id="fan-slider"
+                />
               </div>
             </div>
           </div>
+          <div class="control-updated" id="fan-updated">Vừa cập nhật</div>
+        </div>
+      </div>
+
+      <div class="card control-panel" id="mist-control">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-tint"></i>
+            Máy phun sương
+          </div>
+          <div class="control-status" id="mist-status">
+            <span>Đang hoạt động</span>
+          </div>
+        </div>
+        <div class="control-items">
+          <div class="control-item">
+            <div class="control-info">
+              <div class="control-name">Máy phun sương</div>
+              <div class="control-value" id="mist-value">Cường độ: 70%</div>
+            </div>
+            <div class="control-actions">
+              <div class="toggle-switch active" id="mist-toggle">
+                <div class="toggle-slider"></div>
+              </div>
+              <div class="control-slider">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="70"
+                  id="mist-slider"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="control-updated" id="mist-updated">Vừa cập nhật</div>
+        </div>
+      </div>
+
+      <div class="card control-panel" id="heater-control">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fas fa-fire"></i>
+            Máy sưởi
+          </div>
+          <div class="control-status" id="heater-status">
+            <span>Đang hoạt động</span>
+          </div>
+        </div>
+        <div class="control-items">
+          <div class="control-item">
+            <div class="control-info">
+              <div class="control-name">Máy sưởi</div>
+              <div class="control-value" id="heater-value">Nhiệt độ: 25°C</div>
+            </div>
+            <div class="control-actions">
+              <div class="toggle-switch active" id="heater-toggle">
+                <div class="toggle-slider"></div>
+              </div>
+              <div class="control-slider">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="25"
+                  id="heater-slider"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="control-updated" id="heater-updated">Vừa cập nhật</div>
         </div>
       </div>
 
@@ -203,6 +282,7 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"
       type="text/javascript"
     ></script>
-    <script src="./js/light_control.js"></script>
+    <!-- <script src="./js/light_control.js"></script> -->
+    <script src="./js/control.js"></script>
   </body>
 </html>

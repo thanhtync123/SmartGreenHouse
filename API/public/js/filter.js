@@ -587,6 +587,6 @@ document.getElementById("table-search-button").addEventListener("click", () => {
 window.addEventListener("load", async () => {
   currentPage = 1;
   const defaultTimeRange = "Last 1 Hour";
-  initializeDateTimePickers();
+  // initializeDateTimePickers();
   await updateChartAndAverages(defaultTimeRange);
 });
